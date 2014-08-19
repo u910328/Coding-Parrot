@@ -9,8 +9,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.FBURL = FBURL;
     }])
 
-    .controller('ChatCtrl', ['$scope', '$firebase', 'user', 'fbutil', 'linkify', '$sce', function ($scope, $firebase, user, fbutil, linkify, $sce) {
-        var position0 = ['users', user.uid, 'conversations', 'group'];
+    .controller('ChatCtrl', ['$scope', '$firebase', 'user', 'fbutil', 'linkify', '$sce', '$q', function ($scope, $firebase, user, fbutil, linkify, $sce, $q) {
+        var position0 = ['users', user.uid, 'conversations', 'group'],
+            resetUnread = function (posArray) {$scope.$on('$routeChangeStart', function () {
+                fbutil.ref(posArray)
+                    .off('value')
+            });};
+
         $scope.myUid = user.uid;
         $scope.messages = [];
         $scope.syncedValue = fbutil.syncObject('syncedValue');
@@ -19,8 +24,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             fbutil.ref(['conversations', conv, 'members', user.uid, 'unread'])
                 .on('value', function (snap) {
                     document.getElementById(conv).innerHTML = 'unread: ' + snap.val();
+                    resetUnread(['conversations', conv, 'members', user.uid, 'unread'])
                 });
         };
+
         $scope.getUnread1to1 = function (whom) {
             var pos = ['users', user.uid, 'conversations', '1to1', whom, 'Ref'];
             fbutil.ref(pos)
@@ -30,11 +37,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                         fbutil.ref(['conversations', ref.val(), 'members', user.uid, 'unread'])
                             .on('value', function (snap) {
                                 document.getElementById(whom).innerHTML = 'unread: ' + snap.val();
+                                resetUnread(['conversations', ref.val(), 'members', user.uid, 'unread']);
                             });
                     }
-
                 });
-
         };
 
         $scope.conversations = fbutil.syncObject(position0);
@@ -45,23 +51,27 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 .$update({unread: 0});
         };
         $scope.usrList = fbutil.syncObject('userList');
-        $scope.userInConversation = [user.uid];
+        $scope.usrInCon = [user.uid];
         $scope.invite = function (addedUser) {
-            if (addedUser != user.uid) {
-                $scope.userInConversation.push(addedUser);
-            }
+            var doubleCount = false;
+            for (var i = 0; i < $scope.usrInCon.length; i++) {
+                if ($scope.usrInCon[i] == addedUser ) {
+                    doubleCount = true
+            }}
+            if (!doubleCount) {$scope.usrInCon.push(addedUser)}
         };
+
         $scope.Confirm = function () {
             fbutil.syncData(position0).$push({data: 'success'}).then(function (conversationRef) {
                 var conRef = conversationRef.name();
                 $scope.selConv(conRef);  //switch messages to current ref
                 var i;
-                for (i = 0; i < $scope.userInConversation.length; i++) {
+                for (i = 0; i < $scope.usrInCon.length; i++) {
                     if (i != 0) {
-                        var position = ['users', $scope.userInConversation[i], 'conversations', 'group'];
+                        var position = ['users', $scope.usrInCon[i], 'conversations', 'group'];
                         fbutil.syncData(position).$update(conRef, {data: 'success'});
                     }
-                    fbutil.syncData(['conversations', conRef, 'members', $scope.userInConversation[i]])
+                    fbutil.syncData(['conversations', conRef, 'members', $scope.usrInCon[i]])
                         .$update({unread: 0});          //messages pos in conversations
                 }
             });
