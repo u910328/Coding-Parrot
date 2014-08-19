@@ -1,0 +1,26 @@
+{
+  "name": "angular-tunnels",
+  "version": "0.0.8",
+  "main": "tunnels.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "angular": "~1.2.x"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.x"
+  },
+  "homepage": "https://github.com/mrvdot/angular-tunnels",
+  "_release": "0.0.8",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.8",
+    "commit": "3fee26f12c2b9e389aff4f81e7015a1ff293c139"
+  },
+  "_source": "git://github.com/mrvdot/angular-tunnels.git",
+  "_target": "~0.0.6",
+  "_originalSource": "angular-tunnels"
+}

@@ -1,0 +1,27 @@
+<h2>Chat</h2>
+<div ng-repeat="(conv, value) in conversations">
+    <a href="" ng-click="selConv(conv)">{{conv}}</a>
+    <div ng-init="getUnread(conv)"> <div id={{conv}}></div> </div>
+</div>
+        <hr>
+<form>
+  <input placeholder="Message..." ng-model="newMessage">
+  <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
+</form>
+
+<ul id="messages" ng-show="messages.length">
+    <li ng-repeat="message in messages | reverse">{{message.addresser}}: <div ng-bind-html="message.text"></li>        <!--use ng-bind-html because of $sanitize-->
+</ul>
+
+<hr>
+<div ng-repeat="usr in usrList" ng-show="usr.uid != myUid">
+    <a href="" ng-click="talkTo(usr.uid)">{{usr.name}}</a>
+    <div ng-init="getUnread1to1(usr.uid)"> <div id={{usr.uid}}></div> </div>
+    <button ng-click="invite(usr.uid)">Add</button>
+    <br>
+</div>
+<button ng-click="Confirm()">Confirm</button>
+<p>Users in this room: {{userInConversation}}</p><br>
+
+        <div>My UID: {{myUid}}</div>
+

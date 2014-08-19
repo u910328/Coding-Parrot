@@ -1,0 +1,28 @@
+{
+  "name": "angular-comments",
+  "version": "1.2.0",
+  "main": "scripts/comments.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "angular-tunnels": "~0.0.6"
+  },
+  "devDependencies": {
+    "angular-tunnels": "~0.0.6",
+    "angular-mocks": "~1.2.x"
+  },
+  "homepage": "https://github.com/mrvdot/angular-comments",
+  "_release": "1.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.0",
+    "commit": "9f55efcbc27b528cd8ed4a751737a6a0e3a2de8b"
+  },
+  "_source": "git://github.com/mrvdot/angular-comments.git",
+  "_target": "~1.2.0",
+  "_originalSource": "angular-comments",
+  "_direct": true
+}
