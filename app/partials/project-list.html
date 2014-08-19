@@ -1,0 +1,8 @@
+<a href="#!/newProject">new project</a><hr>
+<div ng-repeat="(pjRef, pjData) in pjList">
+    Name: <a href="#!/projects/{{pjRef}}">{{pjData.Name}}</a><br>
+    Brief: <a href="#!">{{pjData.Brief}}</a><br>
+    Expertise: <a href="#!">{{pjData.Expertise}}</a><br>
+    Client: <a href="#!">{{pjData.ClientName}}</a><br>
+    <hr>
+</div>
