@@ -21,6 +21,11 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
             controller: 'ChatCtrl',
             authRequired: true
         },
+        '/contacts': {
+            templateUrl: 'partials/contacts.html',
+            controller: 'ContactCtrl',
+            authRequired: true
+        },
         '/newProject': {
             templateUrl: 'partials/project-new.html',
             controller: 'ProjectCreatorCtrl',

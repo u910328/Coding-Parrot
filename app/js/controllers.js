@@ -8,24 +8,38 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.user = user;
         $scope.FBURL = FBURL;
     }])
-
+    .controller('ContactCtrl', ['$scope', 'fbutil', 'user', function ($scope, fbutil, user) {
+        $scope.syncedValue = fbutil.syncObject('syncedValue');
+        $scope.user = user;
+        $scope.FBURL = FBURL;
+    }])
     .controller('ChatCtrl', ['$scope', '$firebase', 'user', 'fbutil', 'linkify', '$sce', '$q', function ($scope, $firebase, user, fbutil, linkify, $sce, $q) {
-        var position0 = ['users', user.uid, 'conversations', 'group'],
+        var grpConPos = ['users', user.uid, 'conversations', 'group'],
             resetUnread = function (posArray) {$scope.$on('$routeChangeStart', function () {       // need to destroy listener?
                 fbutil.ref(posArray).off('value')
             });};
-
+        $scope.myUid = user.uid;
         $scope.messages = [];
-        $scope.syncedValue = fbutil.syncObject('syncedValue');
+        $scope.usrList = fbutil.syncObject('userList');
+
+        $scope.contacts = fbutil.syncObject(['users', user.uid, 'contacts']);
+        $scope.addContact = function (contact) {
+            fbutil.syncData(['users', user.uid, 'contacts', contact]).$update({Data: 'success'});
+        };
+        $scope.removeContact = function (contact) {
+            fbutil.syncData(['users', user.uid, 'contacts']).$remove(contact);
+        };
+        $scope.isExist = function (contact) {
+
+        };
 
         $scope.getUnread = function (conv) {
             fbutil.ref(['conversations', conv, 'members', user.uid, 'unread'])
                 .on('value', function (snap) {
-                    document.getElementById(conv).innerHTML = snap.val();
+                    document.getElementById(conv).innerHTML = snap.val() || 0;
                     resetUnread(['conversations', conv, 'members', user.uid, 'unread'])
                 });
         };
-
         $scope.getUnread1to1 = function (whom) {
             var pos = ['users', user.uid, 'conversations', '1to1', whom, 'Ref'];
             fbutil.ref(pos)
@@ -41,14 +55,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 });
         };
 
-        $scope.conversations = fbutil.syncObject(position0);
+        $scope.conversations = fbutil.syncObject(grpConPos);
         $scope.selConv = function (conv) {                //select conversation
             $scope.conversationRef = conv;
             $scope.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});        //messages pos in conversations
             fbutil.syncData(['conversations', conv, 'members', user.uid])
                 .$update({unread: 0});
         };
-        $scope.usrList = fbutil.syncObject('userList');
         $scope.usrInCon = [user.uid];
         $scope.invite = function (addedUser) {
             var doubleCount = false;
@@ -58,11 +71,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }}
             if (!doubleCount) {$scope.usrInCon.push(addedUser)}
         };
-
         $scope.Confirm = function () {
             var list = $scope.usrInCon;
             var data = {data: 'test', members: list};
-            fbutil.syncData(position0).$push(data).then(function (conversationRef) {
+            fbutil.syncData(grpConPos).$push(data).then(function (conversationRef) {
                 var conRef = conversationRef.name();
                 $scope.selConv(conRef);  //switch messages to current ref
                 for (var i = 0; i < list.length; i++) {
@@ -75,8 +87,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 }
             });
         };
-        $scope.talkTo = function (whom) {
 
+        $scope.talkTo = function (whom) {
             var pos = ['users', user.uid, 'conversations', '1to1', whom, 'Ref'];
             fbutil.ref(pos)
                 .once('value', function (snapshot) {
@@ -95,6 +107,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
                 })
         };
+
         $scope.addMessage = function (newMessage) {
             if (newMessage) {
                 var linkifiedMsg = linkify(newMessage);
@@ -127,7 +140,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                         var name = usrName.val();
                         $firebase(pjRef).$update({
                             ClientUid: user.uid,
-                            ClientName: name             
+                            ClientName: name
                         });
 //codes above get the user ref back. codes below set the pjList data and store pjListRef back to the project data.
                         $firebase(pjListRef).$set(pjRef.name(), {

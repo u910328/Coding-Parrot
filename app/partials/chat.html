@@ -2,27 +2,46 @@
 <div ng-repeat="(conv, value) in conversations">
     <a href="" ng-click="selConv(conv)">{{conv}}</a>
     Members: <span ng-repeat="(index, name) in value.members">{{name}}||</span>
-    <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span> </div>
+
+    <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span></div>
 </div>
-        <hr>
+<hr>
 <form>
-  <input placeholder="Message..." ng-model="newMessage">
-  <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
+    <input placeholder="Message..." ng-model="newMessage">
+    <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
 </form>
 
 <ul id="messages" ng-show="messages.length">
-    <li ng-repeat="message in messages | reverse">{{message.addresser}}: <div ng-bind-html="message.text"></li>        <!--use ng-bind-html because of $sanitize-->
+    <li ng-repeat="message in messages | reverse">{{message.addresser}}:
+        <div ng-bind-html="message.text">
+    </li>
+    <!--use ng-bind-html because of $sanitize-->
 </ul>
+<hr>
+
+<h3>Contacts</h3>
+<div ng-repeat="(contact, value) in contacts">
+    <a href="" ng-click="talkTo(contact)">{{contact}}</a>
+
+    <div ng-init="getUnread1to1(contact)"> unread: <span id={{contact}}></span></div>
+    <button ng-click="invite(contact)">invite</button>
+</div>
+<hr>
+<button ng-click="Confirm()">Create a Conversation</button>
+<br>
+<span>Users in This Conversation: {{usrInCon}}</span>
 
 <hr>
-<div ng-repeat="usr in usrList" ng-show="usr.uid != myUid">
-    <a href="" ng-click="talkTo(usr.uid)">{{usr.name}}</a>
-    <div ng-init="getUnread1to1(usr.uid)"> unread: <span id={{usr.uid}}></span> </div>
-    <button ng-click="invite(usr.uid)">Add</button>
+<h3>User List</h3>
+<div ng-repeat="(usr, value) in usrList" ng-show="usr != myUid">
+    <a href="" ng-click="talkTo(usr)">{{value.name}}</a>
+    <br>
+    <button ng-click="addContact(usr)">add contact</button>
+    <button ng-click="removeContact(usr)">remove contact</button>
     <br>
 </div>
-<button ng-click="Confirm()">Confirm</button>
-<p>Users in this room: {{usrInCon}}</p><br>
 
-        <div>My UID: {{myUid}}</div>
+<hr>
+
+
 
