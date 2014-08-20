@@ -46,7 +46,7 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                     } else {
                         return auth.$login(provider)
                             .then(function (user) {
-                                fbutil.ref(['users', user.uid, 'name'])
+                                fbutil.ref(['users', user.uid, 'userInfo', 'name'])
                                     .once('value', function (snapshot) {
                                         var isNew = (snapshot.val() == null);
                                         if (isNew) {
@@ -127,7 +127,7 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
 
     .factory('createProfile', ['fbutil', '$q', '$timeout', function (fbutil, $q, $timeout) {
         return function (provider, email, name, user) {
-            var ref = fbutil.ref('users', user.uid), def = $q.defer();
+            var ref = fbutil.ref('users', user.uid, 'userInfo'), def = $q.defer();
             var onComplete = function (err) {
                 $timeout(function () {
                     if (err) {

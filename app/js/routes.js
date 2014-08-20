@@ -26,19 +26,24 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
             controller: 'ProjectCreatorCtrl',
             authRequired: true
         },
-        '/projects/:projectId': {
+        '/projects/edit/:projectId': {
             templateUrl: 'partials/project-edit.html',
             controller: 'ProjectEditorCtrl',
             authRequired: true
         },
-        '/users': {
-            templateUrl: 'partials/user-list.html',
-            controller: 'UserListCtrl',
+        '/projects/detail/:projectId': {
+            templateUrl: 'partials/project-detail.html',
+            controller: 'ProjectDetailCtrl',
             authRequired: true
         },
         '/projects': {
             templateUrl: 'partials/project-list.html',
             controller: 'ProjectListCtrl',
+            authRequired: true
+        },
+        '/projectManager': {
+            templateUrl: 'partials/project-manager.html',
+            controller: 'ProjectManagerCtrl',
             authRequired: true
         },
         '/login': {
@@ -51,6 +56,16 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
             // require user to be logged in to view this route
             // the whenAuthenticated method below will resolve the current user
             // before this controller loads and redirect if necessary
+            authRequired: true
+        },
+        '/users': {
+            templateUrl: 'partials/user-list.html',
+            controller: 'UserListCtrl',
+            authRequired: true
+        },
+        '/users/detail/:userId': {
+            templateUrl: 'partials/user-detail.html',
+            controller: 'UserDetailCtrl',
             authRequired: true
         }
     })

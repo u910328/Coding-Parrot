@@ -1,7 +1,8 @@
 <h2>Chat</h2>
 <div ng-repeat="(conv, value) in conversations">
     <a href="" ng-click="selConv(conv)">{{conv}}</a>
-    <div ng-init="getUnread(conv)"> <div id={{conv}}></div> </div>
+    Members: <span ng-repeat="(index, name) in value.members">{{name}}||</span>
+    <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span> </div>
 </div>
         <hr>
 <form>
@@ -16,7 +17,7 @@
 <hr>
 <div ng-repeat="usr in usrList" ng-show="usr.uid != myUid">
     <a href="" ng-click="talkTo(usr.uid)">{{usr.name}}</a>
-    <div ng-init="getUnread1to1(usr.uid)"> <div id={{usr.uid}}></div> </div>
+    <div ng-init="getUnread1to1(usr.uid)"> unread: <span id={{usr.uid}}></span> </div>
     <button ng-click="invite(usr.uid)">Add</button>
     <br>
 </div>

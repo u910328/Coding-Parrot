@@ -11,19 +11,17 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
     .controller('ChatCtrl', ['$scope', '$firebase', 'user', 'fbutil', 'linkify', '$sce', '$q', function ($scope, $firebase, user, fbutil, linkify, $sce, $q) {
         var position0 = ['users', user.uid, 'conversations', 'group'],
-            resetUnread = function (posArray) {$scope.$on('$routeChangeStart', function () {
-                fbutil.ref(posArray)
-                    .off('value')
+            resetUnread = function (posArray) {$scope.$on('$routeChangeStart', function () {       // need to destroy listener?
+                fbutil.ref(posArray).off('value')
             });};
 
-        $scope.myUid = user.uid;
         $scope.messages = [];
         $scope.syncedValue = fbutil.syncObject('syncedValue');
 
         $scope.getUnread = function (conv) {
             fbutil.ref(['conversations', conv, 'members', user.uid, 'unread'])
                 .on('value', function (snap) {
-                    document.getElementById(conv).innerHTML = 'unread: ' + snap.val();
+                    document.getElementById(conv).innerHTML = snap.val();
                     resetUnread(['conversations', conv, 'members', user.uid, 'unread'])
                 });
         };
@@ -36,7 +34,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     if (exists) {
                         fbutil.ref(['conversations', ref.val(), 'members', user.uid, 'unread'])
                             .on('value', function (snap) {
-                                document.getElementById(whom).innerHTML = 'unread: ' + snap.val();
+                                document.getElementById(whom).innerHTML = snap.val() || 0;
                                 resetUnread(['conversations', ref.val(), 'members', user.uid, 'unread']);
                             });
                     }
@@ -62,16 +60,17 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         };
 
         $scope.Confirm = function () {
-            fbutil.syncData(position0).$push({data: 'success'}).then(function (conversationRef) {
+            var list = $scope.usrInCon;
+            var data = {data: 'test', members: list};
+            fbutil.syncData(position0).$push(data).then(function (conversationRef) {
                 var conRef = conversationRef.name();
                 $scope.selConv(conRef);  //switch messages to current ref
-                var i;
-                for (i = 0; i < $scope.usrInCon.length; i++) {
+                for (var i = 0; i < list.length; i++) {
                     if (i != 0) {
-                        var position = ['users', $scope.usrInCon[i], 'conversations', 'group'];
-                        fbutil.syncData(position).$update(conRef, {data: 'success'});
+                        var position = ['users', list[i], 'conversations', 'group'];
+                        fbutil.syncData(position).$update(conRef, data);
                     }
-                    fbutil.syncData(['conversations', conRef, 'members', $scope.usrInCon[i]])
+                    fbutil.syncData(['conversations', conRef, 'members', list[i]])
                         .$update({unread: 0});          //messages pos in conversations
                 }
             });
@@ -116,11 +115,6 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         };
     }])
-    .controller('UserListCtrl', ['$scope', '$firebase', 'fbutil',
-        function ($scope, $firebase, fbutil) {
-            $scope.usrList = fbutil.syncObject('userList');
-        }
-    ])
     .controller('ProjectCreatorCtrl', ['$scope', '$firebase', 'fbutil', 'user',
         function ($scope, $firebase, fbutil, user) {
             var pjsRef = fbutil.ref('projects');
@@ -129,21 +123,29 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.createProject = function () {
 
                 $firebase(pjsRef).$push($scope.pj).then(function (pjRef) {
-                    $firebase(pjRef).$update({
-                        ClientUid: user.uid,
-                        ClientName: user.displayName
-                    });
+                    fbutil.ref(['users', user.uid, 'userInfo', 'name']).on('value', function (usrName) {
+                        var name = usrName.val();
+                        $firebase(pjRef).$update({
+                            ClientUid: user.uid,
+                            ClientName: name             
+                        });
 //codes above get the user ref back. codes below set the pjList data and store pjListRef back to the project data.
-                    $firebase(pjListRef).$set(pjRef.name(), {
-                        Name: $scope.pj.Name,
-                        Brief: $scope.pj.Brief,
-                        Expertise: $scope.pj.Expertise,     // TODO: change it to Requirement.
-                        ClientUid: user.uid,
-                        ClientName: user.displayName
-                    });
-                    $firebase(userPjRef).$set(pjRef.name(), {
-                        Name: $scope.pj.Name
-                    });
+                        $firebase(pjListRef).$set(pjRef.name(), {
+                            Name: $scope.pj.Name,
+                            Brief: $scope.pj.Brief,
+                            Expertise: $scope.pj.Expertise,     // TODO: change it to Requirement.
+                            ClientUid: user.uid,
+                            ClientName: name
+                        });
+                        $firebase(userPjRef).$set(pjRef.name(), {
+                            Name: $scope.pj.Name,
+                            Brief: $scope.pj.Brief,
+                            Expertise: $scope.pj.Expertise,     // TODO: change it to Requirement.
+                            ClientUid: user.uid,
+                            ClientName: name
+                        });
+                    })
+
                 });
             };
         }
@@ -166,9 +168,20 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
         }
     ])
+    .controller('ProjectDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams',
+        function ($scope, $firebase, fbutil, $routeParams) {
+            $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
+            $scope.id = $routeParams.projectId;
+        }
+    ])
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil',
         function ($scope, $firebase, fbutil) {
             $scope.pjList = fbutil.syncObject('projectList');
+        }
+    ])
+    .controller('ProjectManagerCtrl', ['$scope', '$firebase', 'fbutil', 'user',
+        function ($scope, $firebase, fbutil, user) {
+            $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
         }
     ])
 
@@ -223,11 +236,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location',
         function ($scope, simpleLogin, fbutil, user, $location) {
             // create a 3-way binding with the user profile object in Firebase
-            var profile = fbutil.syncObject(['users', user.uid]);
+            var userInfoPos = ['users', user.uid, 'userInfo'];                 //remember to change changeEmail and UserDetailCtrl if you change this (also in simpleLogin.js)
+            var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
 
             // update user data in user list and users.
-            $scope.userInfo = fbutil.syncObject(['users', user.uid]);
+            $scope.userInfo = fbutil.syncObject(userInfoPos);
             $scope.userInfoUpdate = function () {
                 $scope.userInfo.$save().then(function () {
                     var ref = fbutil.ref(['userList', user.uid]);
@@ -271,7 +285,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 profile.$destroy();
                 simpleLogin.changeEmail(pass, newEmail)
                     .then(function (user) {
-                        profile = fbutil.syncObject(['users', user.uid]);
+                        profile = fbutil.syncObject(['users', user.uid, 'userInfo']);
                         profile.$bindTo($scope, 'profile');
                         $scope.emailmsg = 'Email changed';
                     }, function (err) {
@@ -285,5 +299,15 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 $scope.emailerr = null;
                 $scope.emailmsg = null;
             }
+        }
+    ])
+    .controller('UserListCtrl', ['$scope', '$firebase', 'fbutil',
+        function ($scope, $firebase, fbutil) {
+            $scope.usrList = fbutil.syncObject('userList');
+        }
+    ])
+    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil','$routeParams',
+        function ($scope, $firebase, fbutil, $routeParams) {
+            $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
         }
     ]);
