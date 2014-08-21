@@ -130,8 +130,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         };
     }])
-    .controller('ProjectCreatorCtrl', ['$scope', '$firebase', 'fbutil', 'user',
-        function ($scope, $firebase, fbutil, user) {
+    .controller('ProjectCreatorCtrl', ['$scope', '$firebase', 'fbutil', 'user', '$location',
+        function ($scope, $firebase, fbutil, user, $location) {
             var pjsRef = fbutil.ref('projects');
             var pjListRef = fbutil.ref('projectList');
             var userPjRef = fbutil.ref(['users', user.uid, 'projects']);
@@ -159,6 +159,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                             ClientName: name
                         });
                     })
+                    $location.path('/projectManager');
 
                 });
             };
@@ -192,6 +193,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         function ($scope, $firebase, fbutil, $routeParams, linkify, $sce) {
             $scope.linkify = linkify;
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
+            $scope.id = $routeParams.projectId;
         }
     ])
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil',
@@ -202,6 +204,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ProjectManagerCtrl', ['$scope', '$firebase', 'fbutil', 'user',
         function ($scope, $firebase, fbutil, user) {
             $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
+            $scope.remove = function (projectId) {
+                fbutil.syncData(['projects', projectId]).$remove;
+                fbutil.syncData(['projectList', projectId])
+                    .$remove();
+                fbutil.syncData(['users', user.uid, 'projects', projectId])
+                    .$remove();
+            }
         }
     ])
 
@@ -267,6 +276,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     var ref = fbutil.ref(['userList', user.uid]);
                     ref.update({
                         name: $scope.userInfo.name,
+                        picture: $scope.userInfo.picture,
                         uid: user.uid
                     });
 //user in user list data.
