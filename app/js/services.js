@@ -14,6 +14,7 @@
         .factory('linkify', [ function () {
         //copied from http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
             return function (inputText) {
+                if (inputText) {
                 var replacedText, replacePattern1, replacePattern2, replacePattern3;
 
                 //URLs starting with http://, https://, or ftp://
@@ -28,7 +29,9 @@
                 replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
                 replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
 
-                return replacedText;
+                return replacedText;} else {
+                    return ''
+                }
             }
         }]);
 
