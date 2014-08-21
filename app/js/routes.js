@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
+angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
 
     .constant('ROUTES', {
         '/home': {
@@ -19,7 +19,15 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
         '/chat': {
             templateUrl: 'partials/chat.html',
             controller: 'ChatCtrl',
-            authRequired: true
+            authRequired: true,
+            resolve: {
+                contacts: ['fbutil', 'simpleLogin', function (fbutil, simpleLogin) {
+                    return simpleLogin.getUser().then(function (user) {
+                        return fbutil.syncObject(['users', user.uid, 'contacts']).$loaded();  //todo: remove it?
+                    });
+                }]
+
+            }
         },
         '/contacts': {
             templateUrl: 'partials/contacts.html',
@@ -44,7 +52,7 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
         '/projects': {
             templateUrl: 'partials/project-list.html',
             controller: 'ProjectListCtrl',
-            authRequired: true
+            authRequired: false
         },
         '/projectManager': {
             templateUrl: 'partials/project-manager.html',
@@ -83,7 +91,7 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin'])
  * dependency injection (see AuthCtrl), or rejects the promise if user is not logged in,
  * forcing a redirect to the /login page
  */
-    .config(['$routeProvider','$locationProvider', function ($routeProvider, $locationProvider) {
+    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         // credits for this idea: https://groups.google.com/forum/#!msg/angular/dPr9BpIZID0/MgWVluo_Tg8J
         // unfortunately, a decorator cannot be use here because they are not applied until after
         // the .config calls resolve, so they can't be used during route configuration, so we have

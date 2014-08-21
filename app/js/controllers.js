@@ -11,127 +11,14 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ContactCtrl', ['$scope', 'fbutil', 'user', function ($scope, fbutil, user) {
         $scope.syncedValue = fbutil.syncObject('syncedValue');
         $scope.user = user;
-        $scope.FBURL = FBURL;
     }])
-    .controller('ChatCtrl', ['$scope', '$firebase', 'user', 'fbutil', 'linkify', '$sce', '$q', function ($scope, $firebase, user, fbutil, linkify, $sce, $q) {
-        var grpConPos = ['users', user.uid, 'conversations', 'group'],
-            resetUnread = function (posArray) {
-                $scope.$on('$routeChangeStart', function () {       // need to destroy listener?
-                    fbutil.ref(posArray).off('value')
-                });
-            };
-        $scope.myUid = user.uid;
-        $scope.messages = [];
-        $scope.usrList = fbutil.syncObject('userList');
-
-        $scope.contacts = fbutil.syncObject(['users', user.uid, 'contacts']);
-        $scope.addContact = function (contact) {
-            fbutil.syncData(['users', user.uid, 'contacts', contact]).$update({Data: 'success'});
-        };
-        $scope.removeContact = function (contact) {
-            fbutil.syncData(['users', user.uid, 'contacts']).$remove(contact);
-        };
-
-        $scope.getUnread = function (conv) {
-            fbutil.ref(['conversations', conv, 'members', user.uid, 'unread'])
-                .on('value', function (snap) {
-                    document.getElementById(conv).innerHTML = snap.val() || 0;
-                    resetUnread(['conversations', conv, 'members', user.uid, 'unread'])
-                });
-        };
-        $scope.getUnread1to1 = function (whom) {
-            var pos = ['users', user.uid, 'conversations', '1to1', whom, 'Ref'];
-            fbutil.ref(pos)
-                .once('value', function (ref) {
-                    var exists = (ref.val() != null);
-                    if (exists) {
-                        fbutil.ref(['conversations', ref.val(), 'members', user.uid, 'unread'])
-                            .on('value', function (snap) {
-                                document.getElementById(whom).innerHTML = snap.val() || 0;
-                                resetUnread(['conversations', ref.val(), 'members', user.uid, 'unread']);
-                            });
-                    }
-                });
-        };
-
-        $scope.conversations = fbutil.syncObject(grpConPos);
-        $scope.selConv = function (conv) {                //select conversation
-            $scope.conversationRef = conv;
-            $scope.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});        //messages pos in conversations
-            fbutil.syncData(['conversations', conv, 'members', user.uid])
-                .$update({unread: 0});
-        };
-        $scope.usrInCon = [user.uid];
-        $scope.invite = function (addedUser) {
-            var doubleCount = false;
-            for (var i = 0; i < $scope.usrInCon.length; i++) {
-                if ($scope.usrInCon[i] == addedUser) {
-                    doubleCount = true
-                }
-            }
-            if (!doubleCount) {
-                $scope.usrInCon.push(addedUser)
-            }
-        };
-        $scope.Confirm = function () {
-            var list = $scope.usrInCon;
-            var data = {data: 'test', members: list};
-            fbutil.syncData(grpConPos).$push(data).then(function (conversationRef) {
-                var conRef = conversationRef.name();
-                $scope.selConv(conRef);  //switch messages to current ref
-                for (var i = 0; i < list.length; i++) {
-                    if (i != 0) {
-                        var position = ['users', list[i], 'conversations', 'group'];
-                        fbutil.syncData(position).$update(conRef, data);
-                    }
-                    fbutil.syncData(['conversations', conRef, 'members', list[i]])
-                        .$update({unread: 0});          //messages pos in conversations
-                }
-            });
-        };
-
-        $scope.talkTo = function (whom) {
-            var pos = ['users', user.uid, 'conversations', '1to1', whom, 'Ref'];
-            fbutil.ref(pos)
-                .once('value', function (snapshot) {
-                    var exists = (snapshot.val() != null);
-                    if (exists) {
-                        var whomRef = snapshot.val();
-                        $scope.selConv(whomRef);
-                    } else {
-                        fbutil.syncData(pos).$push({Data: 'success'}).then(function (conversationRef) {
-                            var conRef = conversationRef.name();
-                            $scope.selConv(conRef);
-                            fbutil.syncData(['users', whom, 'conversations', '1to1', user.uid]).$update({Data: 'success', Ref: conRef});
-                            fbutil.syncData(['users', user.uid, 'conversations', '1to1', whom]).$update({Data: 'success', Ref: conRef})
-                        })
-                    }
-
-                })
-        };
-
-        $scope.addMessage = function (newMessage) {
-            if (newMessage) {
-                var linkifiedMsg = linkify(newMessage);
-                fbutil.ref(['users', user.uid, 'name']).once('value', function (usrName) {
-                    fbutil.syncData(['conversations', $scope.conversationRef, 'messages']).$push({addresser: usrName.val(), text: linkifiedMsg});
-                });           //messages pos in conversations
-                var memPos = ['conversations', $scope.conversationRef, 'members'];
-                fbutil.ref(memPos).once('value', function (members) {
-                    var temp = members.val();
-                    for (var key in temp) {
-                        if (key != user.uid) {
-                            var unread = temp[key].unread + 1;
-                            fbutil.syncData(['conversations', $scope.conversationRef, 'members', key])
-                                .$update({unread: unread});
-                        }
-                    }
-                })
-            }
-        };
+    .controller('ChatCtrl', ['$scope', 'user','contacts', function ($scope, user, contacts) {
+        $scope.user = user;
+        //$scope.contacts = contacts;
     }])
     .controller('ProjectCreatorCtrl', ['$scope', '$firebase', 'fbutil', 'user', '$location',
         function ($scope, $firebase, fbutil, user, $location) {
+            $scope.user = user
             var pjsRef = fbutil.ref('projects');
             var pjListRef = fbutil.ref('projectList');
             var userPjRef = fbutil.ref(['users', user.uid, 'projects']);
@@ -158,7 +45,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                             ClientUid: user.uid,
                             ClientName: name
                         });
-                    })
+                    });
                     $location.path('/projectManager');
 
                 });
@@ -205,7 +92,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         function ($scope, $firebase, fbutil, user) {
             $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
             $scope.remove = function (projectId) {
-                fbutil.syncData(['projects', projectId]).$remove;
+                fbutil.syncData(['projects', projectId]).$remove();
                 fbutil.syncData(['projectList', projectId])
                     .$remove();
                 fbutil.syncData(['users', user.uid, 'projects', projectId])
