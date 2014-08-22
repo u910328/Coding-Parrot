@@ -3,15 +3,21 @@
 <div ng-repeat="(pjRef, pjData) in pjList">
     Name: <a href="#!/projects/edit/{{pjRef}}">{{pjData.Name}}</a><br>
     Brief: <a href="#!">{{pjData.Brief}}</a><br>
-    Expertise: <a href="#!">{{pjData.Expertise}}</a><br>
+    Requirements: <a href="#!">{{pjData.Requirements}}</a><br>
     Client: <a href="#!">{{pjData.ClientName}}</a><br>
+    Status: {{pjData.Status}}<br>
+    Assigned to: {{pjData.AssignedTo}}<br>
     <button ng-click="remove(pjRef)">Remove</button>
     <hr>
+
     <h3>Waiting list</h3>
     <div ng-repeat="(coder, request) in pjData.waitingList">
         Name: {{coder}}<br>
         Price: {{request.price}}<br>
-        Message: {{request.message}}
+        Message: {{request.message}}<br>
+        <button ng-click="accept(pjRef,coder)">Accept</button>
+        <button ng-click="reject(pjRef,coder)">Reject</button>
     </div>
+
     <hr>
 </div>

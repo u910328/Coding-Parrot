@@ -60,6 +60,11 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
             controller: 'ProjectManagerCtrl',
             authRequired: true
         },
+        '/jobManager': {
+            templateUrl: 'partials/job-manager.html',
+            controller: 'JobManagerCtrl',
+            authRequired: true
+        },
         '/login': {
             templateUrl: 'partials/login.html',
             controller: 'LoginCtrl'
