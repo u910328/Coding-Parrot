@@ -1,6 +1,45 @@
-    <p>Name: {{pj.Name}}</p>
-    <p>Brief: {{pj.Brief}}</p>
-    <p>Expertise: {{pj.Expertise}}</p>
-    <p>Description: <span ng-bind-html="linkify(pj.Description)"></span></p>
-    <hr>
-    <div id="disqus_thread" disqus="id"></div>
+<p>Name: {{pj.Name}}</p>
+<p>Client: {{pj.ClientUid}}</p>
+<p>Brief: {{pj.Brief}}</p>
+<p>Expertise: {{pj.Expertise}}</p>
+<p>Description: <span ng-bind-html="linkify(pj.Description)"></span></p>
+<div ng-init="show=false" ng-hide="show">
+    <button ng-show="!proposeExists" ng-click="show=true">Propose</button>
+    <button ng-show="proposeExists" ng-click="show=true">Repropose</button>
+</div>
+<div ng-show="show">
+    <div ng-show="!proposeExists">
+        <form role="form">
+            <div class="form-group">
+                <label for="proposePrice">Price</label>
+                <input ng-model="propose.price" type="text" class="form-control" id="proposePrice" placeholder="0.00 USD">
+            </div>
+            <div class="form-group">
+                <label for="proposeMessage">Message</label>
+                <input ng-model="propose.message" type="text" class="form-control" id="proposeMessage" placeholder="Enter Message">
+            </div>
+            <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message);show=false" class="btn btn-default">Send</button>
+            <button ng-click="proposeExists= false;show=false" class="btn btn-danger">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div ng-show="show">
+    <div ng-show="proposeExists">
+        <form role="form">
+            <div class="form-group">
+                <label for="proposePrice">Price</label>
+                <input ng-model="propose.price" type="text" class="form-control" id="proposePrice">
+            </div>
+            <div class="form-group">
+                <label for="proposeMessage">Message</label>
+                <input ng-model="propose.message" type="text" class="form-control" id="proposeMessage">
+            </div>
+            <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message);show=false" class="btn btn-default">Update</button>
+            <button ng-click="proposeRemove(pj.ClientUid);show=false" class="btn btn-danger">Withdrawn</button>
+        </form>
+    </div>
+</div>
+
+<hr>
+<div id="disqus_thread" disqus="id"></div>

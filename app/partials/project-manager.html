@@ -7,4 +7,11 @@
     Client: <a href="#!">{{pjData.ClientName}}</a><br>
     <button ng-click="remove(pjRef)">Remove</button>
     <hr>
+    <h3>Waiting list</h3>
+    <div ng-repeat="(coder, request) in pjData.waitingList">
+        Name: {{coder}}<br>
+        Price: {{request.price}}<br>
+        Message: {{request.message}}
+    </div>
+    <hr>
 </div>

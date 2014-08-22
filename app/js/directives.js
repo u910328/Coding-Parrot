@@ -13,11 +13,10 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
     .directive('chat', [function () {
         return {
             restrict: 'E',
-            transclude: false,
             scope: {user: '='},
             templateUrl: 'partials/directiveTemplates/chat.html',
             controller: function ($scope, $firebase, fbutil, linkify, $sce, $q) {
-                var myUid = $scope.user.uid
+                var myUid = $scope.user.uid;
                 var grpConPos = ['users', myUid, 'conversations', 'group'],
                     resetUnread = function (posArray) {
                         $scope.$on('$routeChangeStart', function () {       // need to destroy listener?

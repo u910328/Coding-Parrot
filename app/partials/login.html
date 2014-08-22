@@ -1,8 +1,27 @@
 
-<h2>Login Page</h2>
+
+<form class="form-signin" role="form" ng-submit="login('password' ,email, pass)">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <input type="email" class="form-control" placeholder="Email address" required="" autofocus="" ng-model="email">
+    <input type="password" class="form-control" placeholder="Password" required="" ng-model="pass">
+        <span ng-cloak ng-show="createMode">
+            <input type="password" class="form-control" placeholder="Confirm" ng-model="confirm" />
+        </span>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" value="remember-me"> Remember me
+        </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type='submit' ng-hide="createMode">Sign in</button>
+    <button class="btn btn-lg btn-success btn-block" ng-click="createMode = true" ng-hide="createMode">Register</button>
+    <button class="btn btn-lg btn-success btn-block" ng-cloak ng-show="createMode" ng-click="createAccount(email, pass, confirm)">Create Account</button>
+    <button class="btn btn-lg btn-danger btn-block" ng-cloak ng-show="createMode" ng-click="createMode = false">Cancel</button>
+</form>
 
 <form>
-    <label>
+
+
+    <!--<label>
         <span>email</span>
         <input type="text" ng-model="email" />
     </label>
@@ -13,11 +32,14 @@
     <label ng-cloak ng-show="createMode">
         <span>confirm pass</span>
         <input type="password" ng-model="confirm" />
-    </label>
-    <button ng-click="login('password' ,email, pass)" ng-hide="createMode">Log In</button>
-    <button ng-click="createMode = true" ng-hide="createMode">Register</button>
-    <button ng-cloak ng-show="createMode" ng-click="createAccount(email, pass, confirm)">Create Account</button>
-    <button ng-cloak ng-show="createMode" ng-click="createMode = false">Cancel</button>
+    </label>-->
+
+
+
+
+
+
+
     <hr>
     <button ng-click="login('facebook')">Log In with Facebook</button><br>
     <button ng-click="login('gitHub')">Log In with GitHub</button><br>

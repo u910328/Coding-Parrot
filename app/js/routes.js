@@ -47,7 +47,8 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
         '/projects/detail/:projectId': {
             templateUrl: 'partials/project-detail.html',
             controller: 'ProjectDetailCtrl',
-            authRequired: true
+            authRequired: true,
+
         },
         '/projects': {
             templateUrl: 'partials/project-list.html',

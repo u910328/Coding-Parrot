@@ -18,7 +18,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     }])
     .controller('ProjectCreatorCtrl', ['$scope', '$firebase', 'fbutil', 'user', '$location',
         function ($scope, $firebase, fbutil, user, $location) {
-            $scope.user = user
+            $scope.user = user;
             var pjsRef = fbutil.ref('projects');
             var pjListRef = fbutil.ref('projectList');
             var userPjRef = fbutil.ref(['users', user.uid, 'projects']);
@@ -76,11 +76,31 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
         }
     ])
-    .controller('ProjectDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', 'linkify', '$sce',
-        function ($scope, $firebase, fbutil, $routeParams, linkify, $sce) {
+    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', 'linkify', '$sce', 'user',
+        function ($scope, fbutil, $routeParams, linkify, $sce, user) {
             $scope.linkify = linkify;
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
+            $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid])||{};
+            fbutil.ref(['projects', $scope.id, 'waitingList', user.uid, 'price'])
+                .once('value', function (snap) {
+                    if (snap.val()==null) {$scope.proposeExists = false}
+                    else {$scope.proposeExists = true}
+                });
+
+            $scope.proposeSend = function (whom, price, message) {
+                var data = {price: price, message: message};
+                fbutil.syncData(['projects', $scope.id, 'waitingList']).$update(user.uid, data);
+                fbutil.syncData(['projectList', $scope.id, 'waitingList']).$update(user.uid, data);
+                fbutil.syncData(['users', whom, 'projects', $scope.id, 'waitingList']).$update(user.uid, data);
+                $scope.proposeExists = true
+            };
+            $scope.proposeRemove = function (whom) {
+                fbutil.syncData(['projects', $scope.id, 'waitingList']).$remove(user.uid);
+                fbutil.syncData(['projectList', $scope.id, 'waitingList']).$remove(user.uid);
+                fbutil.syncData(['users', whom, 'projects', $scope.id, 'waitingList']).$remove(user.uid);
+                $scope.proposeExists= false
+            }
         }
     ])
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil',
@@ -97,7 +117,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     .$remove();
                 fbutil.syncData(['users', user.uid, 'projects', projectId])
                     .$remove();
-            }
+            };
         }
     ])
 
