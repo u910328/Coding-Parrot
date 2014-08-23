@@ -25,6 +25,7 @@
 
     <div ng-init="getUnread1to1(contact)"> unread: <span id={{contact}}></span></div>
     <button ng-click="invite(contact)">invite</button>
+    <button ng-click="removeContact(contact)">remove contact</button>
 </div>
 <hr>
 <button ng-click="Confirm()">Create a Conversation</button>
@@ -37,7 +38,6 @@
     <a href="" ng-click="talkTo(usr)">{{value.name}}</a>
     <br>
     <button ng-click="addContact(usr)">add contact</button>
-    <button ng-click="removeContact(usr)">remove contact</button>
     <br>
 </div>
 

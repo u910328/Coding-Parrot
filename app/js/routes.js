@@ -19,15 +19,15 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
         '/chat': {
             templateUrl: 'partials/chat.html',
             controller: 'ChatCtrl',
-            authRequired: true,
-            resolve: {
+            authRequired: true
+            /**   ,resolve: {
                 contacts: ['fbutil', 'simpleLogin', function (fbutil, simpleLogin) {
                     return simpleLogin.getUser().then(function (user) {
-                        return fbutil.syncObject(['users', user.uid, 'contacts']).$loaded();  //todo: remove it?
+                        return fbutil.syncObject(['users', user.uid, 'contacts']).$loaded();                      //todo: remove it?
                     });
                 }]
 
-            }
+            } **/
         },
         '/contacts': {
             templateUrl: 'partials/contacts.html',
