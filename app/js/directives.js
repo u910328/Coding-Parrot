@@ -15,7 +15,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             restrict: 'E',
             scope: {user: '='},
             templateUrl: 'partials/directiveTemplates/chat.html',
-            controller: function ($scope, $firebase, fbutil, linkify, $sce, $q) {
+            controller: function ($scope, fbutil, linkify, $sce) {
                 var myUid = $scope.user.uid;
                 var grpConPos = ['users', myUid, 'conversations', 'group'],
                     resetUnread = function (posArray) {
@@ -25,6 +25,10 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                     };
 
                 $scope.messages = [];
+                $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']);
+                $scope.notificationClear = function (key) {
+                    fbutil.syncData(['users', myUid, 'notifications']).$remove(key)
+                };
                 $scope.usrList = fbutil.syncObject('userList');
 
                 $scope.contacts = fbutil.syncObject(['users', myUid, 'contacts']);
@@ -38,7 +42,13 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 $scope.getUnread = function (conv) {
                     fbutil.ref(['conversations', conv, 'members', myUid, 'unread'])
                         .on('value', function (snap) {
-                            document.getElementById(conv).innerHTML = snap.val() || 0;
+                            if (typeof snap.val() == 'number') {
+                                var unread = snap.val();
+                            }
+                            else {
+                                unread = 0
+                            }
+                            document.getElementById(conv).innerHTML = unread;
                             resetUnread(['conversations', conv, 'members', myUid, 'unread'])
                         });
                 };
@@ -50,7 +60,13 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                             if (exists) {
                                 fbutil.ref(['conversations', ref.val(), 'members', myUid, 'unread'])
                                     .on('value', function (snap) {
-                                        document.getElementById(whom).innerHTML = snap.val() || 0;
+                                        if (typeof snap.val() == 'number') {
+                                            var unread = snap.val();
+                                        }
+                                        else {
+                                            unread = 0
+                                        }
+                                        document.getElementById(whom).innerHTML = unread;
                                         resetUnread(['conversations', ref.val(), 'members', myUid, 'unread']);
                                     });
                             }
@@ -60,9 +76,15 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 $scope.conversations = fbutil.syncObject(grpConPos);
                 $scope.selConv = function (conv) {                //select conversation
                     $scope.conversationRef = conv;
-                    $scope.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});        //messages pos in conversations
-                    fbutil.syncData(['conversations', conv, 'members', myUid])
-                        .$update({unread: 0});
+                    $scope.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});       //messages pos in conversations
+                    fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
+                    fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
+                };
+                $scope.closeWindow = function () {
+                    if ($scope.conversationRef) {
+                        fbutil.syncData(['conversations', $scope.conversationRef, 'members', myUid]).$update({unread: 0});
+                        $scope.conversationRef = false
+                    }
                 };
                 $scope.usrInCon = [myUid];
                 $scope.invite = function (addedUser) {
@@ -105,6 +127,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                                 fbutil.syncData(pos).$push({Data: 'success'}).then(function (conversationRef) {
                                     var conRef = conversationRef.name();
                                     $scope.selConv(conRef);
+                                    fbutil.syncData(['conversations', conRef, 'members', whom]).$update({Data: 'success'});
                                     fbutil.syncData(['users', whom, 'conversations', '1to1', myUid]).$update({Data: 'success', Ref: conRef});
                                     fbutil.syncData(['users', myUid, 'conversations', '1to1', whom]).$update({Data: 'success', Ref: conRef})
                                 })
@@ -116,17 +139,29 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 $scope.addMessage = function (newMessage) {
                     if (newMessage) {
                         var linkifiedMsg = linkify(newMessage);
-                        fbutil.ref(['users', myUid, 'name']).once('value', function (usrName) {
-                            fbutil.syncData(['conversations', $scope.conversationRef, 'messages']).$push({addresser: usrName.val(), text: linkifiedMsg});
+                        fbutil.ref(['users', myUid, 'userInfo', 'name']).once('value', function (usrName) {
+                            fbutil.syncData(['conversations', $scope.conversationRef, 'messages'])
+                                .$push({
+                                    addresser: usrName.val(),
+                                    text: linkifiedMsg,
+                                    timeStamp: Firebase.ServerValue.TIMESTAMP
+                                });
                         });           //messages pos in conversations
                         var memPos = ['conversations', $scope.conversationRef, 'members'];
                         fbutil.ref(memPos).once('value', function (members) {
                             var temp = members.val();
                             for (var key in temp) {
-                                if (key != myUid) {
-                                    var unread = temp[key].unread + 1;
+                                if ((key != myUid) && (temp[key].unread != 'watching')) {
+                                    var unread = 1;
+                                    if (typeof temp[key].unread == 'number') {unread = temp[key].unread + 1}
                                     fbutil.syncData(['conversations', $scope.conversationRef, 'members', key])
                                         .$update({unread: unread});
+                                    //send notification once
+                                    if (!$scope.notified) {
+                                        fbutil.syncData(['users', key, 'notifications', $scope.conversationRef])
+                                            .$update({notified: true});
+                                        $scope.notified = true
+                                    }
                                 }
                             }
                         })

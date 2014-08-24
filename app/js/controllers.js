@@ -161,7 +161,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     var ref = fbutil.ref(['userList', user.uid]);
                     ref.update({
                         name: $scope.userInfo.name,
-                        picture: $scope.userInfo.picture,
+                        picture: $scope.userInfo.picture||'',
                         uid: user.uid
                     });
 //user in user list data.

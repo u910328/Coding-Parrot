@@ -9,10 +9,14 @@ angular.module('myApp', [
     'myApp.filters',
     'myApp.routes',
     'myApp.services',
-    'ngSanitize'
+    'ngSanitize',
+    'myApp.timeAgo'
 ])
 
-    .run(['simpleLogin', function (simpleLogin) {
+    .run(['simpleLogin', 'FBURL', function (simpleLogin, FBURL) {
         console.log('run'); //debug
-        simpleLogin.getUser();
+        simpleLogin.getUser().then(function (user) {
+            console.log(user.uid+'app.js');
+            presenceMonitor (FBURL, user.uid);
+        });
     }]);

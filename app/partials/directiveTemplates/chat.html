@@ -1,44 +1,70 @@
-<h2>Chat</h2>
-<div ng-repeat="(conv, value) in conversations">
-    <a href="" ng-click="selConv(conv)">{{conv}}</a>
-    Members: <span ng-repeat="(index, name) in value.members">{{name}}||</span>
+<div ng-show="!conversationRef">
+    <h2>Notification</h2>
 
-    <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span></div>
-</div>
-<hr>
-<form>
-    <input placeholder="Message..." ng-model="newMessage">
-    <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
-</form>
-
-<ul id="messages" ng-show="messages.length">
-    <li ng-repeat="message in messages | reverse">{{message.addresser}}:
-        <div ng-bind-html="message.text">
-    </li>
-    <!--use ng-bind-html because of $sanitize-->
-</ul>
-<hr>
-
-<h3>Contacts</h3>
-<div ng-repeat="(contact, value) in contacts">
-    <a href="" ng-click="talkTo(contact)">{{contact}}</a>
-
-    <div ng-init="getUnread1to1(contact)"> unread: <span id={{contact}}></span></div>
-    <button ng-click="invite(contact)">invite</button>
-    <button ng-click="removeContact(contact)">remove contact</button>
-</div>
-<hr>
-<button ng-click="Confirm()">Create a Conversation</button>
-<br>
-<span>Users in This Conversation: {{usrInCon}}</span>
-
-<hr>
-<h3>User List</h3>
-<div ng-repeat="(usr, value) in usrList" ng-show="usr != user.uid">
-    <a href="" ng-click="talkTo(usr)">{{value.name}}</a>
-    <br>
-    <button ng-click="addContact(usr)">add contact</button>
-    <br>
+    <div ng-repeat="(noti, value) in notifications">
+        <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
+    </div>
 </div>
 
+<div ng-show="!conversationRef">
+    <h2>Conversations</h2>
+
+    <div ng-repeat="(conv, value) in conversations">
+        <a href="" ng-click="selConv(conv)">{{conv}}</a>
+        Members: <span ng-repeat="(index, name) in value.members">{{name}}||</span>
+
+        <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span></div>
+    </div>
+</div>
+
+<div ng-show="!conversationRef">
+    <h2>Contacts</h2>
+
+    <div ng-repeat="(contact, value) in contacts">
+        <a href="" ng-click="talkTo(contact)">{{contact}}</a>
+
+        <div ng-init="getUnread1to1(contact)"> unread: <span id={{contact}}></span></div>
+        <button ng-click="invite(contact)">invite</button>
+        <button ng-click="removeContact(contact)">remove contact</button>
+    </div>
+
+    <div>
+        {{convCount}}
+        <hr>
+        <button ng-click="Confirm()">Create a Conversation</button>
+        <br>
+        <span>Users in This Conversation: {{usrInCon}}</span>
+    </div>
+
+</div>
+
+
+<div ng-show="!!conversationRef">
+    <button ng-click="closeWindow()">X</button>
+    <ul id="messages" ng-show="messages.length">
+        <li ng-repeat="message in messages | reverse">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+            <div ng-bind-html="message.text"></div>
+        </li>
+        <!--use ng-bind-html because of $sanitize-->
+    </ul>
+    <form>
+        <br>
+        <input placeholder="Message..." ng-model="newMessage">
+        <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
+    </form>
+</div>
+
+
 <hr>
+<div ng-show="!conversationRef">
+    <h2>User List</h2>
+
+    <div ng-repeat="(usr, value) in usrList" ng-show="usr != user.uid">
+        <a href="" ng-click="talkTo(usr)">{{value.name}}</a>
+        <br>
+        <button ng-click="addContact(usr)">add contact</button>
+        <br>
+    </div>
+
+    <hr>
+</div>
