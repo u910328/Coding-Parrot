@@ -1,8 +1,17 @@
-<div ng-show="!conversationRef">
+<div ng-show="(!conversationRef)">
     <h2>Notification</h2>
-
     <div ng-repeat="(noti, value) in notifications">
+
         <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
+        <span ng-init="getUnread(noti, 'conv')"> ({{Conversations[noti].unread}})</span>
+
+        <div ng-init="getNotiData(noti, value.type)"></div>
+        <div ng-repeat="(key, data) in NotiData[noti].lastMessage">
+            <span><strong>{{data.addresser}}</strong> said: {{data.text}}</span><br>
+            <div>{{data.timeStamp| chatTimeStamp}}</div>
+        </div>
+
+
     </div>
 </div>
 
@@ -10,10 +19,10 @@
     <h2>Conversations</h2>
 
     <div ng-repeat="(conv, value) in conversations">
-        <a href="" ng-click="selConv(conv)">{{conv}}</a>
-        Members: <span ng-repeat="(index, name) in value.members">{{name}}||</span>
-
-        <div ng-init="getUnread(conv)"> unread: <span id={{conv}}></span></div>
+        <a href="" ng-click="selConv(conv)">
+        Members: <span ng-repeat="(index, uid) in value.members"><span ng-init="getUserName(uid)">{{Users[uid].name}}|</span></span>
+        </a>
+        <div ng-init="getUnread(conv, 'conv')">({{Conversations[conv].unread}})</div>
     </div>
 </div>
 
@@ -21,15 +30,16 @@
     <h2>Contacts</h2>
 
     <div ng-repeat="(contact, value) in contacts">
-        <a href="" ng-click="talkTo(contact)">{{contact}}</a>
+        <a href="" ng-click="removeContact(contact)">[X]</a>
+        <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
+        <span ng-init="getUnread(contact, '1to1')"> ({{Conversations[contact].unread}})</span>
 
-        <div ng-init="getUnread1to1(contact)"> unread: <span id={{contact}}></span></div>
+        <br>
         <button ng-click="invite(contact)">invite</button>
-        <button ng-click="removeContact(contact)">remove contact</button>
+
     </div>
 
     <div>
-        {{convCount}}
         <hr>
         <button ng-click="Confirm()">Create a Conversation</button>
         <br>
@@ -42,7 +52,7 @@
 <div ng-show="!!conversationRef">
     <button ng-click="closeWindow()">X</button>
     <ul id="messages" ng-show="messages.length">
-        <li ng-repeat="message in messages | reverse">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+        <li ng-repeat="message in messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
             <div ng-bind-html="message.text"></div>
         </li>
         <!--use ng-bind-html because of $sanitize-->
@@ -60,9 +70,7 @@
     <h2>User List</h2>
 
     <div ng-repeat="(usr, value) in usrList" ng-show="usr != user.uid">
-        <a href="" ng-click="talkTo(usr)">{{value.name}}</a>
-        <br>
-        <button ng-click="addContact(usr)">add contact</button>
+        <a href="" ng-click="addContact(usr)">[+]</a><a href="" ng-click="talkTo(usr)">{{value.name}}</a>
         <br>
     </div>
 

@@ -23,7 +23,7 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
             /**   ,resolve: {
                 contacts: ['fbutil', 'simpleLogin', function (fbutil, simpleLogin) {
                     return simpleLogin.getUser().then(function (user) {
-                        return fbutil.syncObject(['users', user.uid, 'contacts']).$loaded();                      //todo: remove it?
+                        return fbutil.syncObject(['Data', user.uid, 'contacts']).$loaded();                      //todo: remove it?
                     });
                 }]
 

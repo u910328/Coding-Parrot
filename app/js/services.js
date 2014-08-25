@@ -29,7 +29,9 @@
                                 ClientUid: uid,
                                 ClientName: usrName.val()
                             };
-                            for (var attr in clientData) { pjListData[attr] = clientData[attr] }
+                            for (var attr in clientData) {
+                                pjListData[attr] = clientData[attr]
+                            }
                             pjListData.Status = 'Published';
                             fbutil.syncData(pjsPos).$update(pjRef.name(), clientData);
                             fbutil.syncData(pjListPos).$set(pjRef.name(), pjListData);
@@ -42,7 +44,7 @@
         .service('propose', ['fbutil', function (fbutil) {
             return {
                 Send: function (pid, uid, whom, message, data) {
-                    fbutil.syncData(['projects', pid, 'waitingList', uid]).$update( message);
+                    fbutil.syncData(['projects', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['projectList', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['users', whom, 'projects', pid, 'waitingList', uid]).$update(message);
 
@@ -71,30 +73,34 @@
                 }
             }
         }])
-        .factory('linkify', [ function () {
-            //copied from http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
-            return function (inputText) {
-                if (inputText) {
-                    var replacedText, replacePattern1, replacePattern2, replacePattern3;
-
-                    //URLs starting with http://, https://, or ftp://
-                    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-                    replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
-
-                    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
-                    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-                    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
-
-                    //Change email addresses to mailto:: links.
-                    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
-                    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
-
-                    return replacedText;
-                } else {
-                    return ''
+        .factory("getFbData", ["fbutil", '$firebase', 'FBURL', function (fbutil, $firebase, FBURL) {
+            return {
+                Users: {},
+                getUserName: function (uid) {
+                    var that = this;
+                    this.Users[uid] = {};
+                    fbutil.ref(['users', uid, 'userInfo', 'name'])
+                        .once('value', function (snap) {
+                            that.Users[uid].name = snap.val();
+                            return that.Users[uid].name
+                        });
+                },
+                Conversations: {},
+                getUnread: function (pos, conv) {
+                    var that = this;
+                    this.Conversations[conv] = {};
+                    that.Conversations[conv]=fbutil.syncObject(pos)
+                },
+                NotiData: {},
+                getNotiData: function (ref, type) {
+                    var that = this;
+                    this.NotiData[ref] = {};
+                    if (type!='project') {
+                        that.NotiData[ref].lastMessage = fbutil.syncArray(['conversations', ref, 'messages'], {limit: 1, endAt: null})
+                    }
                 }
-            }
-        }]);
-
+            };
+        }
+        ]);
 })();
 

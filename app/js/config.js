@@ -10,7 +10,7 @@ angular.module('myApp.config', ['ngDisqus'])
     // see tags for other versions: https://github.com/firebase/angularFire-seed/tags
     .constant('version', '0.8.0')
 
-    // where to redirect users if they need to authenticate (see routeSecurity.js)
+    // where to redirect Data if they need to authenticate (see routeSecurity.js)
     .constant('loginRedirectPath', '/login')
 
     // your Firebase URL goes here

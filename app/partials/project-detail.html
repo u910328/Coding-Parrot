@@ -2,7 +2,7 @@
 <p>Client: {{pj.ClientUid}}</p>
 <p>Brief: {{pj.Brief}}</p>
 <p>Requirements: {{pj.Requirements}}</p>
-<p>Description: <span ng-bind-html="linkify(pj.Description)"></span></p>
+<p>Description: <span ng-bind-html="pj.Description |linkify"></span></p>
 <div ng-init="show=false" ng-hide="show">
     <button ng-show="!proposeExists" ng-click="show=true" class="btn btn-primary">Propose</button>
     <button ng-show="proposeExists" ng-click="show=true" class="btn btn-primary">Repropose</button>

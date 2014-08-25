@@ -20,7 +20,7 @@
             }
          }
       },
-      "users": {
+      "Data": {
          "$user": {
             ".read": "auth.uid === $user",
             ".write": "auth.uid === $user && (!newData.exists() || newData.hasChildren())",

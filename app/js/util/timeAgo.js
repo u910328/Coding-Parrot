@@ -2,8 +2,8 @@
 
 'use strict';
 
-angular.module('myApp.timeAgo', [
-]).directive('timeAgo', function (timeAgo, nowTime) {
+angular.module('myApp.timeAgo', [])
+    .directive('timeAgo', function (timeAgo, nowTime) {
     return {
         restrict: 'EA',
         link: function(scope, elem, attrs) {

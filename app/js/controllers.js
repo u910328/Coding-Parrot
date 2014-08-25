@@ -44,9 +44,9 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', 'linkify', '$sce', 'user', 'propose',
-        function ($scope, fbutil, $routeParams, linkify, $sce, user, propose) {
-            $scope.linkify = linkify;
+    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose',
+        function ($scope, fbutil, $routeParams, $sce, user, propose) {
+
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
             $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};
@@ -154,7 +154,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
 
-            // update user data in user list and users.
+            // update user data in user list and Data.
             $scope.userInfo = fbutil.syncObject(userInfoPos);
             $scope.userInfoUpdate = function () {
                 $scope.userInfo.$save().then(function () {
@@ -221,9 +221,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.usrList = fbutil.syncObject('userList');
         }
     ])
-    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', 'linkify', '$sce',
-        function ($scope, $firebase, fbutil, $routeParams, linkify, $sce) {
-            $scope.linkify = linkify;
+    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce',
+        function ($scope, $firebase, fbutil, $routeParams, $sce) {
             $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
         }
     ]);
