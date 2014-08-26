@@ -20,44 +20,72 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 scope.NotiData = getFbData.NotiData
             },
             templateUrl: 'partials/directiveTemplates/chat.html',
-            controller: function ($scope, fbutil, $sce, getFbData) {
+            controller: function ($scope, fbutil, $sce, getFbData, $q) {
                 var myUid = $scope.user.uid;
                 var grpConPos = ['users', myUid, 'conversations', 'group'];
+                var create1to1Ref = function (whom, select) {
+                    var def = $q.defer();
+                    var pos = ['users', myUid, 'conversations', '1to1', whom, 'Ref'];
+                    fbutil.ref(pos)
+                        .once('value', function (snapshot) {
+                            var exists = (snapshot.val() != null);
+                            if (exists) {
+                                var whomRef = snapshot.val();
+                                def.resolve(snapshot.val());
+                                if (select) {
+                                    $scope.selConv(whomRef)
+                                }
+                            } else {
+                                fbutil.syncData(pos).$push({Data: 'success'}).then(function (Ref) {
+                                    var conRef = Ref.name();
+                                    def.resolve(conRef);
+                                    if (select) {
+                                        $scope.selConv(conRef)
+                                    }
+                                    fbutil.syncData(['conversations', conRef, 'members', whom]).$update({Data: 'success'});
+                                    fbutil.syncData(['users', whom, 'conversations', '1to1', myUid]).$update({Data: 'success', Ref: conRef});
+                                    fbutil.syncData(['users', myUid, 'conversations', '1to1', whom]).$update({Data: 'success', Ref: conRef});
+                                })
+                            }
+                        });
+                    return def.promise;
+                };
 
-                $scope.notiShow=false;
-                $scope.showNoti = function () {$scope.notiShow=true};
+                $scope.notiShow = false;
+                $scope.showNoti = function () {
+                    $scope.notiShow = true
+                };
 
                 $scope.getUserName = function (uid) {
                     getFbData.getUserName(uid, myUid);
                 };
-                $scope.getUnread =function (whomOrConv, type) {
-                    var pos1 = ['conversations', whomOrConv, 'members', myUid];
-                    if (type != '1to1') {
-                        getFbData.getUnread(pos1, whomOrConv)
-                    } else {
-                        fbutil.ref(['users', myUid, 'conversations', '1to1', whomOrConv, 'Ref'])
-                            .once('value', function (ref) {
-                                var pos2 = ['conversations', ref.val(), 'members', myUid];
-                                var exists = (ref.val() != null);
-                                if (exists) {
-                                    getFbData.getUnread(pos2, whomOrConv);
-                                }
-                            });
-                    }
+                $scope.getUnread = function (conv) {
+                    var pos1 = ['conversations', conv, 'members', myUid];
+                    getFbData.getUnread(pos1, conv)
                 };
                 $scope.getNotiData = getFbData.getNotiData;
 
                 $scope.messages = [];
-                $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']);
+
+                $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']); //todo: make it a service
                 $scope.notificationClear = function (key) {
                     fbutil.ref(['conversations', key, 'members', myUid, 'unread']).off('value');
                     fbutil.syncData(['users', myUid, 'notifications']).$remove(key)
                 };
+
                 $scope.usrList = fbutil.syncObject('userList');
 
                 $scope.contacts = fbutil.syncObject(['users', myUid, 'contacts']);
-                $scope.addContact = function (contact) {
-                    fbutil.syncData(['users', myUid, 'contacts', contact]).$update({Data: 'success'});
+                $scope.addContact = function (whom) {
+                    create1to1Ref(whom, false).then(function (ref) {
+                        fbutil.syncData(['users', myUid, 'contacts', whom]).$update({Blocked: false, Ref: ref});
+                        fbutil.syncData(['users', whom, 'notifications', myUid]).$update({type: 'addContact'});
+                    });
+                };
+                $scope.blockContact = function (contact) {
+                    create1to1Ref(contact, false).then(function (ref) {
+                        fbutil.syncData(['users', myUid, 'contacts', contact]).$update({Blocked: true, Ref: ref});
+                    });
                 };
                 $scope.removeContact = function (contact) {
                     fbutil.syncData(['users', myUid, 'contacts']).$remove(contact);
@@ -106,23 +134,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 };
 
                 $scope.talkTo = function (whom) {
-                    var pos = ['users', myUid, 'conversations', '1to1', whom, 'Ref'];
-                    fbutil.ref(pos)
-                        .once('value', function (snapshot) {
-                            var exists = (snapshot.val() != null);
-                            if (exists) {
-                                var whomRef = snapshot.val();
-                                $scope.selConv(whomRef);
-                            } else {
-                                fbutil.syncData(pos).$push({Data: 'success'}).then(function (conversationRef) {
-                                    var conRef = conversationRef.name();
-                                    $scope.selConv(conRef);
-                                    fbutil.syncData(['conversations', conRef, 'members', whom]).$update({Data: 'success'});
-                                    fbutil.syncData(['users', whom, 'conversations', '1to1', myUid]).$update({Data: 'success', Ref: conRef});
-                                    fbutil.syncData(['users', myUid, 'conversations', '1to1', whom]).$update({Data: 'success', Ref: conRef})
-                                })
-                            }
-                        })
+                    create1to1Ref(whom, true)
                 };
 
                 $scope.addMessage = function (newMessage) {
@@ -139,15 +151,19 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                         var memPos = ['conversations', convRef, 'members'];
                         fbutil.ref(memPos).once('value', function (members) {
                             var temp = members.val();
-                            var is1to1 = (Object.keys(members.val()).length==2);
+                            var is1to1 = (Object.keys(members.val()).length == 2);
                             for (var key in temp) {
                                 if ((key != myUid) && (temp[key].unread != 'watching')) {
                                     var unread = temp[key].unread + 1;
-                                    if (temp[key].unread == null) {unread = 1}
+                                    if (temp[key].unread == null) {
+                                        unread = 1
+                                    }
                                     fbutil.syncData(['conversations', convRef, 'members', key])
                                         .$update({unread: unread});
                                     var type = '1toN';
-                                    if (is1to1) {type = '1to1'}
+                                    if (is1to1) {
+                                        type = '1to1'
+                                    }
                                     fbutil.syncData(['users', key, 'notifications', convRef])
                                         .$update({type: type});
                                 }

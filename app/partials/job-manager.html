@@ -1,5 +1,9 @@
 <div ng-repeat="(jbRef, jbData) in jbList">
-    Name: <a href="#!/projects/detail/{{jbRef}}">{{jbData.pjName}}</a><br>
+    Project name: <a href="#!/projects/detail/{{jbRef}}">{{jbData.pjName}}</a><br>
+    Client: {{jbData.client}}<br>
+    Price: {{jbData.price | currency : symbol}}<br>
     Status: {{jbData.status}}<br>
+    <button class="btn btn-danger" ng-click="proposeRemove(jbRef, jbData.client)">Withdrawn</button>
     <hr>
+
 </div>

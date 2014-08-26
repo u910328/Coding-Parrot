@@ -1,13 +1,13 @@
 <a href="#!/newProject">new project</a>
 <hr>
 <div ng-repeat="(pjRef, pjData) in pjList">
-    Name: <a href="#!/projects/edit/{{pjRef}}">{{pjData.Name}}</a><br>
-    Brief: <a href="#!">{{pjData.Brief}}</a><br>
-    Requirements: <a href="#!">{{pjData.Requirements}}</a><br>
-    Client: <a href="#!">{{pjData.ClientName}}</a><br>
-    Status: {{pjData.Status}}<br>
-    Assigned to: {{pjData.AssignedTo}}<br>
-    <button ng-click="remove(pjRef)">Remove</button>
+    Name: <a href="#!/projects/edit/{{pjRef}}">{{pjData.name}}</a><br>
+    Brief: <a href="#!">{{pjData.brief}}</a><br>
+    Requirements: <a href="#!">{{pjData.requirements}}</a><br>
+    Client: <a href="#!">{{pjData.clientName}}</a><br>
+    Status: {{pjData.status}}<br>
+    Assigned to: {{pjData.assignedTo}}<br>
+    <button class="btn btn-danger" ng-click="remove(pjRef)">Remove</button>
     <hr>
 
     <h3>Waiting list</h3>
@@ -15,8 +15,8 @@
         Name: {{coder}}<br>
         Price: {{request.price}}<br>
         Message: {{request.message}}<br>
-        <button ng-click="accept(pjRef,coder)">Accept</button>
-        <button ng-click="reject(pjRef,coder)">Reject</button>
+        <button ng-click="accept(pjRef,coder, pjData, request.price)">Accept</button>
+        <button ng-click="reject(pjRef,coder, pjData)">Reject</button>
     </div>
 
     <hr>

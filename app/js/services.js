@@ -26,13 +26,13 @@
                     fbutil.syncData(pjsPos).$push(pjData).then(function (pjRef) {
                         fbutil.ref(['users', uid, 'userInfo', 'name']).on('value', function (usrName) {
                             var clientData = {
-                                ClientUid: uid,
-                                ClientName: usrName.val()
+                                clientUid: uid,
+                                clientName: usrName.val()
                             };
-                            for (var attr in clientData) {
-                                pjListData[attr] = clientData[attr]
+                            for (var property in clientData) {
+                                pjListData[property] = clientData[property]
                             }
-                            pjListData.Status = 'Published';
+                            pjListData.status = 'Published';
                             fbutil.syncData(pjsPos).$update(pjRef.name(), clientData);
                             fbutil.syncData(pjListPos).$set(pjRef.name(), pjListData);
                             fbutil.syncData(userPjPos).$set(pjRef.name(), pjListData);
@@ -42,38 +42,51 @@
             }
         }])
         .service('propose', ['fbutil', function (fbutil) {
+            var partialRemove = function (pid, uid, whom) {
+                fbutil.syncData(['users', whom, 'notifications']).$remove(pid);
+                fbutil.syncData(['projects', pid, 'waitingList']).$remove(uid);
+                fbutil.syncData(['projectList', pid, 'waitingList']).$remove(uid);
+                fbutil.syncData(['users', whom, 'projects', pid, 'waitingList']).$remove(uid);
+            };
             return {
                 Send: function (pid, uid, whom, message, data) {
+                    fbutil.syncData(['users', whom, 'notifications', pid]).$update(
+                        {
+                            type: 'propose', price: message.price, message: message.message,
+                            pjName: data.pjName,
+                            coder: uid
+                        });
                     fbutil.syncData(['projects', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['projectList', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['users', whom, 'projects', pid, 'waitingList', uid]).$update(message);
-
                     fbutil.syncData(['users', uid, 'jobs', pid]).$update(data);
+
                 },
                 Remove: function (pid, uid, whom) {
-                    fbutil.syncData(['projects', pid, 'waitingList']).$remove(uid);
-                    fbutil.syncData(['projectList', pid, 'waitingList']).$remove(uid);
-                    fbutil.syncData(['users', whom, 'projects', pid, 'waitingList']).$remove(uid);
+                    partialRemove(pid, uid, whom);
+                    fbutil.syncData(['users', uid, 'jobs']).$remove(pid);
                 },
-                Reject: function (pid, uid, whom) {
-                    this.Remove(pid, whom, uid);
-                    fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'rejected'});
-                },
-                Accept: function (pid, uid, whom) {
-                    fbutil.syncData(['projects', pid, 'waitingList']).$remove();
-                    fbutil.syncData(['projectList', pid, 'waitingList']).$remove();
-                    fbutil.syncData(['users', uid, 'projects', pid, 'waitingList']).$remove();
-                    //= this.Remove(pid, null, uid) ??
-
-                    fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Accept'});
+                Accept: function (pid, uid, whom, info) {
+                    var update = {
+                        status: 'In progress', assignedTo: whom, price: info.price, waitingList: null
+                    };
+                    fbutil.syncData(['users', uid, 'projects', pid]).$update(update);
+                    fbutil.syncData(['projects', pid, 'waitingList', whom]).$update({price: 'accepted'});
+                    fbutil.syncData(['users', whom, 'notifications', pid]).$update(info);
+                    fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Accepted'});
+                    //fbutil.syncData(['users', uid, 'projects', pid, 'waitingList']).$remove();
                     fbutil.syncData(['projectList', pid]).$remove();
-                    fbutil.syncData(['users', uid, 'projects', pid]).$update({
-                        Status: 'In progress', AssignedTo: whom
-                    })
+                    //= this.Remove(pid, null, uid) ??
+                    //info must have property price
+                },
+                Reject: function (pid, uid, whom, info) {
+                    fbutil.syncData(['users', whom, 'notifications', pid]).$update(info);
+                    partialRemove(pid, whom, uid);
+                    fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Rejected'})
                 }
             }
         }])
-        .factory("getFbData", ["fbutil", '$firebase', 'FBURL', function (fbutil, $firebase, FBURL) {
+        .factory("getFbData", ["fbutil", function (fbutil) {
             return {
                 Users: {},
                 getUserName: function (uid) {
@@ -89,14 +102,16 @@
                 getUnread: function (pos, conv) {
                     var that = this;
                     this.Conversations[conv] = {};
-                    that.Conversations[conv]=fbutil.syncObject(pos)
+                    that.Conversations[conv] = fbutil.syncObject(pos)
                 },
                 NotiData: {},
                 getNotiData: function (ref, type) {
                     var that = this;
                     this.NotiData[ref] = {};
-                    if (type!='project') {
+                    if (type=='1to1' || type=='1toN') {
                         that.NotiData[ref].lastMessage = fbutil.syncArray(['conversations', ref, 'messages'], {limit: 1, endAt: null})
+                    } else {
+                        //that.NotiData[ref].lastMessage = fbutil.syncArray(['projects',ref,])
                     }
                 }
             };

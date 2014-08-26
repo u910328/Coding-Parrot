@@ -19,28 +19,29 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
         function ($scope, fbutil, user, $location, project) {
             $scope.user = user;
-            $scope.createProject2 = function () {
+            $scope.createProject = function () {
                 var pjListData = {
-                    Name: $scope.pj.Name,
-                    Brief: $scope.pj.Brief,
-                    Requirements: $scope.pj.Requirements
+                    name: $scope.pj.name,
+                    brief: $scope.pj.brief,
+                    requirements: $scope.pj.requirements
                 };
                 project.Create(user.uid, $scope.pj, pjListData);
                 $location.path('/projectManager');
             };
         }
     ])
-    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project',
-        function ($scope, fbutil, $routeParams, user, project) {
+    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location',
+        function ($scope, fbutil, $routeParams, user, project, $location) {
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
-            $scope.updateProject2 = function () {
+            $scope.updateProject = function () {
                 var listData = {
-                    Name: $scope.pj.Name,
-                    Brief: $scope.pj.Brief,
-                    Requirements: $scope.pj.Requirements
+                    name: $scope.pj.name,
+                    brief: $scope.pj.brief,
+                    requirements: $scope.pj.requirements
                 };
-                project.Update($scope.pj, user.uid, listData)
+                project.Update($scope.pj, user.uid, listData);
+                $location.path('/projectManager');
             };
         }
     ])
@@ -54,6 +55,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 .once('value', function (snap) {
                     if (snap.val() == null) {
                         $scope.proposeExists = false
+                    } else if (snap.val()=='accepted') {
+                        $scope.proposeAccepted = true
                     }
                     else {
                         $scope.proposeExists = true
@@ -62,7 +65,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             $scope.proposeSend = function (whom, price, message, name) {
                 var messages = {price: price, message: message},
-                    data = {status: 'waiting', pjName: name};
+                    data = {status: 'waiting', pjName: name, price: price, client: whom};
                 propose.Send($scope.id, user.uid, whom, messages, data);
                 $scope.proposeExists = true
             };
@@ -85,17 +88,29 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 fbutil.syncData(['projectList', projectId]).$remove();
                 fbutil.syncData(['users', user.uid, 'projects', projectId]).$remove();
             };
-            $scope.accept = function (projectId, whom) {
-                propose.Accept(projectId, user.uid, whom);
+            $scope.accept = function (projectId, whom, pjData, price) {
+                var info = {
+                    type: 'proposeAccepted',
+                    price: price,
+                    pjName: pjData.name
+                };
+                propose.Accept(projectId, user.uid, whom, info);
             };
-            $scope.reject = function (projectId, whom) {
-                propose.Reject(projectId, user.uid, whom);
+            $scope.reject = function (projectId, whom, pjData) {
+                var info = {
+                    type: 'proposeRejected',
+                    pjName: pjData.name
+                };
+                propose.Reject(projectId, user.uid, whom, info);
             }
         }
     ])
-    .controller('JobManagerCtrl', ['$scope', 'fbutil', 'user',
-        function ($scope, fbutil, user) {
-            $scope.jbList = fbutil.syncObject(['users', user.uid, 'jobs'])
+    .controller('JobManagerCtrl', ['$scope', 'fbutil', 'user', 'propose',
+        function ($scope, fbutil, user, propose) {
+            $scope.jbList = fbutil.syncObject(['users', user.uid, 'jobs']);
+            $scope.proposeRemove = function (pid, whom) {
+                propose.Remove(pid, user.uid, whom)
+            }
         }
     ])
 
@@ -161,7 +176,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     var ref = fbutil.ref(['userList', user.uid]);
                     ref.update({
                         name: $scope.userInfo.name,
-                        picture: $scope.userInfo.picture||'',
+                        picture: $scope.userInfo.picture || '',
                         uid: user.uid
                     });
 //user in user list data.

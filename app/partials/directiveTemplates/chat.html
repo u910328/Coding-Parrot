@@ -2,14 +2,35 @@
     <h2>Notification</h2>
     <div ng-repeat="(noti, value) in notifications">
 
-        <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
-        <span ng-init="getUnread(noti, 'conv')"> ({{Conversations[noti].unread}})</span>
-
-        <div ng-init="getNotiData(noti, value.type)"></div>
-        <div ng-repeat="(key, data) in NotiData[noti].lastMessage">
-            <span><strong>{{data.addresser}}</strong> said: {{data.text}}</span><br>
-            <div>{{data.timeStamp| chatTimeStamp}}</div>
+        <div ng-show="value.type == 'propose'">
+            <strong>{{value.coder}}</strong> want to take <strong>{{value.pjName}}</strong> for {{value.price | currency : symbol}}<br>
+            <span ng-show="value.message!='' ">Message: {{value.message}}</span>
         </div>
+
+        <div ng-show="value.type == 'proposeAccepted'">
+            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been accepted.<br>
+        </div>
+
+        <div ng-show="value.type == 'proposeRejected'">
+            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been rejected.<br>
+        </div>
+
+        <div ng-show="value.type == 'addContact'">
+            {{noti}} added you as a contact.<br>
+            <a href="" ng-click="notificationClear(noti);addContact(noti)">  Ok</a>
+            <a href="" ng-click="notificationClear(noti)">  Cancel</a>
+        </div>
+
+        <div ng-show="(value.type == '1toN')||(value.type == '1to1')">
+            <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
+            <span ng-init="getUnread(noti)" ng-show="Conversations[noti].unread"> ({{Conversations[noti].unread}})</span>
+            <div ng-init="getNotiData(noti, value.type)"></div>
+            <div ng-repeat="(key, data) in NotiData[noti].lastMessage">
+                <span><strong>{{data.addresser}}</strong> said: {{data.text}}</span><br>
+                <div>{{data.timeStamp| chatTimeStamp}}</div>
+            </div>
+        </div>
+
 
 
     </div>
@@ -22,7 +43,7 @@
         <a href="" ng-click="selConv(conv)">
         Members: <span ng-repeat="(index, uid) in value.members"><span ng-init="getUserName(uid)">{{Users[uid].name}}|</span></span>
         </a>
-        <div ng-init="getUnread(conv, 'conv')">({{Conversations[conv].unread}})</div>
+        <div ng-show="Conversations[conv].unread">({{Conversations[conv].unread}})</div>
     </div>
 </div>
 
@@ -32,7 +53,7 @@
     <div ng-repeat="(contact, value) in contacts">
         <a href="" ng-click="removeContact(contact)">[X]</a>
         <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
-        <span ng-init="getUnread(contact, '1to1')"> ({{Conversations[contact].unread}})</span>
+        <span ng-show="Conversations[value.Ref].unread"> ({{Conversations[value.Ref].unread}})</span>
 
         <br>
         <button ng-click="invite(contact)">invite</button>

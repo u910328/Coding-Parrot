@@ -12,7 +12,7 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
                 // in the controller, but this makes things cleaner (controller doesn't need to worry
                 // about auth status or timing of displaying its UI components)
                 user: ['simpleLogin', function (simpleLogin) {
-                    return simpleLogin.getUser();
+                    return simpleLogin.getUser()
                 }]
             }
         },
@@ -20,14 +20,6 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
             templateUrl: 'partials/chat.html',
             controller: 'ChatCtrl',
             authRequired: true
-            /**   ,resolve: {
-                contacts: ['fbutil', 'simpleLogin', function (fbutil, simpleLogin) {
-                    return simpleLogin.getUser().then(function (user) {
-                        return fbutil.syncObject(['Data', user.uid, 'contacts']).$loaded();                      //todo: remove it?
-                    });
-                }]
-
-            } **/
         },
         '/contacts': {
             templateUrl: 'partials/contacts.html',
