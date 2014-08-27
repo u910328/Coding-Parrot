@@ -15,8 +15,4 @@ angular.module('myApp', [
 
     .run(['simpleLogin', 'FBURL', function (simpleLogin, FBURL) {
         console.log('run'); //debug
-        simpleLogin.getUser().then(function (user) {
-            console.log(user.uid+'app.js');
-            presenceMonitor (FBURL, user.uid);
-        });
     }]);

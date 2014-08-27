@@ -10,8 +10,8 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
         }
     }])
 
-    .factory('simpleLogin', ['$firebaseSimpleLogin', 'fbutil', 'createProfile', 'changeEmail', '$q', '$rootScope',
-        function ($firebaseSimpleLogin, fbutil, createProfile, changeEmail, $q, $rootScope) {
+    .factory('simpleLogin', ['$firebaseSimpleLogin', 'fbutil', 'createProfile', 'changeEmail', '$q', '$rootScope', 'FBURL',
+        function ($firebaseSimpleLogin, fbutil, createProfile, changeEmail, $q, $rootScope, FBURL) {
             var auth = $firebaseSimpleLogin(fbutil.ref());
             var listeners = [];
 
@@ -37,15 +37,20 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                  * @returns {*}
                  */
                 login: function (provider, email, pass) {
+                    var presenceCheck =function (user) {
+                        console.log(user.uid+'app.js there is a problem while not logging in');
+                        presenceMonitor (FBURL, user.uid);
+                    };
                     if (provider == 'password') {
                         return auth.$login('password', {
                             email: email,
                             password: pass,
                             rememberMe: true
-                        });
+                        }).then(presenceCheck);
                     } else {
                         return auth.$login(provider)
                             .then(function (user) {
+                                presenceCheck(user);
                                 fbutil.ref(['users', user.uid, 'userInfo', 'name'])
                                     .once('value', function (snapshot) {
                                         var isNew = (snapshot.val() == null);
