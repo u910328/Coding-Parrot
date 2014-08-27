@@ -11,7 +11,7 @@ angular.module('myApp.config', ['ngDisqus'])
     .constant('version', '0.8.0')
 
     // where to redirect Data if they need to authenticate (see routeSecurity.js)
-    .constant('loginRedirectPath', '/login')
+    .constant('loginRedirectPath', '/home')
 
     // your Firebase URL goes here
     .constant('FBURL', 'https://codingparrot.firebaseio.com/')

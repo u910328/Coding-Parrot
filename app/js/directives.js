@@ -174,7 +174,15 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             },
             templateUrl: 'partials/directiveTemplates/chat.html',
             controller: function ($scope, fbutil, $sce, getFbData, $q, simpleLogin) {
-                simpleLogin.getUser().then(function(user) {Ctrl($scope, fbutil, $sce, getFbData, $q, user)})
+
+                simpleLogin.getUser().then(function(user) {
+                    $scope.$on('$firebaseSimpleLogin:logout', function () {$scope.chatShow=false});
+                    $scope.$on('$firebaseSimpleLogin:login', function () {
+                        simpleLogin.getUser().then(function (newUser) {
+                            if (newUser!=user) {document.location.reload()}                           //todo: is it possible to refresh controller without reloading.
+                        })
+                    });
+                    Ctrl($scope, fbutil, $sce, getFbData, $q, user)})
             }
         };
     }])
