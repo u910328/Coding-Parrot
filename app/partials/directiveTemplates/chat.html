@@ -1,7 +1,7 @@
 <div ng-show="(!conversationRef)">
-    <h2>Notification</h2>
-    <div ng-repeat="(noti, value) in notifications">
 
+    <div class="chatContainer" ng-repeat="(noti, value) in notifications">
+        <h2 ng-show="$index==0">Notification</h2>
         <div ng-show="value.type == 'propose'">
             <strong>{{value.coder}}</strong> want to take <strong>{{value.pjName}}</strong> for {{value.price | currency : symbol}}<br>
             <span ng-show="value.message!='' ">Message: {{value.message}}</span>
@@ -17,8 +17,8 @@
 
         <div ng-show="value.type == 'addContact'">
             {{noti}} added you as a contact.<br>
-            <a href="" ng-click="notificationClear(noti);addContact(noti)">  Ok</a>
-            <a href="" ng-click="notificationClear(noti)">  Cancel</a>
+            <button ng-click="notificationClear(noti);addContact(noti, false)">  Ok</button>
+            <button href="" ng-click="notificationClear(noti)">  Cancel</button>
         </div>
 
         <div ng-show="(value.type == '1toN')||(value.type == '1to1')">
@@ -91,7 +91,7 @@
     <h2>User List</h2>
 
     <div ng-repeat="(usr, value) in usrList" ng-show="usr != user.uid">
-        <a href="" ng-click="addContact(usr)">[+]</a><a href="" ng-click="talkTo(usr)">{{value.name}}</a>
+        <a href="" ng-click="addContact(usr, true)">[+]</a><a href="" ng-click="talkTo(usr)">{{value.name}}</a>
         <br>
     </div>
 

@@ -1,0 +1,11 @@
+.chatContainer {
+    width: 300px;
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    background-color: lightgray;
+}
+
+.intro {
+    background-color: yellow;
+}
