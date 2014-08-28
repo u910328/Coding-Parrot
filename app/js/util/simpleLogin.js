@@ -38,7 +38,6 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                  */
                 login: function (provider, email, pass) {
                     var presenceCheck =function (user) {
-                        console.log(user.uid+'app.js there is a problem while not logging in');
                         presenceMonitor (FBURL, user.uid);
                     };
                     if (provider == 'password') {

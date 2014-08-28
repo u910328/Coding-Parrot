@@ -11,10 +11,10 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
         };
     }])
     .directive('chat', ['getFbData', function (getFbData) {
-        var Ctrl = function ($scope, fbutil, $sce, getFbData, $q) {
-            var myUid = $scope.user.uid;
+
+        var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid) {
             var grpConPos = ['users', myUid, 'conversations', 'group'];
-            $scope.conversations = fbutil.syncObject(grpConPos);
+            $scope.conversations = fbutil.syncObject(['users', myUid, 'conversations', 'group']);
             var create1to1Ref = function (whom, select) {
                 var def = $q.defer();
                 var pos = ['users', myUid, 'conversations', '1to1', whom, 'Ref'];
@@ -169,15 +169,21 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
         };
         return {
             restrict: 'E',
-            scope: {user: '='},
             link: function (scope) {
                 scope.Conversations = getFbData.Conversations;
                 scope.Users = getFbData.Users;
                 scope.NotiData = getFbData.NotiData
             },
             templateUrl: 'partials/directiveTemplates/chat.html',
-            controller: function ($scope, fbutil, $sce, getFbData, $q) {
-                if ($scope.user) {Ctrl($scope, fbutil, $sce, getFbData, $q)}
+            controller: function ($scope, $rootScope, simpleLogin, fbutil, $sce, getFbData, $q) {
+                $rootScope.$on('$firebaseSimpleLogin:login', function() {
+                    simpleLogin.getUser().then(function(user) {
+                        Ctrl($scope, fbutil, $sce, getFbData, $q, user.uid)
+                    });
+                });
+                $rootScope.$on('$firebaseSimpleLogin:logout', function() {
+                    $scope.chatShow=false
+                })
             }
         };
     }])

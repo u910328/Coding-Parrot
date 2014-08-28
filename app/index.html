@@ -21,7 +21,7 @@
 
 <ul class="menu">
     <li><a href="#!/home">home</a></li>
-    <li ng-show-auth><a href="#!/chat" ng-click="chatShow=!chatShow" >chat</a></li>
+    <li ng-show-auth><a href="" ng-click="chatShow=!chatShow" >chat</a></li>
     <li ng-hide-auth><a href="#!/login">login</a></li>
     <li ng-show-auth><a href="#!/account">account</a></li>
     <li><a href="#!/projects">projects</a></li>
@@ -30,6 +30,9 @@
     <li><a href="#!/users">users</a></li>
 </ul>
 
+<div ng-init="chatShow=false" ng-show = 'chatShow'>
+    <chat class="chatContainer"></chat>
+</div>
 
     <div ng-view></div>
 
