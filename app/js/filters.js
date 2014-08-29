@@ -8,6 +8,16 @@ angular.module('myApp.filters', [])
             return String(text).replace(/\%VERSION\%/mg, version);
         }
     }])
+    .filter('contactFilter', function () {
+        return function (contactList) {
+            var filteredList ={};
+            for (var uid in contactList) {
+                console.log(uid);
+                if (!contactList[uid].Blocked) {filteredList[uid] = contactList[uid]}
+            }
+            return filteredList
+        }
+    })
 
     .filter('reverse', function () {
         return function (items) {

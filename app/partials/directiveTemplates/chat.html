@@ -1,18 +1,22 @@
-<div ng-show="(!conversationRef)">
+<div ng-show="(!cserv.convRef)">
 
-    <div class="chatContainer" ng-repeat="(noti, value) in notifications">
+    <div ng-repeat="(noti, value) in notifications" ng-hide="blockedList[noti]">
         <h2 ng-show="$index==0">Notification</h2>
         <div ng-show="value.type == 'propose'">
             <strong>{{value.coder}}</strong> want to take <strong>{{value.pjName}}</strong> for {{value.price | currency : symbol}}<br>
-            <span ng-show="value.message!='' ">Message: {{value.message}}</span>
+            <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
+            <button ng-click="accept(noti, value.coder, value.pjName, value.price);notificationClear(noti)">Accept</button>
+            <button ng-click="reject(noti, value.coder, value.pjName);notificationClear(noti)">Reject</button>
         </div>
 
         <div ng-show="value.type == 'proposeAccepted'">
             Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been accepted.<br>
+            <button ng-click="notificationClear(noti)">  Ok</button>
         </div>
 
         <div ng-show="value.type == 'proposeRejected'">
             Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been rejected.<br>
+            <button ng-click="notificationClear(noti)">  Ok</button>
         </div>
 
         <div ng-show="value.type == 'addContact'">
@@ -36,7 +40,7 @@
     </div>
 </div>
 
-<div ng-show="!conversationRef">
+<div ng-show="!cserv.convRef">
     <h2>Conversations</h2>
 
     <div ng-repeat="(conv, value) in conversations">
@@ -47,11 +51,12 @@
     </div>
 </div>
 
-<div ng-show="!conversationRef">
+<div ng-show="!cserv.convRef">
     <h2>Contacts</h2>
 
-    <div ng-repeat="(contact, value) in contacts">
-        <a href="" ng-click="removeContact(contact)">[X]</a>
+    <div ng-repeat="(contact, value) in contacts" ng-hide="value.Blocked">                                                        <!--todo: make a filter to remove blocked contact-->
+        <div ng-init="findBlocked(value.Ref, value.Blocked)"></div>
+        <a href="" ng-click="removeContact(contact)">[X]</a><a href="" ng-click="blockContact(contact)">[Block]</a>
         <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
         <span ng-show="Conversations[value.Ref].unread"> ({{Conversations[value.Ref].unread}})</span>
 
@@ -70,10 +75,10 @@
 </div>
 
 
-<div ng-show="!!conversationRef">
+<div ng-show="!!cserv.convRef">
     <button ng-click="closeWindow()">X</button>
-    <ul id="messages" ng-show="messages.length">
-        <li ng-repeat="message in messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+    <ul id="messages" ng-show="cserv.messages.length">
+        <li ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
             <div ng-bind-html="message.text"></div>
         </li>
         <!--use ng-bind-html because of $sanitize-->
@@ -87,10 +92,10 @@
 
 
 <hr>
-<div ng-show="!conversationRef">
+<div ng-show="!cserv.convRef">
     <h2>User List</h2>
 
-    <div ng-repeat="(usr, value) in usrList" ng-show="usr != user.uid">
+    <div ng-repeat="(usr, value) in usrList" ng-show="usr != myUid">
         <a href="" ng-click="addContact(usr, true)">[+]</a><a href="" ng-click="talkTo(usr)">{{value.name}}</a>
         <br>
     </div>

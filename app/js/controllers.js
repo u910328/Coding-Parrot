@@ -47,7 +47,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     ])
     .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose',
         function ($scope, fbutil, $routeParams, $sce, user, propose) {
-
+            $scope.myUid = user.uid;
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
             $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};

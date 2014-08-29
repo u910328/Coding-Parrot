@@ -11,13 +11,20 @@
         .service('messageList', ['fbutil', function (fbutil) {
             return fbutil.syncArray('messages', {limit: 10, endAt: null});
         }])
-        .service('chat', ['$scope', 'fbutil', '$sce', 'getFbData', '$q', function ($scope, fbutil, $sce, getFbData, $q) {
+        .factory('chatService', ['fbutil', 'getFbData', '$q', function (fbutil, getFbData, $q) {
             return{
-                Conversations: function(myUid) {return fbutil.syncObject(['users', myUid, 'conversations', 'group'])
+                cserv: {},
+                SelConv: function (myUid, conv) {
+                    this.cserv.convRef = conv;
+                    this.cserv.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
+                    fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
+                    fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
                 },
                 Create1to1Ref: function (myUid, whom, select) {
-                    var def = $q.defer();
-                    var pos = ['users', myUid, 'conversations', '1to1', whom, 'Ref'];
+                    var def = $q.defer(),
+                        pos = ['users', myUid, 'conversations', '1to1', whom, 'Ref'],
+                        that = this;
+
                     fbutil.ref(pos)
                         .once('value', function (snapshot) {
                             var exists = (snapshot.val() != null);
@@ -25,14 +32,14 @@
                                 var whomRef = snapshot.val();
                                 def.resolve(snapshot.val());
                                 if (select) {
-                                    $scope.selConv(whomRef)
+                                    that.SelConv(myUid, whomRef)
                                 }
                             } else {
                                 fbutil.syncData(pos).$push({Data: 'success'}).then(function (Ref) {
                                     var conRef = Ref.name();
                                     def.resolve(conRef);
                                     if (select) {
-                                        $scope.selConv(conRef)
+                                        that.SelConv(myUid, conRef)
                                     }
                                     fbutil.syncData(['conversations', conRef, 'members', whom]).$update({Data: 'success'});
                                     fbutil.syncData(['users', whom, 'conversations', '1to1', myUid]).$update({Data: 'success', Ref: conRef});
@@ -42,20 +49,9 @@
                         });
                     return def.promise;
                 },
-                GetUserName: function (myUid, uid) {
-                    getFbData.getUserName(uid, myUid);
-                },
-                GetUnread: function (myUid, conv) {
-                    var pos1 = ['conversations', conv, 'members', myUid];
-                    getFbData.getUnread(pos1, conv)
-                },
-                Notifications: function (myUid) {return fbutil.syncObject(['users', myUid, 'notifications']);
-                },
                 NotificationClear: function (myUid, ref) {
                     fbutil.ref(['conversations', ref, 'members', myUid, 'unread']).off('value');
                     fbutil.syncData(['users', myUid, 'notifications']).$remove(ref)
-                },
-                Contacts: function (myUid) {return fbutil.syncObject(['users', myUid, 'contacts']);
                 },
                 AddContact: function (myUid, whom, sendNoti) {
                     this.Create1to1Ref(myUid, whom, false).then(function (ref) {
@@ -73,10 +69,7 @@
                 RemoveContact: function (myUid, contact) {
                     fbutil.syncData(['users', myUid, 'contacts']).$remove(contact);
                 },
-                SelConv: function (myUid, conv) {
-                    fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
-                    fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
-                },
+
                 AddMessage: function (myUid, convRef, newMessage) {
                     if (newMessage) {
                         fbutil.syncData(['conversations', convRef, 'messages'])
@@ -223,7 +216,7 @@
                 getNotiData: function (ref, type) {
                     var that = this;
                     this.NotiData[ref] = {};
-                    if (type=='1to1' || type=='1toN') {
+                    if (type == '1to1' || type == '1toN') {
                         that.NotiData[ref].lastMessage = fbutil.syncArray(['conversations', ref, 'messages'], {limit: 1, endAt: null})
                     } else {
                         //that.NotiData[ref].lastMessage = fbutil.syncArray(['projects',ref,])

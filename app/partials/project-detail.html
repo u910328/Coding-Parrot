@@ -1,9 +1,9 @@
-<p>Name: {{pj.Name}}</p>
-<p>Client: {{pj.ClientUid}}</p>
-<p>Brief: {{pj.Brief}}</p>
-<p>Requirements: {{pj.Requirements}}</p>
-<p>Description: <span ng-bind-html="pj.Description |linkify"></span></p>
-<div ng-init="show=false" ng-hide="show">
+<p>Name: {{pj.name}}</p>
+<p>Client: {{pj.clientUid}}</p>
+<p>Brief: {{pj.brief}}</p>
+<p>Requirements: {{pj.requirements}}</p>
+<p>Description: <span ng-bind-html="pj.description |linkify"></span></p>
+<div ng-init="show=false" ng-hide="show||(pj.clientUid==myUid)">
     <button ng-show="!proposeExists" ng-click="show=true" class="btn btn-primary">Propose</button>
     <button ng-show="proposeExists" ng-click="show=true" class="btn btn-primary">Repropose</button>
 </div>
@@ -18,7 +18,7 @@
                 <label for="proposeMessage">Message</label>
                 <input ng-model="propose.message" type="text" class="form-control" id="proposeMessage" placeholder="Enter Message">
             </div>
-            <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message, pj.Name);show=false" class="btn btn-primary">Send</button>
+            <button ng-click="proposeSend(pj.clientUid, propose.price, propose.message, pj.name);show=false" class="btn btn-primary">Send</button>
             <button ng-click="proposeExists= false;show=false" class="btn btn-danger">Cancel</button>
         </form>
     </div>
