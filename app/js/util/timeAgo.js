@@ -122,8 +122,8 @@ angular.module('myApp.timeAgo', [])
 }).filter('chatTimeStamp', function (nowTime, timeAgo, $filter) {
     return function (fromTime) {
         var diff = nowTime() - fromTime;
-        var week = 7*24*60*60*1000;
-        if (diff< week) {return timeAgo.inWords(diff)}
+        var day = 24*60*60*1000;
+        if (diff< day) {return timeAgo.inWords(diff)}
         return $filter('date')(fromTime, 'yyyy-MM-dd')
     };
 });
