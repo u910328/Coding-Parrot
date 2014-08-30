@@ -14,7 +14,6 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     }])
     .controller('ChatCtrl', ['$scope', 'user', function ($scope, user) {
         $scope.user = user;
-        //$scope.contacts = contacts;
     }])
     .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
         function ($scope, fbutil, user, $location, project) {
@@ -231,8 +230,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         }
     ])
-    .controller('UserListCtrl', ['$scope', '$firebase', 'fbutil',
-        function ($scope, $firebase, fbutil) {
+    .controller('UserListCtrl', ['$scope', 'fbutil',
+        function ($scope, fbutil) {
             $scope.usrList = fbutil.syncObject('userList');
         }
     ])

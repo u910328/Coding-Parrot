@@ -1,4 +1,6 @@
 <div ng-repeat="usr in usrList">
+    <div j-rating="{{usr.uid}}"></div>
     <img ng-src='{{usr.picture}}' width="32" height="32"><span>  </span><a href="#!/users/detail/{{usr.uid}}">{{usr.name}}</a><br>
+    <div class="basic" data-average="{{usr.rating}}" data-id="{{usr.uid}}"></div>
     <hr>
 </div>

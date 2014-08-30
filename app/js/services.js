@@ -206,6 +206,15 @@
                             return that.Users[uid].name
                         });
                 },
+                getUserRating: function (uid) {
+                    var that = this;
+                    this.Users[uid] = {};
+                    fbutil.ref(['userList', uid, 'rating'])
+                        .once('value', function (snap) {
+                            that.Users[uid].rating = snap.val();
+                            return that.Users[uid].rating
+                        });
+                },
                 Conversations: {},
                 getUnread: function (pos, conv) {
                     var that = this;

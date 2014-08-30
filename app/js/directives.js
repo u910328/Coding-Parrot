@@ -188,4 +188,19 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 simpleLogin.watch(update, scope);
             }
         };
-    }]);
+    }])
+    .directive('jRating', function($timeout, fbutil) {                   // see http://stackoverflow.com/questions/19864007/angularjs-event-for-when-model-binding-or-ng-repeat-is-complete
+        return function(scope, element, attrs) {
+            if (scope.$last) {
+                $timeout(function() {
+                    $(".basic").jRating({
+                        onClick : function(element,rate) {
+                            var uid = $(element).attr("data-id");
+                            fbutil.syncData(['userList', uid]).$update({rating: rate});
+
+                        }
+                    })
+                }, 0);
+            }
+        };
+    });
