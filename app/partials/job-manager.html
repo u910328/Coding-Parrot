@@ -3,7 +3,9 @@
     Client: {{jbData.client}}<br>
     Price: {{jbData.price | currency : symbol}}<br>
     Status: {{jbData.status}}<br>
-    <button ng-show="jbData.status!='Accepted'" class="btn btn-danger" ng-click="proposeRemove(jbRef, jbData.client)">Withdrawn</button>
-    <hr>
 
+    <button ng-show="jbData.status!='Accepted'&&jbData.status!='In progress'" class="btn btn-danger" ng-click="proposeRemove(jbRef, jbData.client)">Withdrawn</button>
+    <button ng-show="jbData.status=='Accepted'" class="btn btn-primary" ng-click="start(jbRef, jbData.client)">I got it!</button>
+    <button ng-show="jbData.status=='Rejected'" class="btn btn-primary" ng-click="removeJb(jbRef)">I got it!</button>
+    <hr>
 </div>

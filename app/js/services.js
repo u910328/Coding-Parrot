@@ -125,6 +125,7 @@
                     syncObj.$save().then(function (pjRef) {
                         fbutil.syncData(['projectList', pjRef.name()]).$update(pjListData);
                         fbutil.syncData(['users', uid, 'projects', pjRef.name()]).$update(pjListData);
+                        fbutil.syncData(['users', uid, 'due', pjRef.name()]).$update(pjListData.due, {data: 'success'});
                     });
                 },
                 Create: function (uid, pjData, pjListData) {
@@ -132,10 +133,11 @@
                     var pjListPos = 'projectList';
                     var userPjPos = ['users', uid, 'projects'];
                     fbutil.syncData(pjsPos).$push(pjData).then(function (pjRef) {
-                        fbutil.ref(['users', uid, 'userInfo', 'name']).on('value', function (usrName) {
+                        fbutil.ref(['users', uid, 'userInfo', 'name']).once('value', function (usrName) {
                             var clientData = {
                                 clientUid: uid,
-                                clientName: usrName.val()
+                                clientName: usrName.val(),
+                                createdTime: Firebase.ServerValue.TIMESTAMP
                             };
                             for (var property in clientData) {
                                 pjListData[property] = clientData[property]
@@ -144,8 +146,19 @@
                             fbutil.syncData(pjsPos).$update(pjRef.name(), clientData);
                             fbutil.syncData(pjListPos).$set(pjRef.name(), pjListData);
                             fbutil.syncData(userPjPos).$set(pjRef.name(), pjListData);
+                            fbutil.syncData(['users', uid, 'due', pjRef.name()]).$update(pjData.due, {data: 'success'});
                         });
                     });
+                }
+            }
+        }])
+        .service('notification', ['fbutil', function (fbutil) {
+            return {
+                Clear: function (uid, ref) {
+                    fbutil.syncData(['users', uid, 'notifications']).$remove(ref)
+                },
+                Push: function (uid, ref, obj) {
+                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj)
                 }
             }
         }])
@@ -174,17 +187,21 @@
                     partialRemove(pid, uid, whom);
                     fbutil.syncData(['users', uid, 'jobs']).$remove(pid);
                 },
+                Start: function (pid, uid, whom) {
+                    fbutil.syncData(['users', uid, 'jobs', pid]).$update({status: 'In progress'});
+                    fbutil.syncData(['users', whom, 'projects', pid]).$update({status: 'In progress'});
+                },
                 Accept: function (pid, uid, whom, info) {
                     var update = {
-                        status: 'In progress', assignedTo: whom, price: info.price, waitingList: null
+                        status: 'Waiting for response', assignedTo: whom, price: info.price
                     };
                     fbutil.syncData(['users', uid, 'projects', pid]).$update(update);
-                    fbutil.syncData(['projects', pid, 'waitingList', whom]).$update({price: 'accepted'});
+                    fbutil.syncData(['projects', pid]).$update(update);
                     fbutil.syncData(['users', whom, 'notifications', pid]).$update(info);
                     fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Accepted'});
-                    //fbutil.syncData(['users', uid, 'projects', pid, 'waitingList']).$remove();
+                    fbutil.syncData(['users', uid, 'projects', pid, 'waitingList']).$remove();
                     fbutil.syncData(['projectList', pid]).$remove();
-                    //= this.Remove(pid, null, uid) ??
+
                     //info must have property price
                 },
                 Reject: function (pid, uid, whom, info) {

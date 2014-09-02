@@ -10,6 +10,40 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             elm.text(version);
         };
     }])
+    .directive('checkOverDue', [function () {
+        return {
+            restrict: 'E',
+            controller: function ($scope, $rootScope, simpleLogin, fbutil, $timeout, nowTime, notification) {
+                $rootScope.$on('$firebaseSimpleLogin:login', function () {
+                    simpleLogin.getUser().then(function (user) {
+                        $scope.dt = fbutil.syncObject(['users', user.uid, 'due']);
+                        var checkDue = function () {
+                            $timeout(function () {
+                                for (var key in $scope.dt) {
+                                    var patt = /\$/;
+                                    var res = patt.test(key);
+                                    if (!res) {
+                                        for (var key2 in $scope.dt[key]) {
+                                            var dif = nowTime() - key2;
+                                            if (dif>0) {
+                                                var obj = {type:'reminder', due: key2, pid: key};
+                                                notification.Push(user.uid, key, obj);
+                                                fbutil.syncData(['users', user.uid, 'due', key]).$remove(key2);
+                                            }
+                                        }
+                                    }
+                                }
+                                checkDue()
+                            }, 10000)
+                        };
+                        checkDue()
+
+
+                    })
+                })
+            }
+        }
+    }])
     .directive('chat', ['getFbData', 'chatService', function (getFbData, chatService) {
 
         var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService) {
@@ -45,20 +79,24 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             };
 
             $scope.conversations = fbutil.syncObject(['users', myUid, 'conversations', 'group']);
-            $scope.selConv = function(conv) {chatService.SelConv(myUid,conv)};
+            $scope.selConv = function (conv) {
+                chatService.SelConv(myUid, conv)
+            };
             $scope.contacts = fbutil.syncObject(['users', myUid, 'contacts']);
             $scope.addContact = function (whom, sendNoti) {
                 chatService.AddContact(myUid, whom, sendNoti);
             };
             $scope.blockContact = function (contact) {
-                chatService.BlockContact(myUid,contact);
+                chatService.BlockContact(myUid, contact);
             };
             $scope.removeContact = function (contact) {
                 chatService.RemoveContact(myUid, contact)
             };
             $scope.blockedList = {};
             $scope.findBlocked = function (contactRef, isBlocked) {
-                if (isBlocked) {$scope.blockedList[contactRef] = true}
+                if (isBlocked) {
+                    $scope.blockedList[contactRef] = true
+                }
             };
 
 
@@ -72,7 +110,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             $scope.usrInCon = [myUid];
             // use ng-init to put in myUid
             $scope.addMessage = function (newMessage) {
-                chatService.AddMessage(myUid,$scope.cserv.convRef,newMessage);
+                chatService.AddMessage(myUid, $scope.cserv.convRef, newMessage);
             };
 
 
@@ -123,13 +161,13 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             },
             templateUrl: 'partials/directiveTemplates/chat.html',
             controller: function ($scope, $rootScope, simpleLogin, fbutil, $sce, getFbData, $q, propose, chatService) {
-                $rootScope.$on('$firebaseSimpleLogin:login', function() {
-                    simpleLogin.getUser().then(function(user) {
+                $rootScope.$on('$firebaseSimpleLogin:login', function () {
+                    simpleLogin.getUser().then(function (user) {
                         Ctrl($scope, fbutil, $sce, getFbData, $q, user.uid, propose, chatService)
                     });
                 });
-                $rootScope.$on('$firebaseSimpleLogin:logout', function() {
-                    $scope.chatShow=false
+                $rootScope.$on('$firebaseSimpleLogin:logout', function () {
+                    $scope.chatShow = false
                 })
             }
         };
@@ -189,15 +227,14 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             }
         };
     }])
-    .directive('jRating', function($timeout, fbutil) {                   // see http://stackoverflow.com/questions/19864007/angularjs-event-for-when-model-binding-or-ng-repeat-is-complete
-        return function(scope, element, attrs) {
+    .directive('jRating', function ($timeout, fbutil) {                   // see http://stackoverflow.com/questions/19864007/angularjs-event-for-when-model-binding-or-ng-repeat-is-complete
+        return function (scope, el, attrs) {
             if (scope.$last) {
-                $timeout(function() {
+                $timeout(function () {
                     $(".basic").jRating({
-                        onClick : function(element,rate) {
+                        onClick: function (element, rate) {
                             var uid = $(element).attr("data-id");
                             fbutil.syncData(['userList', uid]).$update({rating: rate});
-
                         }
                     })
                 }, 0);

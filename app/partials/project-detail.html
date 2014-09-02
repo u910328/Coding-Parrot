@@ -1,6 +1,7 @@
 <p>Name: {{pj.name}}</p>
 <p>Client: {{pj.clientUid}}</p>
 <p>Brief: {{pj.brief}}</p>
+<p>Due: {{pj.due |date: "yyyy/MM/dd"}}</p>
 <p>Requirements: {{pj.requirements}}</p>
 <p>Description: <span ng-bind-html="pj.description |linkify"></span></p>
 <div ng-init="show=false" ng-hide="show||(pj.clientUid==myUid)">

@@ -12,20 +12,81 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.syncedValue = fbutil.syncObject('syncedValue');
         $scope.user = user;
     }])
-    .controller('ChatCtrl', ['$scope', 'user', function ($scope, user) {
+    .controller('ChatCtrl', ['$scope', 'user', 'fbutil', 'nowTime', '$timeout', function ($scope, user, fbutil, nowTime, $timeout) {
+        $scope.later = function () {
+            var now = new Date();
+            var later = new Date(now.getTime() + 60000);
+            var later2 = new Date(now.getTime() + 30000);
+            var later3 = new Date(now.getTime() + 10000);
+            $scope.now = now.getTime();
+            $scope.later = later.getTime();
+            $scope.later2 = later2.getTime();
+            $scope.later3 = later3.getTime();
+            fbutil.syncData('test').$update($scope.later, {ref: 1});
+            fbutil.syncData('test').$update($scope.later2, {ref: 2});
+            fbutil.syncData('test').$update($scope.later3, {ref: 3})
+        };
+        $scope.later();
+
+
+        $scope.check = function () {
+            var obj = fbutil.syncObject(['test']);
+            $timeout(function () {
+                obj.$loaded().then(function () {
+                        var now = Date.now();
+                        for (var key in obj) {
+                            var dif = key - now;
+                            if (dif < 0) {
+                                console.log(obj[key].ref + 'time' + dif);
+                                fbutil.syncData('test').$remove(key)
+                            }
+                        }
+                    }
+                )
+                ;
+                $scope.check()
+            }, 10000)
+        };
+        $scope.check();
+
         $scope.user = user;
-    }])
-    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
+
+
+    }
+    ])
+    .
+    controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
         function ($scope, fbutil, user, $location, project) {
             $scope.user = user;
             $scope.createProject = function () {
+                $scope.pj.due = Date.parse($scope.dt);
                 var pjListData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
-                    requirements: $scope.pj.requirements
+                    requirements: $scope.pj.requirements,
+                    due: $scope.pj.due
                 };
                 project.Create(user.uid, $scope.pj, pjListData);
                 $location.path('/projectManager');
+            };
+
+            $scope.afterNday = function () {
+                var today = new Date();
+                var threeDLater = new Date();
+                $scope.minDate = threeDLater.setDate(today.getDate() + 3);
+                $scope.dt = threeDLater.setDate(today.getDate() + 30);
+            };
+            $scope.afterNday();
+
+            $scope.open = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.opened = !$scope.opened;
+            };
+
+            $scope.dateOptions = {
+                formatYear: 'yy',
+                startingDay: 1
             };
         }
     ])
@@ -34,13 +95,40 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
             $scope.updateProject = function () {
+                $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
                 var listData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
-                    requirements: $scope.pj.requirements
+                    requirements: $scope.pj.requirements,
+                    due: $scope.pj.due
                 };
                 project.Update($scope.pj, user.uid, listData);
+                if($scope.oldDue){fbutil.syncData(['users', user.uid, 'due', $scope.id]).$remove($scope.oldDue)}
                 $location.path('/projectManager');
+            };
+            $scope.afterNday = function () {
+                var today = new Date();
+                var threeDLater = new Date();
+                $scope.minDate = threeDLater.setDate(today.getDate() + 3);
+                $scope.$watch('pj.due', function (nVal, oVal) {
+                    if ((oVal!= undefined)&&(!$scope.oldDueCount)) {                                 //locate and remove old due
+                        $scope.oldDueCount= true;
+                        $scope.oldDue=oVal;
+                    }
+
+                });
+            };
+            $scope.afterNday();
+
+            $scope.open = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.opened = !$scope.opened;
+            };
+
+            $scope.dateOptions = {
+                formatYear: 'yy',
+                startingDay: 1
             };
         }
     ])
@@ -54,7 +142,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 .once('value', function (snap) {
                     if (snap.val() == null) {
                         $scope.proposeExists = false
-                    } else if (snap.val()=='accepted') {
+                    } else if (snap.val() == 'accepted') {
                         $scope.proposeAccepted = true
                     }
                     else {
@@ -109,6 +197,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.jbList = fbutil.syncObject(['users', user.uid, 'jobs']);
             $scope.proposeRemove = function (pid, whom) {
                 propose.Remove(pid, user.uid, whom)
+            };
+            $scope.start = function (pid, whom) {
+                propose.Start(pid, user.uid, whom)
+            };
+            $scope.removeJb = function (pid) {
+                fbutil.syncData(['users', user.uid, 'jobs', pid]).$remove();
             }
         }
     ])
