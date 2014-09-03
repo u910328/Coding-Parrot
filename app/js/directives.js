@@ -37,8 +37,6 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                             }, 10000)
                         };
                         checkDue()
-
-
                     })
                 })
             }
