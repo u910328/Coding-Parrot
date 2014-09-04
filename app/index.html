@@ -32,7 +32,12 @@
 </ul>
 
 <div ng-init="chatShow=false" ng-show = 'chatShow'>
-    <chat class="chatContainer"></chat>
+    <communication class="chatContainer">
+        <notification></notification>
+        <conversation></conversation>
+        <contacts></contacts>
+        <messenger></messenger>
+    </communication>
 </div>
 
     <div ng-view></div>

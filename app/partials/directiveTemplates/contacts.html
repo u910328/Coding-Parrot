@@ -1,0 +1,22 @@
+<div ng-show="!cserv.convRef">
+    <h2>Contacts</h2>
+
+    <div ng-repeat="(contact, value) in contacts" ng-hide="value.Blocked">                                                        <!--todo: make a filter to remove blocked contact-->
+        <div ng-init="findBlocked(value.Ref, value.Blocked)"></div>
+        <a href="" ng-click="removeContact(contact)">[X]</a><a href="" ng-click="blockContact(contact)">[Block]</a>
+        <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
+        <span ng-show="Conversations[value.Ref].unread"> ({{Conversations[value.Ref].unread}})</span>
+
+        <br>
+        <button ng-click="invite(contact)">invite</button>
+
+    </div>
+
+    <div>
+        <hr>
+        <button ng-click="Confirm()">Create a Conversation</button>
+        <br>
+        <div>Users in This Conversation: {{usrInCon}}</div>
+    </div>
+
+</div>

@@ -16,9 +16,9 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
                 }]
             }
         },
-        '/chat': {
-            templateUrl: 'partials/chat.html',
-            controller: 'ChatCtrl',
+        '/projects/review/:projectId': {
+            templateUrl: 'partials/review.html',
+            controller: 'ReviewCtrl',
             authRequired: true
         },
         '/contacts': {

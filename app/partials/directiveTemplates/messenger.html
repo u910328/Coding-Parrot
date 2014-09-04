@@ -1,0 +1,15 @@
+
+<div ng-show="!!cserv.convRef">
+    <button ng-click="closeWindow()">X</button>
+    <ul id="messages" ng-show="cserv.messages.length">
+        <li ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+            <div ng-bind-html="message.text"></div>
+        </li>
+        <!--use ng-bind-html because of $sanitize-->
+    </ul>
+    <form>
+        <br>
+        <input placeholder="Message..." ng-model="newMessage">
+        <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
+    </form>
+</div>

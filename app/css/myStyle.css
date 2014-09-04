@@ -5,6 +5,13 @@
     bottom: 10px;
     background-color: lightgray;
 }
+.notification {
+    width: 300px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: lightgray;
+}
 
 .intro {
     background-color: yellow;

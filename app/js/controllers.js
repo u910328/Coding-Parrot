@@ -12,54 +12,14 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.syncedValue = fbutil.syncObject('syncedValue');
         $scope.user = user;
     }])
-    .controller('ChatCtrl', ['$scope', 'user', 'fbutil', 'nowTime', '$timeout', function ($scope, user, fbutil, nowTime, $timeout) {
-        $scope.later = function () {
-            var now = new Date();
-            var later = new Date(now.getTime() + 60000);
-            var later2 = new Date(now.getTime() + 30000);
-            var later3 = new Date(now.getTime() + 10000);
-            $scope.now = now.getTime();
-            $scope.later = later.getTime();
-            $scope.later2 = later2.getTime();
-            $scope.later3 = later3.getTime();
-            fbutil.syncData('test').$update($scope.later, {ref: 1});
-            fbutil.syncData('test').$update($scope.later2, {ref: 2});
-            fbutil.syncData('test').$update($scope.later3, {ref: 3})
-        };
-        $scope.later();
+    .controller('ReviewCtrl', ['$scope', 'user', 'fbutil', 'nowTime', '$timeout', function ($scope, user, fbutil, nowTime, $timeout) {
 
-
-        $scope.check = function () {
-            var obj = fbutil.syncObject(['test']);
-            $timeout(function () {
-                obj.$loaded().then(function () {
-                        var now = Date.now();
-                        for (var key in obj) {
-                            var dif = key - now;
-                            if (dif < 0) {
-                                console.log(obj[key].ref + 'time' + dif);
-                                fbutil.syncData('test').$remove(key)
-                            }
-                        }
-                    }
-                )
-                ;
-                $scope.check()
-            }, 10000)
-        };
-        $scope.check();
-
-        $scope.user = user;
-
-
-    }
-    ])
-    .
-    controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
+    }])
+    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
         function ($scope, fbutil, user, $location, project) {
             $scope.user = user;
             $scope.createProject = function () {
-                $scope.pj.due = Date.parse($scope.dt);
+                $scope.pj.due = Date.parse($scope.dt)||$scope.dt;
                 var pjListData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
@@ -72,9 +32,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             $scope.afterNday = function () {
                 var today = new Date();
-                var threeDLater = new Date();
-                $scope.minDate = threeDLater.setDate(today.getDate() + 3);
-                $scope.dt = threeDLater.setDate(today.getDate() + 30);
+                var md = new Date();
+                $scope.pj= {};
+                $scope.minDate = md.setDate(today.getDate() + 3);
+                $scope.dt = md.setDate(today.getDate() + 30);
             };
             $scope.afterNday();
 
@@ -179,7 +140,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 var info = {
                     type: 'proposeAccepted',
                     price: price,
-                    pjName: pjData.name
+                    pjName: pjData.name,
+                    client: user.uid
                 };
                 propose.Accept(projectId, user.uid, whom, info);
             };
@@ -199,10 +161,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 propose.Remove(pid, user.uid, whom)
             };
             $scope.start = function (pid, whom) {
-                propose.Start(pid, user.uid, whom)
+                propose.Start(pid, user.uid, whom);
+                fbutil.ref(['projects', pid, 'due']).once('value', function (snap) {
+                    fbutil.syncData(['users', user.uid, 'due', pid]).$update(snap.val(), {data: 'success'})
+                });
             };
-            $scope.removeJb = function (pid) {
-                fbutil.syncData(['users', user.uid, 'jobs', pid]).$remove();
+            $scope.acceptRejection = function (pid) {
+                propose.AcceptRejection(pid, user.uid)
             }
         }
     ])

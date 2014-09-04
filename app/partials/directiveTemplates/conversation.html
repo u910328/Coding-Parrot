@@ -1,0 +1,10 @@
+<div ng-show="!cserv.convRef">
+    <h2>Conversations</h2>
+
+    <div ng-repeat="(conv, value) in conversations">
+        <a href="" ng-click="selConv(conv)">
+            Members: <span ng-repeat="(index, uid) in value.members"><span ng-init="getUserName(uid)">{{Users[uid].name}}|</span></span>
+        </a>
+        <div ng-show="Conversations[conv].unread">({{Conversations[conv].unread}})</div>
+    </div>
+</div>

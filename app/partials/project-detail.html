@@ -4,7 +4,7 @@
 <p>Due: {{pj.due |date: "yyyy/MM/dd"}}</p>
 <p>Requirements: {{pj.requirements}}</p>
 <p>Description: <span ng-bind-html="pj.description |linkify"></span></p>
-<div ng-init="show=false" ng-hide="show||(pj.clientUid==myUid)">
+<div ng-init="show=false" ng-hide="pj.assignedTo||show||(pj.clientUid==myUid)">
     <button ng-show="!proposeExists" ng-click="show=true" class="btn btn-primary">Propose</button>
     <button ng-show="proposeExists" ng-click="show=true" class="btn btn-primary">Repropose</button>
 </div>

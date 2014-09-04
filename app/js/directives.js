@@ -25,8 +25,8 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                                     if (!res) {
                                         for (var key2 in $scope.dt[key]) {
                                             var dif = nowTime() - key2;
-                                            if (dif>0) {
-                                                var obj = {type:'reminder', due: key2, pid: key};
+                                            if (dif > 0) {
+                                                var obj = {type: 'reminder', due: key2};
                                                 notification.Push(user.uid, key, obj);
                                                 fbutil.syncData(['users', user.uid, 'due', key]).$remove(key2);
                                             }
@@ -42,12 +42,13 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             }
         }
     }])
-    .directive('chat', ['getFbData', 'chatService', function (getFbData, chatService) {
+    .directive('communication', [function () {
 
         var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService) {
+            //utilities
             var grpConPos = ['users', myUid, 'conversations', 'group'];
-
             $scope.myUid = myUid;
+            $scope.Users = getFbData.Users;
             $scope.getUserName = function (uid) {
                 getFbData.getUserName(uid, myUid);
             };
@@ -55,8 +56,11 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 var pos1 = ['conversations', conv, 'members', myUid];
                 getFbData.getUnread(pos1, conv)
             };
-            $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']); //todo: make it a service
 
+            //notification
+            $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']);
+            $scope.getNotiData = getFbData.getNotiData;
+            $scope.NotiData = getFbData.NotiData;
             $scope.notificationClear = function (ref) {
                 chatService.NotificationClear(myUid, ref)
             };
@@ -64,7 +68,8 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 var info = {
                     type: 'proposeAccepted',
                     price: price,
-                    pjName: pjName
+                    pjName: pjName,
+                    client: myUid
                 };
                 propose.Accept(projectId, myUid, whom, info);
             };
@@ -75,47 +80,23 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 };
                 propose.Reject(projectId, myUid, whom, info);
             };
+            $scope.start = function (pid, whom) {
+                propose.Start(pid, myUid, whom);
+                fbutil.ref(['projects', pid, 'due']).once('value', function (snap) {
+                    fbutil.syncData(['users', myUid, 'due', pid]).$update(snap.val(), {data: 'success'})
+                });
+            };
+            $scope.acceptRejection = function (pid) {
+                propose.AcceptRejection(pid, myUid)
+            };
 
+            //conversations
             $scope.conversations = fbutil.syncObject(['users', myUid, 'conversations', 'group']);
+            $scope.Conversations = getFbData.Conversations;
             $scope.selConv = function (conv) {
                 chatService.SelConv(myUid, conv)
             };
-            $scope.contacts = fbutil.syncObject(['users', myUid, 'contacts']);
-            $scope.addContact = function (whom, sendNoti) {
-                chatService.AddContact(myUid, whom, sendNoti);
-            };
-            $scope.blockContact = function (contact) {
-                chatService.BlockContact(myUid, contact);
-            };
-            $scope.removeContact = function (contact) {
-                chatService.RemoveContact(myUid, contact)
-            };
-            $scope.blockedList = {};
-            $scope.findBlocked = function (contactRef, isBlocked) {
-                if (isBlocked) {
-                    $scope.blockedList[contactRef] = true
-                }
-            };
-
-
-            //stay here
-            $scope.closeWindow = function () {
-                if ($scope.cserv.convRef) {
-                    fbutil.syncData(['conversations', $scope.cserv.convRef, 'members', myUid]).$update({unread: 0});
-                    $scope.cserv.convRef = false
-                }
-            };
             $scope.usrInCon = [myUid];
-            // use ng-init to put in myUid
-            $scope.addMessage = function (newMessage) {
-                chatService.AddMessage(myUid, $scope.cserv.convRef, newMessage);
-            };
-
-
-            $scope.getNotiData = getFbData.getNotiData;
-
-            $scope.usrList = fbutil.syncObject('userList');
-
             $scope.invite = function (addedUser) {
                 var doubleCount = false;
                 for (var i = 0; i < $scope.usrInCon.length; i++) {
@@ -144,20 +125,46 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 });
             };
 
+            //contacts
+            $scope.contacts = fbutil.syncObject(['users', myUid, 'contacts']);
+            $scope.addContact = function (whom, sendNoti) {
+                chatService.AddContact(myUid, whom, sendNoti);
+            };
+            $scope.blockContact = function (contact) {
+                chatService.BlockContact(myUid, contact);
+            };
+            $scope.removeContact = function (contact) {
+                chatService.RemoveContact(myUid, contact)
+            };
+            $scope.blockedList = {};
+            $scope.findBlocked = function (contactRef, isBlocked) {
+                if (isBlocked) {
+                    $scope.blockedList[contactRef] = true
+                }
+            };
+
+            //messenger
+            $scope.cserv = chatService.cserv
+            $scope.closeWindow = function () {
+                if ($scope.cserv.convRef) {
+                    fbutil.syncData(['conversations', $scope.cserv.convRef, 'members', myUid]).$update({unread: 0});
+                    $scope.cserv.convRef = false
+                }
+            };
+            $scope.addMessage = function (newMessage) {
+                chatService.AddMessage(myUid, $scope.cserv.convRef, newMessage);
+            };
             $scope.talkTo = function (whom) {
                 chatService.Create1to1Ref(myUid, whom, true)
             };
 
+            //user list
+            $scope.usrList = fbutil.syncObject('userList');
         };
         return {
             restrict: 'E',
-            link: function (scope) {
-                scope.Conversations = getFbData.Conversations;
-                scope.Users = getFbData.Users;
-                scope.NotiData = getFbData.NotiData;
-                scope.cserv = chatService.cserv
-            },
-            templateUrl: 'partials/directiveTemplates/chat.html',
+            transclude: true,
+            templateUrl: 'partials/directiveTemplates/communication.html',
             controller: function ($scope, $rootScope, simpleLogin, fbutil, $sce, getFbData, $q, propose, chatService) {
                 $rootScope.$on('$firebaseSimpleLogin:login', function () {
                     simpleLogin.getUser().then(function (user) {
@@ -165,7 +172,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                     });
                 });
                 $rootScope.$on('$firebaseSimpleLogin:logout', function () {
-                    $scope.chatShow = false
+                    $scope.chatShow = false;
                 })
             }
         };
@@ -173,6 +180,38 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
 /**
  * A directive that shows elements only when user is logged in.
  */
+    .directive('notification', [function () {
+        return {
+            restrict: 'E',
+            require: '^communication',
+            scope: true,
+            templateUrl: 'partials/directiveTemplates/notification.html'
+        }
+    }])
+    .directive('contacts', [function () {
+        return {
+            restrict: 'E',
+            require: '^communication',
+            scope: true,
+            templateUrl: 'partials/directiveTemplates/contacts.html'
+        }
+    }])
+    .directive('conversation', [function () {
+        return {
+            restrict: 'E',
+            require: '^communication',
+            scope: true,
+            templateUrl: 'partials/directiveTemplates/conversation.html'
+        }
+    }])
+    .directive('messenger', [function () {
+        return {
+            restrict: 'E',
+            require: '^communication',
+            scope: true,
+            templateUrl: 'partials/directiveTemplates/messenger.html'
+        }
+    }])
     .directive('ngShowAuth', ['simpleLogin', '$timeout', function (simpleLogin, $timeout) {
         var isLoggedIn;
         simpleLogin.watch(function (user) {
