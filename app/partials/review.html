@@ -1,0 +1,10 @@
+<div ng-repeat="(key, value) in rating">
+    <div j-rating></div>
+    {{key}}:
+    <div class="basic" data-average="{{value}}" data-id="{{key}}"></div>
+    <br>
+</div>
+<form ng-submit="send()">
+    <p>Comment: <textarea class="form-control" type="text" ng-model="review.comment"></textarea></p>
+        <input class="form-control btn btn-primary" type="submit" id="submit" value="Send!"/>
+</form>

@@ -12,8 +12,20 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.syncedValue = fbutil.syncObject('syncedValue');
         $scope.user = user;
     }])
-    .controller('ReviewCtrl', ['$scope', 'user', 'fbutil', 'nowTime', '$timeout', function ($scope, user, fbutil, nowTime, $timeout) {
-
+    .controller('ReviewCtrl', ['$scope', 'user', 'fbutil', '$routeParams', 'notification', function ($scope, user, fbutil, $routeParams, notification) {
+        $scope.review = fbutil.syncObject(['projects', $routeParams.projectId, 'review', $routeParams.userId]);
+        $scope.review.rating= {};
+        $scope.rating = {quality: 0, completeness: 0, speed:0};
+        $scope.rate = function (element, rate) {
+            var key = $(element).attr("data-id");
+            $scope.review.rating[key] = rate;
+        };
+        $scope.send = function () {
+            notification.Clear(user.uid, $routeParams.projectId);
+            //calculate average ratings
+            //update the average rating in user list
+            $scope.review.$save()
+        }
     }])
     .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
         function ($scope, fbutil, user, $location, project) {
@@ -292,6 +304,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('UserListCtrl', ['$scope', 'fbutil',
         function ($scope, fbutil) {
             $scope.usrList = fbutil.syncObject('userList');
+            $scope.rate = function (element, rate) {
+                var uid = $(element).attr("data-id");
+                fbutil.syncData(['userList', uid]).$update({rating: rate});
+            }
         }
     ])
     .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce',

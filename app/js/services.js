@@ -159,7 +159,7 @@
                     fbutil.syncData(['users', uid, 'notifications']).$remove(ref)
                 },
                 Push: function (uid, ref, obj) {
-                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj)
+                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj).then(function(ref) {console.log('success'+ref)})
                 }
             }
         }])

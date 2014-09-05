@@ -37,9 +37,13 @@
         </div>
 
         <div ng-show="value.type == 'reminder'">
-            <a href="#!/projects/detail/{{noti}}"><strong>{{noti}}</strong></a> is due on {{value.due}}.<br>
-            <button ng-click="notificationClear(noti)">  Ok</button>
+            <a href="#!/projects/detail/{{noti}}" ng-click="notificationClear(noti)"><strong>{{noti}}</strong></a> is due on {{value.due}}.<br>
         </div>
+
+        <div ng-show="value.type == 'review'">
+            review <a href="#!/projects/review/{{noti}}/{{value.coder}}"><strong>{{value.coder}}</strong></a>.<br>
+        </div>
+
 
 
 

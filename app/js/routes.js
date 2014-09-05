@@ -16,7 +16,7 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
                 }]
             }
         },
-        '/projects/review/:projectId': {
+        '/projects/review/:projectId/:userId': {
             templateUrl: 'partials/review.html',
             controller: 'ReviewCtrl',
             authRequired: true

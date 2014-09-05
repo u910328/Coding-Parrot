@@ -13,22 +13,33 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
     .directive('checkOverDue', [function () {
         return {
             restrict: 'E',
+            scope: {},
             controller: function ($scope, $rootScope, simpleLogin, fbutil, $timeout, nowTime, notification) {
                 $rootScope.$on('$firebaseSimpleLogin:login', function () {
                     simpleLogin.getUser().then(function (user) {
                         $scope.dt = fbutil.syncObject(['users', user.uid, 'due']);
+                        $scope.isNoted = {};
                         var checkDue = function () {
                             $timeout(function () {
-                                for (var key in $scope.dt) {
+                                for (var pjRef in $scope.dt) {
                                     var patt = /\$/;
-                                    var res = patt.test(key);
+                                    var res = patt.test(pjRef);
                                     if (!res) {
-                                        for (var key2 in $scope.dt[key]) {
-                                            var dif = nowTime() - key2;
-                                            if (dif > 0) {
-                                                var obj = {type: 'reminder', due: key2};
-                                                notification.Push(user.uid, key, obj);
-                                                fbutil.syncData(['users', user.uid, 'due', key]).$remove(key2);
+                                        for (var due in $scope.dt[pjRef]) {
+                                            var dif = nowTime() - due;
+                                            if (dif > -3*24*60*60*1000 && !$scope.isNoted[pjRef+due]) {
+                                                var obj = {type: 'reminder', due: due};
+                                                notification.Push(user.uid, pjRef, obj);
+                                                $scope.isNoted[pjRef+due]=true
+                                            } else if (dif > 0 && !$scope.isNoted[pjRef+due]) {
+                                                fbutil.syncData(['users', user.uid, 'due', pjRef]).$remove(due);
+                                                fbutil.ref(['projects', pjRef, 'assignedTo']).once('value', function (snap) {
+                                                    var obj = {type: 'review', due: due, coder: snap.val()};
+                                                    notification.Push(user.uid, pjRef, obj);
+                                                    if (user.uid==snap.val()) {return}
+                                                    fbutil.syncData(['projects', pjRef, 'review', snap.val()]).$update({isReviewed: false})
+                                                });
+                                                $scope.isNoted[pjRef+due]=true
                                             }
                                         }
                                     }
@@ -144,7 +155,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             };
 
             //messenger
-            $scope.cserv = chatService.cserv
+            $scope.cserv = chatService.cserv;
             $scope.closeWindow = function () {
                 if ($scope.cserv.convRef) {
                     fbutil.syncData(['conversations', $scope.cserv.convRef, 'members', myUid]).$update({unread: 0});
@@ -265,16 +276,18 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
         };
     }])
     .directive('jRating', function ($timeout, fbutil) {                   // see http://stackoverflow.com/questions/19864007/angularjs-event-for-when-model-binding-or-ng-repeat-is-complete
-        return function (scope, el, attrs) {
-            if (scope.$last) {
-                $timeout(function () {
-                    $(".basic").jRating({
-                        onClick: function (element, rate) {
-                            var uid = $(element).attr("data-id");
-                            fbutil.syncData(['userList', uid]).$update({rating: rate});
-                        }
-                    })
-                }, 0);
+        return {
+            scope: true,
+            link: function (scope) {
+                if (scope.$last) {
+                    $timeout(function () {
+                        $(".basic").jRating({
+                            onClick: scope.rate
+                        })
+                    }, 0);
+                }
             }
-        };
+        }
+
     });
+
