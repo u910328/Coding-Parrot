@@ -21,9 +21,9 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
             controller: 'ReviewCtrl',
             authRequired: true
         },
-        '/contacts': {
-            templateUrl: 'partials/contacts.html',
-            controller: 'ContactCtrl',
+        '/calendar': {
+            templateUrl: 'partials/calendar.html',
+            controller: 'CalendarCtrl',
             authRequired: true
         },
         '/newProject': {

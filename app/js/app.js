@@ -11,7 +11,8 @@ angular.module('myApp', [
     'myApp.services',
     'ngSanitize',
     'myApp.timeAgo',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'ui.calendar'
 ])
 
     .run(['simpleLogin', 'FBURL', function (simpleLogin, FBURL) {
