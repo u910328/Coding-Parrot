@@ -13,6 +13,21 @@
         </div>
     </div>
     <p>Requirements: <input class="form-control" type="text" ng-model="pj.requirements"></p>
+
+    <span  class="nullable">
+        Category:
+      <select ng-model="pj.category" ng-options="category for category in categories">
+          <option value="">-- choose a category --</option>
+      </select>
+    </span><br/>
+
+    <span  class="nullable">
+        language:
+      <select ng-model="pj.language" ng-options="language for language in languages">
+          <option value="">-- choose a language --</option>
+      </select>
+    </span><br/>
+
     <p>Description: <textarea class="form-control" ng-model="pj.description"></textarea></p>
     <input class="form-control btn btn-primary" type="submit" id="submit" value="Update!" />
     <div id="disqus_thread" disqus="id"></div>

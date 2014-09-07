@@ -1,5 +1,8 @@
 <img ng-src='{{userInfo.picture}}' width="68" height="68">
 <h2>{{userInfo.name}}</h2>
 <br>
-<a ng-href="{{userInfo.link}}">Link</a>
+
+<a ng-href="{{userInfo.link}}">Link</a><br>
+        <button ng-show="showTalkTo" ng-click="talkTo()">Talk to this user</button>
+<button ng-show="showAddContact" ng-click="addContact()">Add to contacts{{showAddContact}}</button>
 <br>

@@ -1,1 +1,9 @@
-<div ui-calendar="uiConfig.calendar" class="span4 calendar" ng-model="eventSources"></div>
+<div ng-repeat="(ref, val) in dues">
+    <div ng-repeat="(due, v) in val" ng-init="pushEvent(ref,due)"></div>
+</div>
+
+<div class="calendar-container">
+    <div ui-calendar="uiConfig.calendar" class="calendar" ng-model="eventSources"></div>
+</div>
+
+

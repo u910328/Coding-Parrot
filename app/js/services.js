@@ -11,6 +11,25 @@
         .service('messageList', ['fbutil', function (fbutil) {
             return fbutil.syncArray('messages', {limit: 10, endAt: null});
         }])
+        .factory('cateAndLang', [function () {
+            return {
+                categories: [
+                    'General',
+                    'WebApp',
+                    'Games',
+                    'Academic',
+                    'Others'
+                ],
+                languages: [
+                    'C++',
+                    'Python',
+                    'Javascript',
+                    'Ruby',
+                    'Fortran',
+                    'Others'
+                ]
+            }
+        }])
         .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {
             return{
                 cserv: {},
@@ -96,7 +115,7 @@
                                         type = '1to1'
                                     }
                                     var obj = {type: type};
-                                    notification.Push(key, convRef,obj);
+                                    notification.Push(key, convRef, obj);
                                 }
                             }
                         })
@@ -159,7 +178,7 @@
                     fbutil.syncData(['users', uid, 'notifications']).$remove(ref)
                 },
                 Push: function (uid, ref, obj) {
-                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj).then(function(ref) {console.log('success'+ref)})
+                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj)
                 }
             }
         }])
@@ -242,9 +261,12 @@
                 },
                 Conversations: {},
                 getUnread: function (pos, conv) {
-                    var that = this;
                     this.Conversations[conv] = {};
-                    that.Conversations[conv] = fbutil.syncObject(pos)
+                    this.Conversations[conv] = fbutil.syncObject(pos)
+                },
+                Dues: {},
+                getDue: function (fbObj) {
+                    this.Dues = fbObj
                 },
                 NotiData: {},
                 getNotiData: function (ref, type) {

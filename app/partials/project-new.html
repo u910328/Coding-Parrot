@@ -1,6 +1,6 @@
 <form ng-submit="createProject()">
-    <p>Name: <input class="form-control" type="text" ng-model="pj.name"/></p>
-    <p>Brief: <input class="form-control" type="text" ng-model="pj.brief"/><br></p>
+    <p>Name: <input class="form-control" type="text" ng-required="true" ng-model="pj.name"/></p>
+    <p>Brief: <input class="form-control" type="text" ng-required="true" ng-model="pj.brief"/><br></p>
     <div class="row">
         <div class="col-md-2">
             Due:
@@ -12,8 +12,24 @@
             </p>
         </div>
     </div>
+
     <p>Requirements: <input class="form-control" type="text" ng-model="pj.requirements"></p>
-    <p>Description: <textarea class="form-control" ng-model="pj.description"></textarea></p>
+
+    <span  class="nullable">
+        Category:
+      <select ng-required="true" ng-model="pj.category" ng-options="category for category in categories">
+          <option value="">-- choose a category --</option>
+      </select>
+    </span><br/>
+
+    <span  class="nullable">
+        language:
+      <select ng-required="true" ng-model="pj.language" ng-options="language for language in languages">
+          <option value="">-- choose a language --</option>
+      </select>
+    </span><br/>
+
+    <p>Description: <textarea class="form-control" ng-required="true" ng-model="pj.description"></textarea></p>
     <input type="submit" id="submit" value="Create!" />
 </form>
 <hr>

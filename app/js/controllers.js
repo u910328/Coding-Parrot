@@ -27,15 +27,21 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.review.$save()
         }
     }])
-    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project',
-        function ($scope, fbutil, user, $location, project) {
+    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang',
+        function ($scope, fbutil, user, $location, project, cateAndLang) {
             $scope.user = user;
+
+            $scope.categories = cateAndLang.categories;
+            $scope.languages = cateAndLang.languages;
+
             $scope.createProject = function () {
                 $scope.pj.due = Date.parse($scope.dt)||$scope.dt;
                 var pjListData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
-                    requirements: $scope.pj.requirements,
+                    language: $scope.pj.language,
+                    category: $scope.pj.category,
+                    requirements: $scope.pj.requirements||'',
                     due: $scope.pj.due
                 };
                 project.Create(user.uid, $scope.pj, pjListData);
@@ -63,16 +69,22 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location',
-        function ($scope, fbutil, $routeParams, user, project, $location) {
+    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang',
+        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang) {
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
+
+            $scope.categories = cateAndLang.categories;
+            $scope.languages = cateAndLang.languages;
+
             $scope.updateProject = function () {
                 $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
                 var listData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
-                    requirements: $scope.pj.requirements,
+                    language: $scope.pj.language,
+                    category: $scope.pj.category,
+                    requirements: $scope.pj.requirements||'',
                     due: $scope.pj.due
                 };
                 project.Update($scope.pj, user.uid, listData);
@@ -232,8 +244,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         }
     }])
 
-    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location',
-        function ($scope, simpleLogin, fbutil, user, $location) {
+    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location', 'cateAndLang',
+        function ($scope, simpleLogin, fbutil, user, $location, cateAndLang) {
             // create a 3-way binding with the user profile object in Firebase
             var userInfoPos = ['users', user.uid, 'userInfo'];                 //remember to change changeEmail and UserDetailCtrl if you change this (also in simpleLogin.js)
             var profile = fbutil.syncObject(userInfoPos);
@@ -241,6 +253,37 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             // update user data in user list and Data.
             $scope.userInfo = fbutil.syncObject(userInfoPos);
+            $scope.showPwdEml = user.provider=='password';
+            $scope.categories = cateAndLang.categories;
+            $scope.languages = cateAndLang.languages;
+
+            $scope.addCate = function () {
+                if (!$scope.selectedCate) {return}
+                if ($scope.userInfo.categories) {
+                    $scope.userInfo.categories[$scope.selectedCate]={rating: 'unrated'};
+                } else {
+                    $scope.userInfo.categories = {};
+                    $scope.userInfo.categories[$scope.selectedCate]= {rating: 'unrated'};
+                }
+                $scope.selectedCate= null;
+            };
+            $scope.removeCate = function (cate) {
+                delete $scope.userInfo.categories[cate]
+            };
+            $scope.addLang = function () {
+                if (!$scope.selectedLang) {return}
+                if ($scope.userInfo.languages) {
+                    $scope.userInfo.languages[$scope.selectedLang]={rating: 'unrated'};
+                } else {
+                    $scope.userInfo.languages= {};
+                    $scope.userInfo.languages[$scope.selectedLang]= {rating: 'unrated'};
+                }
+                $scope.selectedLang= null;
+            };
+            $scope.removeLang = function (lang) {
+                delete $scope.userInfo.languages[lang]
+            };
+
             $scope.userInfoUpdate = function () {
                 $scope.userInfo.$save().then(function () {
                     var ref = fbutil.ref(['userList', user.uid]);
@@ -310,45 +353,52 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         }
     ])
-    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce',
-        function ($scope, $firebase, fbutil, $routeParams, $sce) {
+    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce', 'chatService', 'user',
+        function ($scope, $firebase, fbutil, $routeParams, $sce, chatService, user) {
             $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
+            $scope.showAddContact= false;
+            $scope.showTalkTo= $routeParams.userId!=user.uid;
+            var isContactExist = function () {fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
+                .once('value', function(snap) {
+                    if(snap.val()!=false && user.uid!=$routeParams.userId) {$scope.showAddContact = true}
+                })
+            };
+            $scope.talkTo = function () {
+                chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
+                $scope.$parent.chatShow= true
+            };
+            isContactExist();
+            $scope.addContact = function () {
+                if ($scope.showAddContact = true) {
+                    chatService.AddContact(user.uid, $routeParams.userId, true);
+                    $scope.showAddContact= false;
+                }
+            };
         }
     ])
-    .controller('CalendarCtrl', ['$scope', 'fbutil', 'user', function ($scope, fbutil, user) {
-
-        var date = new Date();
-        var d = date.getDate();
-        var m = date.getMonth();
-        var y = date.getFullYear();
-
-
-
+    .controller('CalendarCtrl', ['$scope', 'fbutil', 'user', 'getFbData', function ($scope, fbutil, user, getFbData) {
+        $scope.dues = getFbData.Dues;
+        $scope.pushEvent =function (title, time) {
+            var date = new Date(Number(time)).toISOString();
+            var url = '#!/projects/detail/'+title;
+            $scope.calEventsExt.events.push({
+                title: title,
+                start: date,
+                url: url
+            })
+        };
         /* event source that contains custom events on the scope */
-        $scope.events = [
-            {title: 'All Day Event',start: new Date(y, m, 1)},
-            {title: 'Long Event',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
-            {id: 999,title: 'Repeating Event',start: new Date(y, m, d - 3, 16, 0),allDay: false},
-            {id: 999,title: 'Repeating Event',start: new Date(y, m, d + 4, 16, 0),allDay: false},
-            {title: 'Birthday Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false},
-            {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
-        ];
+        $scope.events = [];
         /* event source that calls a function on every view switch */
-
         $scope.calEventsExt = {
             color: '#f00',
-            textColor: 'yellow',
-            events: [
-                {type:'party',title: 'Lunch',start: new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false},
-                {type:'party',title: 'Lunch 2',start: new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false},
-                {type:'party',title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
-            ]
+            textColor: 'white',
+            events: []
         };
 
         /* config object */
         $scope.uiConfig = {
             calendar:{
-                height: 450,
                 header:{
                     left: 'title',
                     center: '',

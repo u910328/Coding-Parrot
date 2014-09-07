@@ -16,3 +16,8 @@
 .intro {
     background-color: yellow;
 }
+
+.calendar-container {
+    width: 500px;
+}
+

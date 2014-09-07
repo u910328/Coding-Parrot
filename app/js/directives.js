@@ -14,10 +14,11 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
         return {
             restrict: 'E',
             scope: {},
-            controller: function ($scope, $rootScope, simpleLogin, fbutil, $timeout, nowTime, notification) {
+            controller: function ($scope, $rootScope, simpleLogin, fbutil, $timeout, nowTime, notification, getFbData) {
                 $rootScope.$on('$firebaseSimpleLogin:login', function () {
                     simpleLogin.getUser().then(function (user) {
                         $scope.dt = fbutil.syncObject(['users', user.uid, 'due']);
+                        getFbData.getDue(fbutil.syncObject(['users', user.uid, 'due']));
                         $scope.isNoted = {};
                         var checkDue = function () {
                             $timeout(function () {

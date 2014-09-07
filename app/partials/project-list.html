@@ -1,10 +1,12 @@
 <a href="#!/newProject">new project</a><hr>
 <div ng-repeat="(pjRef, pjData) in pjList">
     Name: <a href="#!/projects/detail/{{pjRef}}">{{pjData.name}}</a><br>
-    Brief: <a href="#!">{{pjData.brief}}</a><br>
-    Created: <a href="#!">{{pjData.createdTime}}</a><br>
-    Due: <a href="#!">{{pjData.due|date: "yyyy/MM/dd"}}</a><br>
-    Requirements: <a href="#!">{{pjData.requirements}}</a><br>
-    Client: <a href="#!">{{pjData.clientName}}</a><br>
+    Brief: <a href="">{{pjData.brief}}</a><br>
+    Created: <a href="">{{pjData.createdTime}}</a><br>
+    Due: <a href="">{{pjData.due|date: "yyyy/MM/dd"}}</a><br>
+    Category: <a href="#!">{{pjData.category}}</a><br>
+    Language: <a href="#!">{{pjData.language}}</a><br>
+    Requirements: <span>{{pjData.requirements}}</span><br>
+    Client: <a href="">{{pjData.clientName}}</a><br>
     <hr>
 </div>
