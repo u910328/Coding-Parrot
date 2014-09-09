@@ -74,17 +74,23 @@
             <input type="text" name="name" ng-model="userInfo.name"/>
         </label>
 
+        <label>
+            <span>Email:</span>
+            <input type="text" name="email" ng-model="userInfo.email"/>
+        </label>
+
         Category:
         <div ng-repeat="(cate, value) in userInfo.categories">{{cate}}<a href ng-click="removeCate(cate)">X</a></div>
         <span class="nullable">
           <select ng-change="addCate()" ng-model="selectedCate" ng-options="category for category in categories">
-          <option value="">-- choose a category --</option>
+              <option value="">-- choose a category --</option>
           </select>
         </span><br>
 
-<span class="nullable">
+
         language:
-    <div ng-repeat="(lang, value) in userInfo.languages">{{lang}}<a href ng-click="removeLang(lang)">X</a></div>
+        <div ng-repeat="(lang, value) in userInfo.languages">{{lang}}<a href ng-click="removeLang(lang)">X</a></div>
+        <span class="nullable">
       <select ng-change="addLang()" ng-model="selectedLang" ng-options="language for language in languages">
           <option value="">-- choose a language --</option>
       </select>

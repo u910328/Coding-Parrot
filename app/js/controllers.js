@@ -152,13 +152,11 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.pjList = fbutil.syncObject('projectList');
         }
     ])
-    .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose',
-        function ($scope, fbutil, user, propose) {
+    .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project',
+        function ($scope, fbutil, user, propose, project) {
             $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
             $scope.remove = function (projectId) {
-                fbutil.syncData(['projects', projectId]).$remove();
-                fbutil.syncData(['projectList', projectId]).$remove();
-                fbutil.syncData(['users', user.uid, 'projects', projectId]).$remove();
+                project.Remove(user.uid, projectId)
             };
             $scope.accept = function (projectId, whom, pjData, price) {
                 var info = {

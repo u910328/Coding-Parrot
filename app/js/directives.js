@@ -28,7 +28,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                                     if (!res) {
                                         for (var due in $scope.dt[pjRef]) {
                                             var dif = nowTime() - due;
-                                            if (dif > -3*24*60*60*1000 && !$scope.isNoted[pjRef+due]) {
+                                            if (dif<0 && dif > -3*24*60*60*1000 && !$scope.isNoted[pjRef+due]) {
                                                 var obj = {type: 'reminder', due: due};
                                                 notification.Push(user.uid, pjRef, obj);
                                                 $scope.isNoted[pjRef+due]=true

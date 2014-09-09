@@ -148,6 +148,12 @@
                         fbutil.syncData(['users', uid, 'due', pjRef.name()]).$update(pjListData.due, {data: 'success'});
                     });
                 },
+                Remove: function (uid, projectId) {
+                    fbutil.syncData(['projects', projectId]).$remove();
+                    fbutil.syncData(['projectList', projectId]).$remove();
+                    fbutil.syncData(['users', uid, 'projects', projectId]).$remove();
+                    fbutil.syncData(['users', uid, 'due', projectId]).$remove()
+                },
                 Create: function (uid, pjData, pjListData) {
                     var pjsPos = 'projects';
                     var pjListPos = 'projectList';
