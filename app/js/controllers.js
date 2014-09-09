@@ -289,10 +289,18 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     var ref = fbutil.ref(['userList', user.uid]);
                     ref.update({
                         name: $scope.userInfo.name,
+                        email: $scope.userInfo.email||'',
                         picture: $scope.userInfo.picture || '',
                         uid: user.uid
                     });
-//user in user list data.
+                    fbutil.syncData(['emailService', user.uid]).$update({
+                        name: $scope.userInfo.name,
+                        email: $scope.userInfo.email||'',
+                        isUpdated: true,
+                        sendNoti: false,
+                        sendRec: false
+                    })
+
                 });
             };
 
