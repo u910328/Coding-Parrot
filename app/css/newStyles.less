@@ -8,7 +8,21 @@
   .box-shadow(@style, rgba(0, 0, 0, @alpha));
 }
 .box {
+  width:120px;
   color: saturate(@base, 15%);
-  border-color: lighten(@base, 40%);
-  div { .box-shadow(0 0 5px, 40%) }
+  border-color: lighten(@base, 20%);
+  div { .box-shadow(0 0 5px, 30%) }
+}
+//
+
+
+
+
+// Centered container element
+.container-fixed(@gutter: @grid-gutter-width) {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+  &:extend(.clearfix all);
 }
