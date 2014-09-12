@@ -63,7 +63,7 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('categorizeObj', function() {
+    .filter('categorize', function() {
         return function(items, cate, lang) {
             var result = {};
             var patt = /\$/;
@@ -83,7 +83,7 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('categorize', function() {
+    .filter('categorizeArr', function() {
         return function(items, cate, lang) {
             var result = [];
             for (var i = 0; i < items.length; i++) {
@@ -99,4 +99,18 @@ angular.module('myApp.filters', [])
             }
             return result;
         };
+    })
+    .filter('mapFilter', function($filter) {
+        return function(map, expression, comparator) {
+            if (! expression) return map;
+            var result = {};
+            var patt = /\$/;
+            for(var key in map) {
+                var res = patt.test(key);
+                if (res) {continue}
+                if ($filter('filter')([map[key]], expression, comparator).length)
+                    result[key] = map[key];
+            }
+            return result;
+        }
     });

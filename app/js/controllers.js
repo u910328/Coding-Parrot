@@ -170,7 +170,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     ])
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil', 'cateAndLang',
         function ($scope, $firebase, fbutil, cateAndLang) {
-            $scope.pjList = fbutil.syncArray('projectList');
+            $scope.pjList = fbutil.syncObject('projectList');
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
             $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
@@ -179,7 +179,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     ])
     .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project', 'cateAndLang',
         function ($scope, fbutil, user, propose, project, cateAndLang) {
-            $scope.pjList = fbutil.syncArray(['users', user.uid, 'projects']);
+            $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
             $scope.remove = function (projectId) {
                 project.Remove(user.uid, projectId)
             };

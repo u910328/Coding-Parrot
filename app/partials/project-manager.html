@@ -21,8 +21,8 @@
         </div>
     </div>
     <div class="col-md-8">
-        <div ng-repeat="pj in pjList | filter:searchText |categorize:cate:lang|reverse">
-            Name: <a href="#!/projects/detail/{{pjList.$keyAt($index)}}">{{pj.name}}</a><br>
+        <div ng-repeat="(pjRef, pj) in pjList | mapFilter:searchText |categorize:cate:lang">
+            Name: <a href="#!/projects/edit/{{pjRef}}">{{pj.name}}</a><br>
             Brief: <a href="">{{pj.brief}}</a><br>
             Created: <a href="">{{pj.createdTime}}</a><br>
             Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
@@ -32,15 +32,15 @@
             Client: <a href="">{{pj.clientName}}</a><br>
             Status: {{pj.status}}<br>
             <span ng-hide="!pj.assignedTo">Assigned to:</span> {{pj.assignedTo}}<br>
-            <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pjList.$keyAt($index))">Remove</button>
+            <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pjRef)">Remove</button>
             <hr>
             <div ng-repeat="(coder, request) in pj.waitingList">
                 <h3 ng-show="$index==0">Waiting list</h3>
                 Name: {{coder}}<br>
                 Price: {{request.price}}<br>
                 Message: {{request.message}}<br>
-                <button ng-click="accept(pjList.$keyAt($index),coder, pjData, request.price)">Accept</button>
-                <button ng-click="reject(pjList.$keyAt($index),coder, pjData)">Reject</button>
+                <button ng-click="accept(pjRef, coder, pj, request.price)">Accept</button>
+                <button ng-click="reject(pjRef, coder, pj)">Reject</button>
             </div>
         </div>
     </div>
