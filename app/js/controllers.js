@@ -153,7 +153,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             $scope.status = {
                 isopen: false,
-                isopen2: false
+                isopen2: false,
+                isopen3: false
             };
 
         }

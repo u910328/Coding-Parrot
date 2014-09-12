@@ -1,8 +1,55 @@
 <a href="#!/newProject">new project</a><hr>
 
+<div class="nav-container">
+    <ul class="nav" dropdown is-open="status.isopen">
+        <li class="dropdown-toggle nav-list-item apps visible-item" style="left: 0px; display: block; top: 0px; opacity: 1;" >
+            <a ng-class="{mover1:hover1}" class="menu-link id-no-menu-change not-selected" href="" style="padding:0; width: 200px;" ng-mouseenter="hover1=true" ng-mouseleave="hover1=false">
+                <span class="hover-target" style="width: 200px;"> <span class="icon-container"> <span><img src="http://placekitten.com/65/48"></span> </span>
+                <span class="title" style="color: rgb(85,85,85); display: table-cell;">Category 1</span> </span>
+            </a>
+        </li>
+        <ul class="dropdown-menu rightMenu">
+            <li>
+                <div class="btn-group">
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                        <h5>A</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                        <h5>J</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                </div>
+            </li>
+        </ul>
+
+        <li class="nav-list-item apps visible-item" style="left: 0px; display: block; top: 0px; opacity: 1;">
+            <a ng-class="{mover2:hover2}" class="menu-link id-no-menu-change not-selected" href="" style="padding:0; width: 200px;" ng-mouseenter="hover2=true" ng-mouseleave="hover2=false">
+          <span class="hover-target" style="width: 200px;"> <span class="icon-container"> <span><img src="http://placekitten.com/65/48"></span> </span>
+          <span class="title" style="color: rgb(85,85,85); display: table-cell;">Category 2</span> </span>
+            </a>
+        </li>
+        <li class="nav-list-item apps visible-item" style="left: 0px; display: block; top: 0px; opacity: 1;">
+            <a ng-class="{mover3:hover3}" class="menu-link id-no-menu-change not-selected" href="" style="padding:0; width: 200px;" ng-mouseenter="hover3=true" ng-mouseleave="hover3=false">
+          <span class="hover-target" style="width: 200px;"> <span class="icon-container"> <span><img src="http://placekitten.com/65/48"></span> </span>
+          <span class="title" style="color: rgb(85,85,85); display: table-cell;">Category 2</span> </span>
+            </a>
+        </li>
+        <li class="nav-list-item apps visible-item" style="left: 0px; display: block; top: 0px; opacity: 1;">
+            <a ng-class="{mover4:hover4}" class="menu-link id-no-menu-change not-selected" href="" style="padding:0; width: 200px;" ng-mouseenter="hover4=true" ng-mouseleave="hover4=false">
+          <span class="hover-target" style="width: 200px;"> <span class="icon-container"> <span><img src="http://placekitten.com/65/48"></span> </span>
+          <span class="title" style="color: rgb(85,85,85); display: table-cell;">Category 2</span> </span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
     <!-- Single button -->
-<div class="btn-toolbar" role="toolbar">
-  <div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen" >
+<!--<div class="btn-toolbar" role="toolbar">
+    <div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen" >
         <button type="button" class="btn btn-primary dropdown-toggle">
             Button dropdown <span class="right-caret"></span>
         </button>
@@ -28,39 +75,37 @@
             <li><a href="#">Something else here</a></li>
             <li class="divider"></li>
             <li><a href="#">Separated link</a></li>
-        </ul>-->
+        </ul>
     </div>
-  </div>
-<div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen2" >
-    <button type="button" class="btn btn-primary dropdown-toggle">
-        Button dropdown <span class="right-caret"></span>
-    </button>
-    <ul class="dropdown-menu rightMenu">
-        <li>
-            <div class="btn-group">
-                <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+    <div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen2" >
+        <button type="button" class="btn btn-primary dropdown-toggle">
+            Button dropdown <span class="right-caret"></span>
+        </button>
+        <ul class="dropdown-menu rightMenu">
+            <li>
+                <div class="btn-group">
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
 
-                    <h5>A</h5>
-                    <img src="http://placekitten.com/g/50/50"></a>
-                </a>
-                <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+                        <h5>A</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
 
-                    <h5>J</h5>
-                    <img src="http://placekitten.com/g/50/50"></a>
-                </a>
-            </div>
-        </li>
-    </ul>
-    <!--<ul class="dropdown-menu rightMenu" role="menu">
-        <li><a href="#">Action</a></li>
-        <li><a href="#">Another action</a></li>
-        <li><a href="#">Something else here</a></li>
-        <li class="divider"></li>
-        <li><a href="#">Separated link</a></li>
-    </ul>-->
-</div>
- </div>
-
+                        <h5>J</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <!--<ul class="dropdown-menu rightMenu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+        </ul>
+    </div>
+</div> -->
 
 
 
