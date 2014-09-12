@@ -15,10 +15,13 @@
     <link rel="stylesheet" href="bower_components/jquery/plugins/jRating-master/jRating.jquery.css">
     <link rel="stylesheet" href="css/app.css"/>
     <link rel="stylesheet" href="css/myStyle.css"/>
+    <link rel="stylesheet" href="css/newStyles.css"/>
+    <link rel="stylesheet" href="css/additionalStyles.css"/>
+
     <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
 <body ng-cloak>
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header" > <!--style="position: fixed;top=0px"-->
@@ -28,17 +31,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Brand</a>
+            <a class="navbar-brand" href="#!/home">Home</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#!/home">home</a>
                 <li ng-show-auth><a href="" ng-click="chatShow=!chatShow" >chat</a></li>
                 <li ng-show-auth><a href="" ng-click="notiShow=!notiShow" >notificaton</a></li>
-                <li ng-hide-auth><a href="#!/login">login</a></li>
-                <li ng-show-auth><a href="#!/account">account</a></li>
                 <li><a href="#!/projects">projects</a></li>
                 <li><a href="#!/projectManager">my projects</a></li>
                 <li><a href="#!/jobManager">jobs</a></li>
@@ -46,7 +46,8 @@
                 <li><a href="#!/calendar">calendar</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a>
+                <li ng-hide-auth><a href="#!/login">login</a></li>
+                <li ng-show-auth><a href="#!/account">account</a></li>
                 </li>
             </ul>
         </div>
@@ -70,9 +71,11 @@
         <messenger></messenger>
     </communication>
 </div>
-
+<div style="width:700px;height:60px"></div>
     <div ng-view></div>
 <check-over-due></check-over-due>
+
+
 
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.x/angular.min.js"></script>

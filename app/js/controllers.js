@@ -150,6 +150,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil',
         function ($scope, $firebase, fbutil) {
             $scope.pjList = fbutil.syncObject('projectList');
+
+            $scope.status = {
+                isopen: false,
+                isopen2: false
+            };
+
         }
     ])
     .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose',

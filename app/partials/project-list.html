@@ -1,5 +1,71 @@
 <a href="#!/newProject">new project</a><hr>
-<div ng-repeat="(pjRef, pjData) in pjList">
+
+    <!-- Single button -->
+<div class="btn-toolbar" role="toolbar">
+  <div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen" >
+        <button type="button" class="btn btn-primary dropdown-toggle">
+            Button dropdown <span class="right-caret"></span>
+        </button>
+        <ul class="dropdown-menu rightMenu">
+            <li>
+                <div class="btn-group">
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                        <h5>A</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                    <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                        <h5>J</h5>
+                        <img src="http://placekitten.com/g/50/50"></a>
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <!--<ul class="dropdown-menu rightMenu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+        </ul>-->
+    </div>
+  </div>
+<div class="btn-group" style="position: relative; vertical-align: middle;" dropdown is-open="status.isopen2" >
+    <button type="button" class="btn btn-primary dropdown-toggle">
+        Button dropdown <span class="right-caret"></span>
+    </button>
+    <ul class="dropdown-menu rightMenu">
+        <li>
+            <div class="btn-group">
+                <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                    <h5>A</h5>
+                    <img src="http://placekitten.com/g/50/50"></a>
+                </a>
+                <a href="parent_homepage_2.html" style="text-align:center;display:block;" class="btn btn-link operationsButtons">
+
+                    <h5>J</h5>
+                    <img src="http://placekitten.com/g/50/50"></a>
+                </a>
+            </div>
+        </li>
+    </ul>
+    <!--<ul class="dropdown-menu rightMenu" role="menu">
+        <li><a href="#">Action</a></li>
+        <li><a href="#">Another action</a></li>
+        <li><a href="#">Something else here</a></li>
+        <li class="divider"></li>
+        <li><a href="#">Separated link</a></li>
+    </ul>-->
+</div>
+ </div>
+
+
+
+
+
+<!--<div ng-repeat="(pjRef, pjData) in pjList">
     Name: <a href="#!/projects/detail/{{pjRef}}">{{pjData.name}}</a><br>
     Brief: <a href="">{{pjData.brief}}</a><br>
     Created: <a href="">{{pjData.createdTime}}</a><br>
@@ -9,4 +75,4 @@
     Requirements: <span>{{pjData.requirements}}</span><br>
     Client: <a href="">{{pjData.clientName}}</a><br>
     <hr>
-</div>
+</div>-->
