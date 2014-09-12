@@ -1,12 +1,38 @@
-<a href="#!/newProject">new project</a><hr>
-<div ng-repeat="(pjRef, pjData) in pjList">
-    Name: <a href="#!/projects/detail/{{pjRef}}">{{pjData.name}}</a><br>
-    Brief: <a href="">{{pjData.brief}}</a><br>
-    Created: <a href="">{{pjData.createdTime}}</a><br>
-    Due: <a href="">{{pjData.due|date: "yyyy/MM/dd"}}</a><br>
-    Category: <a href="#!">{{pjData.category}}</a><br>
-    Language: <a href="#!">{{pjData.language}}</a><br>
-    Requirements: <span>{{pjData.requirements}}</span><br>
-    Client: <a href="">{{pjData.clientName}}</a><br>
-    <hr>
+<div class="row">
+    <div class="col-md-2">
+        <a href="#!/newProject" class="btn btn-danger">new project</a>
+    </div>
+    <div class="col-md-8">
+        Search: <input ng-model="searchText">
+    </div>
 </div>
+
+<hr>
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <ul>
+                <h2>Categories</h2>
+                <li><a href="" ng-click="selCate('all')">All categories</a></li>
+                <li ng-repeat="category in categories"><a href="" ng-click="selCate(category.name)">{{category.name}}</a></li>
+                <h2>Languages</h2>
+                <li><a href="" ng-click="selLang('all')">All languages</a></li>
+                <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div ng-repeat="pj in pjList | filter:searchText |categorize:cate:lang|reverse">
+            Name: <a href="#!/projects/detail/{{pjList.$keyAt($index)}}">{{pj.name}}</a><br>
+            Brief: <a href="">{{pj.brief}}</a><br>
+            Created: <a href="">{{pj.createdTime}}</a><br>
+            Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
+            Category: <a href="">{{pj.category}}</a><br>
+            Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span></a><br>
+            Requirements: <span>{{pj.requirements}}</span><br>
+            Client: <a href="">{{pj.clientName}}</a><br>
+            <hr>
+        </div>
+    </div>
+</div>
+

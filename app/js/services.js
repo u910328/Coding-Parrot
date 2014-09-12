@@ -14,20 +14,45 @@
         .factory('cateAndLang', [function () {
             return {
                 categories: [
-                    'General',
-                    'WebApp',
-                    'Games',
-                    'Academic',
-                    'Others'
+                    {id:'gen', name: 'General',
+                        lang: [
+                            'C++',
+                            'Python',
+                            'Javascript']},
+                    {id:'wa', name: 'Web/App',
+                        lang: [
+                            'Python',
+                            'Javascript',
+                            'Ruby']},
+                    {id:'gam', name: 'Games',
+                        lang: ['C++']},
+                    {id:'aca', name: 'Academic',
+                        lang: [
+                            'C++',
+                            'Python',
+                            'Fortran']},
+                    {id:'oth', name: 'Others',
+                        lang: [
+                            'C++',
+                            'Python',
+                            'Javascript',
+                            'Ruby']}
                 ],
                 languages: [
-                    'C++',
-                    'Python',
-                    'Javascript',
-                    'Ruby',
-                    'Fortran',
-                    'Others'
-                ]
+                    {id:'cpp', name: 'C++'},
+                    {id:'pyt',name: 'Python'},
+                    {id:'js', name: 'Javascript'},
+                    {id:'rb', name: 'Ruby'},
+                    {id:'ft', name: 'Fortran'}
+                ],
+                Add: function (type, selected, items) {
+                    if (!selected) {return}
+                    if (!items[type]) {items[type]={}}
+                    items[type][selected.id]= {name:selected.name};
+                },
+                Remove: function (type, items, id) {
+                    delete items[type][id]
+                }
             }
         }])
         .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {

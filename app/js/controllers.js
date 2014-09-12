@@ -34,6 +34,16 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
 
+            $scope.selectCate = function () {
+                $scope.pj.category=$scope.selectedCate.name;
+            };
+            $scope.addLang = function () {
+                cateAndLang.Add('language',$scope.selectedLang, $scope.pj);
+                $scope.selectedLang= null
+            };
+            $scope.removeLang = function (lid) {
+                cateAndLang.Remove('language', $scope.pj, lid);
+            };
             $scope.createProject = function () {
                 $scope.pj.due = Date.parse($scope.dt)||$scope.dt;
                 var pjListData = {
@@ -76,6 +86,17 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
+            $scope.selectCate = function () {
+                $scope.pj.category=$scope.selectedCate.name;
+            };
+
+            $scope.addLang = function () {
+                cateAndLang.Add('language',$scope.selectedLang, $scope.pj);
+                $scope.selectedLang= null
+            };
+            $scope.removeLang = function (lid) {
+                cateAndLang.Remove('language', $scope.pj, lid);
+            };
 
             $scope.updateProject = function () {
                 $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
@@ -147,17 +168,25 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         }
     ])
-    .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil',
-        function ($scope, $firebase, fbutil) {
-            $scope.pjList = fbutil.syncObject('projectList');
+    .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil', 'cateAndLang',
+        function ($scope, $firebase, fbutil, cateAndLang) {
+            $scope.pjList = fbutil.syncArray('projectList');
+            $scope.categories = cateAndLang.categories;
+            $scope.languages = cateAndLang.languages;
+            $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
+            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}}
         }
     ])
-    .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project',
-        function ($scope, fbutil, user, propose, project) {
-            $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
+    .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project', 'cateAndLang',
+        function ($scope, fbutil, user, propose, project, cateAndLang) {
+            $scope.pjList = fbutil.syncArray(['users', user.uid, 'projects']);
             $scope.remove = function (projectId) {
                 project.Remove(user.uid, projectId)
             };
+            $scope.categories = cateAndLang.categories;
+            $scope.languages = cateAndLang.languages;
+            $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
+            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}}
             $scope.accept = function (projectId, whom, pjData, price) {
                 var info = {
                     type: 'proposeAccepted',
@@ -256,30 +285,18 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.languages = cateAndLang.languages;
 
             $scope.addCate = function () {
-                if (!$scope.selectedCate) {return}
-                if ($scope.userInfo.categories) {
-                    $scope.userInfo.categories[$scope.selectedCate]={rating: 'unrated'};
-                } else {
-                    $scope.userInfo.categories = {};
-                    $scope.userInfo.categories[$scope.selectedCate]= {rating: 'unrated'};
-                }
-                $scope.selectedCate= null;
+                cateAndLang.Add('categories',$scope.selectedCate, $scope.userInfo);
+                $scope.selectedCate= null
             };
-            $scope.removeCate = function (cate) {
-                delete $scope.userInfo.categories[cate]
+            $scope.removeCate = function (cid) {
+                cateAndLang.Remove('categories', $scope.userInfo, cid);
             };
             $scope.addLang = function () {
-                if (!$scope.selectedLang) {return}
-                if ($scope.userInfo.languages) {
-                    $scope.userInfo.languages[$scope.selectedLang]={rating: 'unrated'};
-                } else {
-                    $scope.userInfo.languages= {};
-                    $scope.userInfo.languages[$scope.selectedLang]= {rating: 'unrated'};
-                }
-                $scope.selectedLang= null;
+                cateAndLang.Add('languages',$scope.selectedLang, $scope.userInfo);
+                $scope.selectedLang= null
             };
-            $scope.removeLang = function (lang) {
-                delete $scope.userInfo.languages[lang]
+            $scope.removeLang = function (lid) {
+                cateAndLang.Remove('languages', $scope.userInfo, lid);
             };
 
             $scope.userInfoUpdate = function () {

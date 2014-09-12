@@ -14,19 +14,26 @@
     </div>
     <p>Requirements: <input class="form-control" type="text" ng-model="pj.requirements"></p>
 
-    <span  class="nullable">
-        Category:
-      <select ng-model="pj.category" ng-options="category for category in categories">
+
+
+    Category:<a href="" ng-hide="showCateSel" ng-click="showCateSel=true">{{pj.category}}</a>
+        <span class="nullable" ng-show="showCateSel">
+      <select ng-change="selectCate();showCateSel=false" ng-model="selectedCate" ng-options="category.name for category in categories">
           <option value="">-- choose a category --</option>
       </select>
-    </span><br/>
+    </span>
+    <br>
 
-    <span  class="nullable">
-        language:
-      <select ng-model="pj.language" ng-options="language for language in languages">
+
+    language:
+    <span ng-repeat="(lid, value) in pj.language">{{value.name}}<a href ng-click="removeLang(lid)">[X]</a><span ng-hide="$last">, </span></span>
+    <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
+
+    <span class="nullable" ng-show="showLangSel">
+      <select ng-change="addLang();showLangSel=false" ng-model="selectedLang" ng-options="language.name for language in languages">
           <option value="">-- choose a language --</option>
       </select>
-    </span><br/>
+    </span>
 
     <p>Description: <textarea class="form-control" ng-model="pj.description"></textarea></p>
     <input class="form-control btn btn-primary" type="submit" id="submit" value="Update!" />

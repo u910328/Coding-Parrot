@@ -51,4 +51,52 @@ angular.module('myApp.filters', [])
         return function (uid) {
             return fbutil.syncObject(['users', uid, 'userInfo', 'name'])
         };
+    })
+    .filter('with', function () {
+        return function (items, field) {
+            var result={};
+            for (var key in items) {
+                if (items[key].hasOwnProperty(field)) {
+                    result[key] = items[key];
+                }
+            }
+            return result;
+        };
+    })
+    .filter('categorizeObj', function() {
+        return function(items, cate, lang) {
+            var result = {};
+            var patt = /\$/;
+            for (var key in items) {
+                var res = patt.test(key);
+                if (res) {continue}
+                var sLang = items[key].language;
+                for (var key2 in sLang) {
+                    if (sLang[key2].name==lang) {var langMatch=true; break}
+                }
+                var cateMatch = items[key].category==cate;
+                if ((cateMatch && langMatch)
+                    ||(langMatch &&!cate)
+                    ||(cateMatch &&!lang)) {result[key] = items[key]}
+                else if (!cate&&!lang) {result=items}
+            }
+            return result;
+        };
+    })
+    .filter('categorize', function() {
+        return function(items, cate, lang) {
+            var result = [];
+            for (var i = 0; i < items.length; i++) {
+                var sLang = items[i].language;
+                for (var key2 in sLang) {
+                    if (sLang[key2].name==lang) {var langMatch=true; break}
+                }
+                var cateMatch = items[i].category==cate;
+                if ((cateMatch && langMatch)
+                    ||(langMatch &&!cate)
+                    ||(cateMatch &&!lang)) {result.push(items[i]);langMatch=false}
+                else if (!cate&&!lang) {result=items}
+            }
+            return result;
+        };
     });

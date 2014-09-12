@@ -3,7 +3,7 @@
 <p>Brief: {{pj.brief}}</p>
 <p>Due: {{pj.due |date: "yyyy/MM/dd"}}</p>
 <p>Category: {{pj.category}}</p>
-<p>Language: {{pj.language}}</p>
+<p>Language: <span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span> </p>
 <p>Requirements: {{pj.requirements}}</p>
 <p>Description: <span ng-bind-html="pj.description |linkify"></span></p>
 <div ng-init="show=false" ng-hide="pj.assignedTo||show||(pj.clientUid==myUid)">

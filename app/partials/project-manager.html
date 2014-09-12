@@ -1,25 +1,47 @@
-<a href="#!/newProject">new project</a>
-<hr>
-<div ng-repeat="(pjRef, pjData) in pjList">
-    Name: <a href="#!/projects/edit/{{pjRef}}">{{pjData.name}}</a><br>
-    Brief: <a href="#!">{{pjData.brief}}</a><br>
-    Due: <a href="#!">{{pjData.due|date: "yyyy/MM/dd"}}</a><br>
-    Requirements: <a href="#!">{{pjData.requirements}}</a><br>
-    Client: <a href="#!">{{pjData.clientName}}</a><br>
-    Status: {{pjData.status}}<br>
-    <span ng-hide="!pjData.assignedTo">Assigned to:</span> {{pjData.assignedTo}}<br>
-    <button ng-show="!pjData.assignedTo" class="btn btn-danger" ng-click="remove(pjRef)">Remove</button>
-    <hr>
-
-
-    <div ng-repeat="(coder, request) in pjData.waitingList">
-        <h3 ng-show="$index==0">Waiting list</h3>
-        Name: {{coder}}<br>
-        Price: {{request.price}}<br>
-        Message: {{request.message}}<br>
-        <button ng-click="accept(pjRef,coder, pjData, request.price)">Accept</button>
-        <button ng-click="reject(pjRef,coder, pjData)">Reject</button>
+<div class="row">
+    <div class="col-md-2">
+        <a href="#!/newProject" class="btn btn-danger">new project</a>
     </div>
+    <div class="col-md-8">
+        Search: <input ng-model="searchText">
+    </div>
+</div>
 
-
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <ul>
+                <h2>Categories</h2>
+                <li><a href="" ng-click="selCate('all')">All categories</a></li>
+                <li ng-repeat="category in categories"><a href="" ng-click="selCate(category.name)">{{category.name}}</a></li>
+                <h2>Languages</h2>
+                <li><a href="" ng-click="selLang('all')">All languages</a></li>
+                <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div ng-repeat="pj in pjList | filter:searchText |categorize:cate:lang|reverse">
+            Name: <a href="#!/projects/detail/{{pjList.$keyAt($index)}}">{{pj.name}}</a><br>
+            Brief: <a href="">{{pj.brief}}</a><br>
+            Created: <a href="">{{pj.createdTime}}</a><br>
+            Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
+            Category: <a href="">{{pj.category}}</a><br>
+            Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span></a><br>
+            Requirements: <span>{{pj.requirements}}</span><br>
+            Client: <a href="">{{pj.clientName}}</a><br>
+            Status: {{pj.status}}<br>
+            <span ng-hide="!pj.assignedTo">Assigned to:</span> {{pj.assignedTo}}<br>
+            <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pjList.$keyAt($index))">Remove</button>
+            <hr>
+            <div ng-repeat="(coder, request) in pj.waitingList">
+                <h3 ng-show="$index==0">Waiting list</h3>
+                Name: {{coder}}<br>
+                Price: {{request.price}}<br>
+                Message: {{request.message}}<br>
+                <button ng-click="accept(pjList.$keyAt($index),coder, pjData, request.price)">Accept</button>
+                <button ng-click="reject(pjList.$keyAt($index),coder, pjData)">Reject</button>
+            </div>
+        </div>
+    </div>
 </div>
