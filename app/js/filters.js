@@ -63,7 +63,7 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('categorize', function() {
+    .filter('categorizeObj', function() {
         return function(items, cate, lang) {
             var result = {};
             var patt = /\$/;
@@ -83,7 +83,7 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('categorizeArr', function() {
+    .filter('categorize', function() {
         return function(items, cate, lang) {
             var result = [];
             for (var i = 0; i < items.length; i++) {
@@ -110,6 +110,20 @@ angular.module('myApp.filters', [])
                 if (res) {continue}
                 if ($filter('filter')([map[key]], expression, comparator).length)
                     result[key] = map[key];
+            }
+            return result;
+        }
+    })
+    .filter('pjToArray', function() {
+        return function(map) {
+            var result = [];
+            var obj = map;
+            var patt = /\$/;
+            for(var key in map) {
+                var res = patt.test(key);
+                if (res) {continue}
+                obj[key].ref=key;
+                result.push(obj[key]);
             }
             return result;
         }

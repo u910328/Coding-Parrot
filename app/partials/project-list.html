@@ -22,8 +22,8 @@
         </div>
     </div>
     <div class="col-md-8">
-        <div ng-repeat="(pjRef, pj) in pjList | mapFilter:searchText |categorize:cate:lang">
-            Name: <a href="#!/projects/detail/{{pjRef}}">{{pj.name}}</a><br>
+        <div ng-repeat="pj in pjList |pjToArray| filter:searchText |categorize:cate:lang|orderBy:'-createdTime'">
+            Name: <a href="#!/projects/detail/{{pj.ref}}">{{pj.name}}</a><br>
             Brief: <a href="">{{pj.brief}}</a><br>
             Created: <a href="">{{pj.createdTime}}</a><br>
             Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
