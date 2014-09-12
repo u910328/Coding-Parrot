@@ -13,35 +13,72 @@
             <ul>
                 <h2>Categories</h2>
                 <li><a href="" ng-click="selCate('all')">All categories</a></li>
-                <li ng-repeat="category in categories"><a href="" ng-click="selCate(category.name)">{{category.name}}</a></li>
+                <li ng-repeat="category in categories"><a href=""
+                                                          ng-click="selCate(category.name)">{{category.name}}</a></li>
                 <h2>Languages</h2>
                 <li><a href="" ng-click="selLang('all')">All languages</a></li>
-                <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a></li>
+                <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a>
+                </li>
             </ul>
         </div>
     </div>
     <div class="col-md-8">
-        <div ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|orderBy:'-createdTime'">
-            Name: <a href="#!/projects/edit/{{pj.ref}}">{{pj.name}}</a><br>
-            Brief: <a href="">{{pj.brief}}</a><br>
-            Created: <a href="">{{pj.createdTime}}</a><br>
-            Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
+        <table class="table table-hover" ng-init="predicate='-createdTime';reverse=false">
+            <thead>
+            <tr>
+                <th><a href="" ng-click="predicate = 'name'; reverse=!reverse">Project Name</a></th>
+                <th><a href="" ng-click="predicate = 'createdTime'; reverse=!reverse">Date created</a></th>
+                <th><a href="" ng-click="predicate = 'due'; reverse=!reverse">Due</a></th>
+                <th><a href="" ng-click="predicate = 'status'; reverse=!reverse">Status</a></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|orderBy:predicate:reverse">
+                <td><a href="#!/projects/edit/{{pj.ref}}">{{pj.name}}</a><br></td>
+                <td><a href="">{{pj.createdTime|date: "yyyy/MM/dd"}}</a><br></td>
+                <td><a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br></td>
+                <td>{{pj.status}}<br></td>
+                <td>
+                    <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pj.ref)">Remove</button>
+                    <span ng-hide="!pj.assignedTo">Assigned to: {{pj.assignedTo}}</span>
+                    <div ng-repeat="(coder, request) in pj.waitingList" ng-init="waitingList.push({ref:pj.ref, name:pj.name, request:request, coder:coder, show:true})"></div>
+                </td>
+            </tr>
+
+            <!--
             Category: <a href="">{{pj.category}}</a><br>
             Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span></a><br>
             Requirements: <span>{{pj.requirements}}</span><br>
-            Client: <a href="">{{pj.clientName}}</a><br>
-            Status: {{pj.status}}<br>
             <span ng-hide="!pj.assignedTo">Assigned to:</span> {{pj.assignedTo}}<br>
-            <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pj.ref)">Remove</button>
-            <hr>
-            <div ng-repeat="(coder, request) in pj.waitingList">
+
+            <tr ng-repeat-end>
+                <td colspan="4">
+
+            <span ng-repeat="(coder, request) in pj.waitingList">
                 <h3 ng-show="$index==0">Waiting list</h3>
                 Name: {{coder}}<br>
                 Price: {{request.price}}<br>
                 Message: {{request.message}}<br>
                 <button ng-click="accept(pj.ref, coder, pj, request.price)">Accept</button>
                 <button ng-click="reject(pj.ref, coder, pj)">Reject</button>
-            </div>
+            </span>
+                </td>
+            </tr>
+            -->
+            </tbody>
+        </table>
+
+
+    </div>
+    <div class="col-md-2">
+        <div ng-repeat="propose in waitingList" ng-show="propose.show">
+            Project: {{propose.name}}<br>
+            Name: {{propose.coder}}<br>
+            Price: {{propose.request.price}}<br>
+            Message: {{propose.request.message}}<br>
+            <button ng-click="accept(propose.ref, propose.coder, propose, propose.request.price);propose.show=false">Accept</button>
+            <button ng-click="reject(propose.ref, propose.coder, propose);propose.show=false">Reject</button>
         </div>
     </div>
 </div>

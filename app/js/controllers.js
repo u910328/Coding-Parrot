@@ -183,6 +183,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.remove = function (projectId) {
                 project.Remove(user.uid, projectId)
             };
+            $scope.waitingList=[];
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
             $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
