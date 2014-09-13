@@ -1,21 +1,20 @@
 <div class="notification" ng-show="(!cserv.convRef)">
-
-
     <div ng-repeat="(noti, value) in notifications" ng-hide="blockedList[noti]">
-        <div ng-show="value.type == 'propose'">
-            <strong>{{value.coder}}</strong> want to take <strong>{{value.pjName}}</strong> for {{value.price | currency : symbol}}<br>
+        <div ng-repeat="(uid, propose) in value">
+        <div ng-show="propose.type == 'propose'">
+            <strong>{{propose.coder}}</strong> want to take <strong>{{propose.pjName}}</strong> for {{propose.price | currency : symbol}}<br>
             <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
-            <button ng-click="accept(noti, value.coder, value.pjName, value.price)">Accept</button>
-            <button ng-click="reject(noti, value.coder, value.pjName)">Reject</button>
+            <button ng-click="accept(noti, propose.coder, propose.pjName, propose.price)">Accept</button>
+            <button ng-click="reject(noti, propose.coder, propose.pjName)">Reject</button>
         </div>
 
-        <div ng-show="value.type == 'proposeAccepted'">
-            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been accepted.<br>
-            <button ng-click="start(noti, value.client)">  Ok</button>
+        <div ng-show="propose.type == 'proposeAccepted'">
+            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been accepted.<br>
+            <button ng-click="start(noti, propose.client)">  Ok</button>
         </div>
 
-        <div ng-show="value.type == 'proposeRejected'">
-            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{value.pjName}}</strong></a> had been rejected.<br>
+        <div ng-show="propose.type == 'proposeRejected'">
+            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been rejected.<br>
             <button ng-click="acceptRejection(noti)">  Ok</button>
         </div>
 
@@ -42,9 +41,6 @@
         <div ng-show="value.type == 'review'">
             review <a href="#!/projects/review/{{noti}}/{{value.coder}}"><strong>{{value.coder}}</strong></a>.<br>
         </div>
-
-
-
-
+        </div>
     </div>
 </div>
