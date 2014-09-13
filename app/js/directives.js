@@ -200,6 +200,14 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             templateUrl: 'partials/directiveTemplates/notification.html'
         }
     }])
+    .directive('userlist', [function () {
+        return {
+            restrict: 'E',
+            require: '^communication',
+            scope: true,
+            templateUrl: 'partials/directiveTemplates/userlist.html'
+        }
+    }])
     .directive('contacts', [function () {
         return {
             restrict: 'E',

@@ -192,7 +192,6 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 angular.forEach(nv, function (pjData, pjRef) {
                     var res = patt.test(pjRef);
                     if (!res) {
-                        console.log(pjRef);
                         if(pjData.waitingList) {
                             angular.forEach(pjData.waitingList, function(request, coder){
                                 $scope.waitingList.push({

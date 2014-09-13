@@ -1,0 +1,9 @@
+<div ng-show="!cserv.convRef">
+    <h2>User List</h2>
+
+    <div ng-repeat="(usr, value) in usrList" ng-show="usr != myUid">
+        <a href="" ng-click="addContact(usr, true)">[+]</a><a href="" ng-click="talkTo(usr)">{{value.name}}</a>
+        <br>
+    </div>
+    <hr>
+</div>

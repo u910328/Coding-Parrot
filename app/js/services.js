@@ -164,7 +164,7 @@
 
             }
         }])
-        .service('project', ['fbutil', function (fbutil) {
+        .service('project', ['fbutil', 'notification', function (fbutil, notification) {
             return {
                 Update: function (syncObj, uid, pjListData) {
                     syncObj.$save().then(function (pjRef) {
@@ -176,11 +176,12 @@
                 Remove: function (uid, projectId) {
                     fbutil.ref([['projects', projectId, 'waitingList']]).once('value',function(snap){
                         var patt = /\$/;
+                        var obj = {type:'projectRemoved'};
                         if(snap.val!=null){
                             for(var key in snap.val()) {
                                 var res = patt.test(key);
                                 if (res) {continue}
-                                fbutil.syncData(['users', key, 'notifications', projectId, uid]).$update({type:'projectRemoved'})
+                                notification.Push(key, projectId, obj, uid);
                             }
                         }
                         fbutil.syncData(['projects', projectId]).$remove();
@@ -189,7 +190,7 @@
                     fbutil.syncData(['projectList', projectId]).$remove();
                     fbutil.syncData(['users', uid, 'projects', projectId]).$remove();
                     fbutil.syncData(['users', uid, 'due', projectId]).$remove();
-                    fbutil.syncData(['users', uid, 'notifications', projectId]).$remove();
+                    notification.Clear(uid, projectId);
                 },
                 Create: function (uid, pjData, pjListData) {
                     var pjsPos = 'projects';
@@ -217,17 +218,25 @@
         }])
         .service('notification', ['fbutil', function (fbutil) {
             return {
-                Clear: function (uid, ref) {
-                    fbutil.syncData(['users', uid, 'notifications']).$remove(ref)
+                Clear: function (uid, ref, whom) {
+                    if(whom) {
+                        fbutil.syncData(['users', uid, 'notifications', ref]).$remove(whom)
+                    } else {
+                        fbutil.syncData(['users', uid, 'notifications']).$remove(ref)
+                    }
                 },
-                Push: function (uid, ref, obj) {
-                    fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj)
+                Push: function (uid, ref, obj, whom) {
+                    if(whom) {
+                        fbutil.syncData(['users', uid, 'notifications', ref, whom]).$update(obj)
+                    } else {
+                        fbutil.syncData(['users', uid, 'notifications', ref]).$update(obj)
+                    }
                 }
             }
         }])
         .service('propose', ['fbutil', 'notification', function (fbutil, notification) {
             var partialRemove = function (pid, uid, whom) {
-                notification.Clear(whom, pid);
+                notification.Clear(whom, pid, uid);
                 fbutil.syncData(['projects', pid, 'waitingList']).$remove(uid);
                 fbutil.syncData(['projectList', pid, 'waitingList']).$remove(uid);
                 fbutil.syncData(['users', whom, 'projects', pid, 'waitingList']).$remove(uid);
@@ -239,7 +248,7 @@
                         pjName: data.pjName,
                         coder: uid
                     };
-                    notification.Push(whom, pid, obj);
+                    notification.Push(whom, pid, obj, uid);
                     fbutil.syncData(['projects', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['projectList', pid, 'waitingList', uid]).$update(message);
                     fbutil.syncData(['users', whom, 'projects', pid, 'waitingList', uid]).$update(message);
@@ -253,10 +262,10 @@
                 Start: function (pid, uid, whom) {
                     fbutil.syncData(['users', uid, 'jobs', pid]).$update({status: 'In progress'});
                     fbutil.syncData(['users', whom, 'projects', pid]).$update({status: 'In progress'});
-                    notification.Clear(uid, pid);
+                    notification.Clear(uid, pid, whom);
                 },
                 AcceptRejection: function (pid, uid) {
-                    notification.Clear(uid, pid);
+                    notification.Clear(uid, pid, whom);
                     fbutil.syncData(['users', uid, 'jobs', pid]).$remove();
                 },
                 Accept: function (pid, uid, whom, info) {
@@ -265,8 +274,8 @@
                     };
                     fbutil.syncData(['users', uid, 'projects', pid]).$update(update);
                     fbutil.syncData(['projects', pid]).$update(update);
-                    notification.Push(whom, pid, info);
-                    notification.Clear(uid, pid);
+                    notification.Push(whom, pid, info, uid);
+                    notification.Clear(uid, pid, whom);
                     fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Accepted'});
                     fbutil.syncData(['users', uid, 'projects', pid, 'waitingList']).$remove();
                     fbutil.syncData(['projectList', pid]).$remove();
@@ -274,8 +283,8 @@
                     //info must have property price
                 },
                 Reject: function (pid, uid, whom, info) {
-                    notification.Push(whom, pid, info);
-                    notification.Clear(uid, pid);
+                    notification.Push(whom, pid, info, uid);
+                    notification.Clear(uid, pid, whom);
                     partialRemove(pid, whom, uid);
                     fbutil.syncData(['users', whom, 'jobs', pid]).$update({status: 'Rejected'})
                 }
