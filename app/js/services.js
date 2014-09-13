@@ -174,10 +174,22 @@
                     });
                 },
                 Remove: function (uid, projectId) {
-                    fbutil.syncData(['projects', projectId]).$remove();
+                    fbutil.ref([['projects', projectId, 'waitingList']]).once('value',function(snap){
+                        var patt = /\$/;
+                        if(snap.val!=null){
+                            for(var key in snap.val()) {
+                                var res = patt.test(key);
+                                if (res) {continue}
+                                fbutil.syncData(['users', key, 'notifications', projectId, uid]).$update({type:'projectRemoved'})
+                            }
+                        }
+                        fbutil.syncData(['projects', projectId]).$remove();
+                    });
+
                     fbutil.syncData(['projectList', projectId]).$remove();
                     fbutil.syncData(['users', uid, 'projects', projectId]).$remove();
-                    fbutil.syncData(['users', uid, 'due', projectId]).$remove()
+                    fbutil.syncData(['users', uid, 'due', projectId]).$remove();
+                    fbutil.syncData(['users', uid, 'notifications', projectId]).$remove();
                 },
                 Create: function (uid, pjData, pjListData) {
                     var pjsPos = 'projects';

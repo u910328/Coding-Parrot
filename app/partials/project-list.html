@@ -22,15 +22,15 @@
         </div>
     </div>
     <div class="col-md-8">
-        <div ng-repeat="pj in pjList |pjToArray| filter:searchText |categorize:cate:lang|orderBy:'-createdTime'">
+        <div ng-repeat="pj in pjList |pjToArray| filter:searchText |categorize:cate:lang|orderBy:predicate:reverse">
             Name: <a href="#!/projects/detail/{{pj.ref}}">{{pj.name}}</a><br>
+            Client: <a href="">{{pj.clientName}}</a><br>
             Brief: <a href="">{{pj.brief}}</a><br>
             Created: <a href="">{{pj.createdTime}}</a><br>
             Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
             Category: <a href="">{{pj.category}}</a><br>
             Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span></a><br>
             Requirements: <span>{{pj.requirements}}</span><br>
-            Client: <a href="">{{pj.clientName}}</a><br>
             <hr>
         </div>
     </div>

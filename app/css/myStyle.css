@@ -1,3 +1,6 @@
+ul {
+    list-style-type: none;
+}
 .chatContainer {
     width: 300px;
     position: absolute;

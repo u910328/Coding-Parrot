@@ -173,6 +173,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.pjList = fbutil.syncObject('projectList');
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
+            $scope.predicate = '-createdTime';
+            $scope.reverse = false;
             $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
             $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}}
         }
@@ -184,10 +186,29 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 project.Remove(user.uid, projectId)
             };
             $scope.waitingList=[];
+            $scope.$watch('pjList', function(nv){
+                $scope.waitingList=[];
+                var patt = /\$/;
+                angular.forEach(nv, function (pjData, pjRef) {
+                    var res = patt.test(pjRef);
+                    if (!res) {
+                        console.log(pjRef);
+                        if(pjData.waitingList) {
+                            angular.forEach(pjData.waitingList, function(request, coder){
+                                $scope.waitingList.push({
+                                    ref:pjRef,
+                                    name:pjData.name,
+                                    request:request,
+                                    coder:coder})
+                            })
+                        }
+                    }
+                });
+            }, true);
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
             $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
-            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}}
+            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}};
             $scope.accept = function (projectId, whom, pjData, price) {
                 var info = {
                     type: 'proposeAccepted',

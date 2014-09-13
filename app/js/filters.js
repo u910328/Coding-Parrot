@@ -100,7 +100,7 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('mapFilter', function($filter) {
+    .filter('objFilter', function($filter) {
         return function(map, expression, comparator) {
             if (! expression) return map;
             var result = {};

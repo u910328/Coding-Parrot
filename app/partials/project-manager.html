@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-2">
-        <a href="#!/newProject" class="btn btn-danger">new project</a>
+        <button class="btn btn-large btn-primary">Job manager</button>
     </div>
     <div class="col-md-8">
         Search: <input ng-model="searchText">
@@ -11,13 +11,17 @@
     <div class="col-md-2">
         <div>
             <ul>
-                <h2>Categories</h2>
-                <li><a href="" ng-click="selCate('all')">All categories</a></li>
-                <li ng-repeat="category in categories"><a href=""
-                                                          ng-click="selCate(category.name)">{{category.name}}</a></li>
-                <h2>Languages</h2>
-                <li><a href="" ng-click="selLang('all')">All languages</a></li>
-                <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a>
+                <li>
+                    <a href="#!/newProject" class="btn btn-danger">new project</a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status=''"><h3>My Projects</h3></a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status='In Progress'"><h3>In Progress</h3></a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status='Published'"><h3>Published</h3></a>
                 </li>
             </ul>
         </div>
@@ -34,7 +38,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|orderBy:predicate:reverse">
+            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|filter:filter.status|orderBy:predicate:reverse">
                 <td><a href="#!/projects/edit/{{pj.ref}}">{{pj.name}}</a><br></td>
                 <td><a href="">{{pj.createdTime|date: "yyyy/MM/dd"}}</a><br></td>
                 <td><a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br></td>
@@ -42,7 +46,6 @@
                 <td>
                     <button ng-show="!pj.assignedTo" class="btn btn-danger" ng-click="remove(pj.ref)">Remove</button>
                     <span ng-hide="!pj.assignedTo">Assigned to: {{pj.assignedTo}}</span>
-                    <div ng-repeat="(coder, request) in pj.waitingList" ng-init="waitingList.push({ref:pj.ref, name:pj.name, request:request, coder:coder, show:true})"></div>
                 </td>
             </tr>
 
@@ -72,7 +75,7 @@
 
     </div>
     <div class="col-md-2">
-        <div ng-repeat="propose in waitingList" ng-show="propose.show">
+        <div ng-repeat="propose in waitingList">
             Project: {{propose.name}}<br>
             Name: {{propose.coder}}<br>
             Price: {{propose.request.price}}<br>

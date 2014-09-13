@@ -2,7 +2,6 @@
 
 
     <div ng-repeat="(noti, value) in notifications" ng-hide="blockedList[noti]">
-        <h2 ng-show="$index==0">Notification</h2>
         <div ng-show="value.type == 'propose'">
             <strong>{{value.coder}}</strong> want to take <strong>{{value.pjName}}</strong> for {{value.price | currency : symbol}}<br>
             <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
