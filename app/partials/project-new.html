@@ -16,8 +16,8 @@
     <div class="form-group">
         <label class="col-lg-4 control-label">Due</label>
         <div class="col-lg-2">
-                <span class="input-group"><input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="$parent.dt" is-open="opened"
-                                                 min-date="minDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+            <span class="input-group"><input name="datePicker" type="text" class="form-control" datepicker-popup='yyyy/MM/dd' ng-model="$parent.dt" is-open="$parent.opened"
+                                                 min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions"
                                                  ng-required="true" show-button-bar="false" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -38,7 +38,8 @@
 
         <div class="col-lg-4 nullable">
 
-            <span ng-repeat="(lid, value) in pj.language">{{value.name}}<a href ng-click="removeLang(lid)">[X]
+            <span ng-repeat="(lid, value) in pj.language">{{value.name}}
+                <a href ng-click="removeLang(lid)">[X]
             </a><span ng-hide="$last">, </span></span>
             <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
           <span class="nullable" ng-show="showLangSel">

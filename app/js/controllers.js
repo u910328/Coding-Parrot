@@ -72,6 +72,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.open = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
+                $scope.$emit('revalidateDate');
                 $scope.opened = !$scope.opened;
             };
 
@@ -93,9 +94,6 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 })
             };
             loadCate();
-
-
-
 
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);  //todo: combine this with loadCate
             $scope.id = $routeParams.projectId;
@@ -143,6 +141,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.open = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
+                $scope.$emit('revalidateDate');
                 $scope.opened = !$scope.opened;
             };
 

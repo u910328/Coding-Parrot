@@ -18,10 +18,10 @@ angular.module('myApp.config', ['ngDisqus'])
     .constant('validFormOptions', {
         // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
         feedbackIcons: {
-            valid: 'glyphicon glyphicon-ok',
-            invalid: 'glyphicon glyphicon-remove',
-            validating: 'glyphicon glyphicon-refresh'
-        },
+            valid: null /*'glyphicon glyphicon-ok'*/,
+            invalid: null /*'glyphicon glyphicon-remove'*/,
+            validating: null /*'glyphicon glyphicon-refresh'
+*/        },
         submitButtons: 'button[type="bvSubmit"]',
         fields: {
             username: {
@@ -55,6 +55,17 @@ angular.module('myApp.config', ['ngDisqus'])
                         min: 6,
                         max: 30,
                         message: 'The project name must be 6-30 characters long'
+                    }
+                }
+            },
+            proposePrice: {
+                message: 'The value is not valid',
+                validators: {
+                    notEmpty: {
+                        message: 'required'
+                    },
+                    integer: {
+                        message: 'The value is not an integer'
                     }
                 }
             },
@@ -96,7 +107,7 @@ angular.module('myApp.config', ['ngDisqus'])
                         message: 'Please select a date'
                     },
                     date: {
-                        format: 'yyyy-MM-dd'
+                        format: 'YYYY/MM/DD'
                     }
                 }
             },

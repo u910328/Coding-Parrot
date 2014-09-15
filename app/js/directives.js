@@ -28,19 +28,21 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                                     if (!res) {
                                         for (var due in $scope.dt[pjRef]) {
                                             var dif = nowTime() - due;
-                                            if (dif<0 && dif > -3*24*60*60*1000 && !$scope.isNoted[pjRef+due]) {
+                                            if (dif < 0 && dif > -3 * 24 * 60 * 60 * 1000 && !$scope.isNoted[pjRef + due]) {
                                                 var obj = {type: 'reminder', due: due};
                                                 notification.Push(user.uid, pjRef, obj);
-                                                $scope.isNoted[pjRef+due]=true
-                                            } else if (dif > 0 && !$scope.isNoted[pjRef+due]) {
+                                                $scope.isNoted[pjRef + due] = true
+                                            } else if (dif > 0 && !$scope.isNoted[pjRef + due]) {
                                                 fbutil.syncData(['users', user.uid, 'due', pjRef]).$remove(due);
                                                 fbutil.ref(['projects', pjRef, 'assignedTo']).once('value', function (snap) {
                                                     var obj = {type: 'review', due: due, coder: snap.val()};
                                                     notification.Push(user.uid, pjRef, obj);
-                                                    if (user.uid==snap.val()) {return}
+                                                    if (user.uid == snap.val()) {
+                                                        return
+                                                    }
                                                     fbutil.syncData(['projects', pjRef, 'review', snap.val()]).$update({isReviewed: false})
                                                 });
-                                                $scope.isNoted[pjRef+due]=true
+                                                $scope.isNoted[pjRef + due] = true
                                             }
                                         }
                                     }
@@ -305,24 +307,31 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             transclude: true,
             templateUrl: 'partials/directiveTemplates/validForm.html',
             link: function (scope, element, attrs) {
-                angular.element(document).ready(function() {
-                    scope.$on('initCheck', function(){});                             //todo: try not to use hack to solve this problem
+                angular.element(document).ready(function () {
                     $("#registrationForm")
                         // on('init.form.bv') must be declared
                         // before calling .bootstrapValidator(options)
-                        .on('error.field.bv', function(e, data) {
-                            scope.isFormValid= false;
+                        .on('error.field.bv', function (e, data) {
+                            scope.isFormValid = false;
                             scope.$digest();
                             //data.bv.disableSubmitButtons(true);
                         })
                         .bootstrapValidator(validFormOptions)
-                        .on('success.field.bv', function(e, data) {
+                        .on('success.field.bv', function (e, data) {
                             var isValid = data.bv.isValid();
-                            scope.isFormValid= isValid;
-                            if(scope.validFormtype=='update'){scope.isFormValid=true}
-                            scope.$digest();
+                            scope.isFormValid = isValid;
+                            if (scope.validFormtype == 'update') {
+                                scope.isFormValid = true
+                            }
+                            $timeout(function () {                //prevent digest while digesting
+                                scope.$digest();
+                            },0);
                             //data.bv.disableSubmitButtons(!isValid);
                         });
+                    scope.$on('revalidateDate', function () {
+                            $('#registrationForm').bootstrapValidator('revalidateField', 'datePicker')
+                        }
+                    );
                 });
             }
         }

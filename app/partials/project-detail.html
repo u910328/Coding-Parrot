@@ -12,35 +12,53 @@
 </div>
 <div ng-show="show">
     <div ng-show="!proposeExists">
-        <form role="form">
+        <valid-form>
             <div class="form-group">
-                <label for="proposePrice">Price</label>
-                <input ng-model="propose.price" type="text" class="form-control" id="proposePrice" placeholder="0.00 USD">
+                <label class="col-lg-1 control-label">Price</label>
+                <div class="col-lg-4">
+                    <input ng-model="propose.price" name="proposePrice" type="text" class="form-control" placeholder="0.00 USD" id="proposePrice">
+                </div>
             </div>
             <div class="form-group">
-                <label for="proposeMessage">Message</label>
-                <input ng-model="propose.message" type="text" class="form-control" id="proposeMessage" placeholder="Enter Message">
+                <label class="col-lg-1 control-label">Message</label>
+                <div class="col-lg-4">
+                    <input ng-model="propose.message" type="text" class="form-control" placeholder="Leave a message" id="proposeMessage">
+                </div>
             </div>
-            <button ng-click="proposeSend(pj.clientUid, propose.price, propose.message, pj.name);show=false" class="btn btn-primary">Send</button>
-            <button ng-click="proposeExists= false;show=false" class="btn btn-danger">Cancel</button>
-        </form>
+            <div class="form-group">
+                <label class="col-lg-1 control-label"></label>
+                <div class="col-lg-4">
+                    <button ng-click="proposeSend(pj.clientUid, propose.price, propose.message, pj.name);show=false" class="btn btn-primary">Send</button>
+                    <button ng-click="proposeExists= false;show=false" class="btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </valid-form>
     </div>
 </div>
 
 <div ng-show="show">
     <div ng-show="proposeExists">
-        <form role="form">
+        <valid-form>
             <div class="form-group">
-                <label for="proposePrice">Price</label>
-                <input ng-model="propose.price" type="text" class="form-control" id="proposePrice">
+                <label class="col-lg-1 control-label">Price</label>
+                <div class="col-lg-4">
+                    <input ng-model="propose.price" name="proposePrice" type="text" class="form-control" placeholder="0.00 USD" id="proposePrice">
+                </div>
             </div>
             <div class="form-group">
-                <label for="proposeMessage">Message</label>
-                <input ng-model="propose.message" type="text" class="form-control" id="proposeMessage">
+                <label class="col-lg-1 control-label">Message</label>
+                <div class="col-lg-4">
+                    <input ng-model="propose.message" type="text" class="form-control" placeholder="Leave a message" id="proposeMessage">
+                </div>
             </div>
-            <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message, pj.Name);show=false" class="btn btn-primary">Update</button>
-            <button ng-click="proposeRemove(pj.ClientUid);show=false" class="btn btn-danger">Withdrawn</button>
-        </form>
+            <div class="form-group">
+                <label class="col-lg-1 control-label"></label>
+                <div class="col-lg-4">
+                    <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message, pj.Name);show=false" class="btn btn-primary">Update</button>
+                    <button ng-click="proposeRemove(pj.ClientUid);show=false" class="btn btn-danger">Withdrawn</button>
+                </div>
+            </div>
+        </valid-form>
     </div>
 </div>
 
