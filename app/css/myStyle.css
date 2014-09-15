@@ -132,6 +132,6 @@ a:hover, a:visited, a:link, a:active {
     background: #3a3b3b;
     position: absolute;
     left: 5px;
-    position: top;
+    top: 0px;
 }
 
