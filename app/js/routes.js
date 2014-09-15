@@ -78,6 +78,11 @@ angular.module('myApp.routes', ['ngRoute', 'simpleLogin', 'firebase.utils'])
             templateUrl: 'partials/user-detail.html',
             controller: 'UserDetailCtrl',
             authRequired: true
+        },
+        '/sandbox': {
+            templateUrl: 'partials/sandbox.html',
+            controller: 'SandboxCtrl',
+            authRequired: true
         }
     })
 

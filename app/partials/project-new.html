@@ -1,41 +1,73 @@
-<form ng-submit="createProject()">
-    <p>Name: <input class="form-control" type="text" ng-required="true" ng-model="pj.name"/></p>
-    <p>Brief: <input class="form-control" type="text" ng-required="true" ng-model="pj.brief"/><br></p>
-    <div class="row">
-        <div class="col-md-2">
-            Due:
-            <p class="input-group">
-                <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="dt" is-open="opened" min-date="minDate" max-date="'2020-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" show-button-bar=false />
+<valid-form>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Project name</label>
+
+        <div class="col-lg-4">
+            <input type="text" class="form-control" name="projectName" ng-model="pj.name"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Brief</label>
+
+        <div class="col-lg-4">
+            <input type="text" class="form-control" name="requirements" ng-model="pj.brief"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Due</label>
+        <div class="col-lg-2">
+                <span class="input-group"><input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="$parent.dt" is-open="opened"
+                                                 min-date="minDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+                                                 ng-required="true" show-button-bar="false" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
+              </span></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Category</label>
+        <div class="col-lg-4 nullable">
+            <select class="form-control" ng-change="selectCate()" name="select" ng-model="$parent.selectedCate" ng-options="category.name for category in categories">
+                <option value="">-- choose a language --</option>
+            </select>
         </div>
     </div>
 
-    <p>Requirements: <input class="form-control" type="text" ng-model="pj.requirements"></p>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">language</label>
 
-    Category:
-        <span class="nullable">
-      <select ng-change="selectCate()" ng-model="selectedCate" ng-options="category.name for category in categories">
+        <div class="col-lg-4 nullable">
+
+            <span ng-repeat="(lid, value) in pj.language">{{value.name}}<a href ng-click="removeLang(lid)">[X]
+            </a><span ng-hide="$last">, </span></span>
+            <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
+          <span class="nullable" ng-show="showLangSel">
+
+          <select class="form-control" ng-change="addLang();showLangSel=false" ng-model="$parent.selectedLang" ng-options="language.name for language in languages">
           <option value="">-- choose a language --</option>
-      </select>
-    </span>
-    <br>
+          </select>
+          </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Requirements</label>
 
-    language:
-    <span ng-repeat="(lid, value) in pj.language">{{value.name}}<a href ng-click="removeLang(lid)">[X]</a><span ng-hide="$last">, </span></span>
-    <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
+        <div class="col-lg-4">
+            <input type="text" class="form-control" name="" ng-model="pj.requirements"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-4 control-label">Description</label>
 
-    <span class="nullable" ng-show="showLangSel">
-      <select ng-change="addLang();showLangSel=false" ng-model="selectedLang" ng-options="language.name for language in languages">
-          <option value="">-- choose a language --</option>
-      </select>
-    </span>
-
-    <p>Description: <textarea class="form-control" ng-required="true" ng-model="pj.description"></textarea></p>
-    <input type="submit" id="submit" value="Create!" />
-</form>
-<hr>
-
-
+        <div class="col-lg-4">
+            <textarea class="form-control" ng-required="true" name="username" ng-model="pj.description"></textarea></p>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-9 col-lg-offset-3">
+            <!-- Do NOT use name="submit" or id="submit" for the Submit button -->
+            <!--<button type="submit" class="btn btn-default" disabled="true">Sign up</button>-->
+            <button class="btn btn-large btn-default" ng-disabled="!isFormValid||!$parent.pj.language||!$parent.pj.category" ng-click="createProject()">Publish!</button>
+        </div>
+    </div>
+</valid-form>

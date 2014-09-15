@@ -1,20 +1,70 @@
 <h2>Account</h2>
 
-<form>
-    <fieldset>
-        <legend>Profile</legend>
+<div class="row">
 
-        <label>
-            <span>Name:</span>
-            <br/>{{profile.name}}
-        </label>
+    <valid-form>
+        <div class="form-group">
+            <label class="col-lg-4 control-label">Name</label>
+            <div class="col-lg-2">
+                <input type="text" class="form-control" name="projectName" ng-model="userInfo.name"/>
+            </div>
+        </div>
 
-        <label>
-            <span>Email:</span>
-            <br/>{{profile.email}}
-        </label>
-    </fieldset>
-</form>
+        <div class="form-group">
+            <label class="col-lg-4 control-label">Email</label>
+            <div class="col-lg-3">
+                <input type="text" class="form-control" name="email" ng-model="userInfo.email"/>
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <label class="col-lg-4 control-label">Category</label>
+
+            <div class="col-lg-4 nullable">
+
+            <span ng-repeat="(cid, value) in userInfo.categories">{{value.name}}<a href ng-click="removeCate(cid)">[X]
+            </a><span ng-hide="$last">, </span></span>
+                <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
+          <span class="nullable" ng-show="showLangSel">
+          <select class="form-control" ng-change="addCate();showLangSel=false" ng-model="$parent.selectedCate" ng-options="category.name for category in categories">
+              <option value="">-- choose a category --</option>
+          </select>
+          </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-lg-4 control-label">language</label>
+
+            <div class="col-lg-4 nullable">
+
+            <span ng-repeat="(lid, value) in userInfo.languages">{{value.name}}<a href ng-click="removeLang(lid)">[X]
+            </a><span ng-hide="$last">, </span></span>
+                <a href="" ng-hide="showLangSel" ng-click="showLangSel=true">[+]</a>
+          <span class="nullable" ng-show="showLangSel">
+
+          <select class="form-control" ng-change="addLang();showLangSel=false" ng-model="$parent.selectedLang" ng-options="language.name for language in languages">
+              <option value="">-- choose a language --</option>
+          </select>
+          </span>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-lg-9 col-lg-offset-7">
+                <!-- Do NOT use name="submit" or id="submit" for the Submit button -->
+                <!--<button type="submit" class="btn btn-default" disabled="true">Sign up</button>-->
+                <button ng-init="$parent.validFormtype='update';$parent.isFormValid=true"
+                        class="btn btn-large btn-default" ng-disabled="!isFormValid||!userInfo.categories||!userInfo.languages"
+                        ng-click="userInfoUpdate()">Update!</button>
+            </div>
+        </div>
+    </valid-form>
+</div>
+
 
 <form ng-show="showPwdEml">
     <fieldset>
@@ -66,38 +116,9 @@
 </form>
 
 
-<form ng-submit="userInfoUpdate()">
-    <fieldset>
-        <legend>User Info</legend>
-        <label>
-            <span>Name:</span>
-            <input type="text" name="name" ng-model="userInfo.name"/>
-        </label>
-
-        <label>
-            <span>Email:</span>
-            <input type="text" name="email" ng-model="userInfo.email"/>
-        </label>
-
-        Category:
-        <div ng-repeat="(cid, value) in userInfo.categories">{{value.name}}<a href ng-click="removeCate(cid)">X</a></div>
-        <span class="nullable">
-          <select ng-change="addCate()" ng-model="selectedCate" ng-options="category.name for category in categories">
-              <option value="">-- choose a category --</option>
-          </select>
-        </span><br>
 
 
-        language:
-        <div ng-repeat="(lid, value) in userInfo.languages">{{value.name}}<a href ng-click="removeLang(lid)">X</a></div>
-        <span class="nullable">
-      <select ng-change="addLang()" ng-model="selectedLang" ng-options="language.name for language in languages">
-          <option value="">-- choose a language --</option>
-      </select>
-    </span>
-        <br>
-        <input type="submit" id="submit" value="Update!"/>
-    </fieldset>
-</form>
+
+
 
 <button ng-click="logout()">Log Out</button>

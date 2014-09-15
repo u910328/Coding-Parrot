@@ -1,11 +1,45 @@
-<div ng-repeat="(jbRef, jbData) in jbList">
-    Project name: <a href="#!/projects/detail/{{jbRef}}">{{jbData.pjName}}</a><br>
-    Client: {{jbData.client}}<br>
-    Price: {{jbData.price | currency : symbol}}<br>
-    Status: {{jbData.status}}<br>
 
-    <button ng-show="jbData.status!='Accepted'&&jbData.status!='In progress'" class="btn btn-danger" ng-click="proposeRemove(jbRef, jbData.client)">Withdrawn</button>
-    <button ng-show="jbData.status=='Accepted'" class="btn btn-primary" ng-click="start(jbRef, jbData.client)">I got it!</button>
-    <button ng-show="jbData.status=='Rejected'" class="btn btn-primary" ng-click="acceptRejection(jbRef)">I got it!</button>
-    <hr>
+<div class="row">
+    <div class="col-md-2">
+        <a class="btn btn-large btn-primary" href="#!/jobManager">Job manager</a>
+    </div>
+    <div class="col-md-8">
+        Search: <input ng-model="searchText">
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <ul>
+                <li>
+                    <a href="#!/newProject" class="btn btn-danger">new project</a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status=''"><h3>My Projects</h3></a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status='In Progress'"><h3>In Progress</h3></a>
+                </li>
+                <li>
+                    <a href="" ng-click="filter.status='Published'"><h3>Published</h3></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div ng-repeat="jb in jbList|pjToArray|filter:searchText|filter:filter.status">
+            Project name: <a href="#!/projects/detail/{{jb.ref}}">{{jb.pjName}}</a><br>
+            Client: {{jb.client}}<br>
+            Price: {{jb.price | currency : symbol}}<br>
+            Status: {{jb.status}}<br>
+
+            <button ng-show="jb.status!='Accepted'&&jb.status!='In progress'" class="btn btn-danger" ng-click="proposeRemove(jb.ref, jb.client)">Withdrawn</button>
+            <button ng-show="jb.status=='Accepted'" class="btn btn-primary" ng-click="start(jb.ref, jb.client)">I got it!</button>
+            <button ng-show="jb.status=='Rejected'" class="btn btn-primary" ng-click="acceptRejection(jb.ref)">I got it!</button>
+            <hr>
+        </div>
+    </div>
+    <div class="col-md-2">
+    </div>
 </div>

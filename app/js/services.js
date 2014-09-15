@@ -51,7 +51,8 @@
                     items[type][selected.id]= {name:selected.name};
                 },
                 Remove: function (type, items, id) {
-                    delete items[type][id]
+                    delete items[type][id];
+                    if (JSON.stringify(items[type])=='{}') {delete items[type]}
                 }
             }
         }])
@@ -265,7 +266,7 @@
                     notification.Clear(uid, pid, whom);
                 },
                 AcceptRejection: function (pid, uid) {
-                    notification.Clear(uid, pid, whom);
+                    notification.Clear(uid, pid);
                     fbutil.syncData(['users', uid, 'jobs', pid]).$remove();
                 },
                 Accept: function (pid, uid, whom, info) {

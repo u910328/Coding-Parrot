@@ -54,7 +54,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             }
         }
     }])
-    .directive('communication', [function () {
+    .directive('communication', function () {
 
         var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService) {
             //utilities
@@ -188,7 +188,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 })
             }
         };
-    }])
+    })
 /**
  * A directive that shows elements only when user is logged in.
  */
@@ -297,6 +297,34 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 }
             }
         }
-
+    })
+    .directive('validForm', function (validFormOptions, $timeout) {
+        return {
+            restrict: 'E',
+            scope: false,
+            transclude: true,
+            templateUrl: 'partials/directiveTemplates/validForm.html',
+            link: function (scope, element, attrs) {
+                angular.element(document).ready(function() {
+                    scope.$on('initCheck', function(){});                             //todo: try not to use hack to solve this problem
+                    $("#registrationForm")
+                        // on('init.form.bv') must be declared
+                        // before calling .bootstrapValidator(options)
+                        .on('error.field.bv', function(e, data) {
+                            scope.isFormValid= false;
+                            scope.$digest();
+                            //data.bv.disableSubmitButtons(true);
+                        })
+                        .bootstrapValidator(validFormOptions)
+                        .on('success.field.bv', function(e, data) {
+                            var isValid = data.bv.isValid();
+                            scope.isFormValid= isValid;
+                            if(scope.validFormtype=='update'){scope.isFormValid=true}
+                            scope.$digest();
+                            //data.bv.disableSubmitButtons(!isValid);
+                        });
+                });
+            }
+        }
     });
 

@@ -1,46 +1,58 @@
 <div class="notification" ng-show="(!cserv.convRef)">
     <div ng-repeat="(noti, value) in notifications" ng-hide="blockedList[noti]">
         <div ng-repeat="(uid, propose) in value">
-        <div ng-show="propose.type == 'propose'">
-            <strong>{{propose.coder}}</strong> want to take <strong>{{propose.pjName}}</strong> for {{propose.price | currency : symbol}}<br>
-            <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
-            <button ng-click="accept(noti, propose.coder, propose.pjName, propose.price)">Accept</button>
-            <button ng-click="reject(noti, propose.coder, propose.pjName)">Reject</button>
-        </div>
-
-        <div ng-show="propose.type == 'proposeAccepted'">
-            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been accepted.<br>
-            <button ng-click="start(noti, propose.client)">  Ok</button>
-        </div>
-
-        <div ng-show="propose.type == 'proposeRejected'">
-            Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been rejected.<br>
-            <button ng-click="acceptRejection(noti)">  Ok</button>
-        </div>
-
-        <div ng-show="value.type == 'addContact'">
-            {{noti}} added you as a contact.<br>
-            <button ng-click="notificationClear(noti);addContact(noti, false)">  Ok</button>
-            <button href="" ng-click="notificationClear(noti)">  Cancel</button>
-        </div>
-
-        <div ng-show="(value.type == '1toN')||(value.type == '1to1')">
-            <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
-            <span ng-init="getUnread(noti)" ng-show="Conversations[noti].unread"> ({{Conversations[noti].unread}})</span>
-            <div ng-init="getNotiData(noti, value.type)"></div>
-            <div ng-repeat="(key, data) in NotiData[noti].lastMessage">
-                <span><strong>{{data.addresser}}</strong> said: {{data.text}}</span><br>
-                <div>{{data.timeStamp| chatTimeStamp}}</div>
+            <div ng-show="propose.type == 'propose'">
+                <strong>{{propose.coder}}</strong> want to take <strong>{{propose.pjName}}</strong> for {{propose.price
+                | currency : symbol}}<br>
+                <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
+                <button ng-click="accept(noti, propose.coder, propose.pjName, propose.price)">Accept</button>
+                <button ng-click="reject(noti, propose.coder, propose.pjName)">Reject</button>
             </div>
-        </div>
 
-        <div ng-show="value.type == 'reminder'">
-            <a href="#!/projects/detail/{{noti}}" ng-click="notificationClear(noti)"><strong>{{noti}}</strong></a> is due on {{value.due|date: "yyyy/MM/dd"}}.<br>
-        </div>
+            <div ng-show="propose.type == 'proposeAccepted'">
+                Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been
+                accepted.<br>
+                <button ng-click="start(noti, propose.client)"> Ok</button>
+            </div>
 
-        <div ng-show="value.type == 'review'">
-            review <a href="#!/projects/review/{{noti}}/{{value.coder}}"><strong>{{value.coder}}</strong></a>.<br>
-        </div>
+            <div ng-show="propose.type == 'proposeRejected'">
+                Request for <a href="#!/projects/detail/{{noti}}"><strong>{{propose.pjName}}</strong></a> had been
+                rejected.<br>
+                <button ng-click="acceptRejection(noti)"> Ok</button>
+            </div>
+            <div ng-show="propose.type == 'projectRemoved'">
+                <strong>{{noti}}</strong> has been
+                removed.<br>
+                <button ng-click="acceptRejection(noti)"> Ok</button>
+            </div>
+
+            <div ng-show="value.type == 'addContact'">
+                {{noti}} added you as a contact.<br>
+                <button ng-click="notificationClear(noti);addContact(noti, false)"> Ok</button>
+                <button href="" ng-click="notificationClear(noti)"> Cancel</button>
+            </div>
+
+            <div ng-show="(value.type == '1toN')||(value.type == '1to1')">
+                <a href="" ng-click="selConv(noti);notificationClear(noti)">{{noti}}</a>
+                <span ng-init="getUnread(noti)"
+                      ng-show="Conversations[noti].unread"> ({{Conversations[noti].unread}})</span>
+
+                <div ng-init="getNotiData(noti, value.type)"></div>
+                <div ng-repeat="(key, data) in NotiData[noti].lastMessage">
+                    <span><strong>{{data.addresser}}</strong> said: {{data.text}}</span><br>
+
+                    <div>{{data.timeStamp| chatTimeStamp}}</div>
+                </div>
+            </div>
+
+            <div ng-show="value.type == 'reminder'">
+                <a href="#!/projects/detail/{{noti}}" ng-click="notificationClear(noti)"><strong>{{noti}}</strong></a>
+                is due on {{value.due|date: "yyyy/MM/dd"}}.<br>
+            </div>
+
+            <div ng-show="value.type == 'review'">
+                review <a href="#!/projects/review/{{noti}}/{{value.coder}}"><strong>{{value.coder}}</strong></a>.<br>
+            </div>
         </div>
     </div>
 </div>

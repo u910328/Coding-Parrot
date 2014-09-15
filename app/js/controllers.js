@@ -14,8 +14,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     }])
     .controller('ReviewCtrl', ['$scope', 'user', 'fbutil', '$routeParams', 'notification', function ($scope, user, fbutil, $routeParams, notification) {
         $scope.review = fbutil.syncObject(['projects', $routeParams.projectId, 'review', $routeParams.userId]);
-        $scope.review.rating= {};
-        $scope.rating = {quality: 0, completeness: 0, speed:0};
+        $scope.review.rating = {};
+        $scope.rating = {quality: 0, completeness: 0, speed: 0};
         $scope.rate = function (element, rate) {
             var key = $(element).attr("data-id");
             $scope.review.rating[key] = rate;
@@ -30,28 +30,30 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang',
         function ($scope, fbutil, user, $location, project, cateAndLang) {
             $scope.user = user;
-
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
+            $scope.form = {};
 
             $scope.selectCate = function () {
-                $scope.pj.category=$scope.selectedCate.name;
+                if ($scope.selectedCate != null) {
+                    $scope.pj.category = $scope.selectedCate.name;
+                }
             };
             $scope.addLang = function () {
-                cateAndLang.Add('language',$scope.selectedLang, $scope.pj);
-                $scope.selectedLang= null
+                cateAndLang.Add('language', $scope.selectedLang, $scope.pj);
+                $scope.selectedLang = null
             };
             $scope.removeLang = function (lid) {
                 cateAndLang.Remove('language', $scope.pj, lid);
             };
             $scope.createProject = function () {
-                $scope.pj.due = Date.parse($scope.dt)||$scope.dt;
+                $scope.pj.due = Date.parse($scope.dt) || $scope.dt;
                 var pjListData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
                     language: $scope.pj.language,
                     category: $scope.pj.category,
-                    requirements: $scope.pj.requirements||'',
+                    requirements: $scope.pj.requirements || '',
                     due: $scope.pj.due
                 };
                 project.Create(user.uid, $scope.pj, pjListData);
@@ -61,7 +63,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.afterNday = function () {
                 var today = new Date();
                 var md = new Date();
-                $scope.pj= {};
+                $scope.pj = {};
                 $scope.minDate = md.setDate(today.getDate() + 3);
                 $scope.dt = md.setDate(today.getDate() + 30);
             };
@@ -81,23 +83,33 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     ])
     .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang',
         function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang) {
-            $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
+            var loadCate = function () {
+                fbutil.ref(['projects', $routeParams.projectId, 'category']).once('value', function(snap) {
+                    for (var i = 0; i < cateAndLang.categories.length; i++) {
+                        if (cateAndLang.categories[i].name == snap.val()) {
+                            $scope.selectedCate = cateAndLang.categories[i];
+                        }
+                    }
+                })
+            };
+            loadCate();
+
+
+
+
+            $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);  //todo: combine this with loadCate
             $scope.id = $routeParams.projectId;
 
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
-            $scope.selectCate = function () {
-                $scope.pj.category=$scope.selectedCate.name;
-            };
 
             $scope.addLang = function () {
-                cateAndLang.Add('language',$scope.selectedLang, $scope.pj);
-                $scope.selectedLang= null
+                cateAndLang.Add('language', $scope.selectedLang, $scope.pj);
+                $scope.selectedLang = null
             };
             $scope.removeLang = function (lid) {
                 cateAndLang.Remove('language', $scope.pj, lid);
             };
-
             $scope.updateProject = function () {
                 $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
                 var listData = {
@@ -105,11 +117,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     brief: $scope.pj.brief,
                     language: $scope.pj.language,
                     category: $scope.pj.category,
-                    requirements: $scope.pj.requirements||'',
+                    requirements: $scope.pj.requirements || '',
                     due: $scope.pj.due
                 };
                 project.Update($scope.pj, user.uid, listData);
-                if($scope.oldDue){fbutil.syncData(['users', user.uid, 'due', $scope.id]).$remove($scope.oldDue)}
+                if ($scope.oldDue) {
+                    fbutil.syncData(['users', user.uid, 'due', $scope.id]).$remove($scope.oldDue)
+                }
                 $location.path('/projectManager');
             };
             $scope.afterNday = function () {
@@ -117,9 +131,9 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 var threeDLater = new Date();
                 $scope.minDate = threeDLater.setDate(today.getDate() + 3);
                 $scope.$watch('pj.due', function (nVal, oVal) {
-                    if ((oVal!= undefined)&&(!$scope.oldDueCount)) {                                 //locate and remove old due
-                        $scope.oldDueCount= true;
-                        $scope.oldDue=oVal;
+                    if ((oVal != undefined) && (!$scope.oldDueCount)) {                                 //locate and remove old due
+                        $scope.oldDueCount = true;
+                        $scope.oldDue = oVal;
                     }
 
                 });
@@ -175,8 +189,18 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.languages = cateAndLang.languages;
             $scope.predicate = '-createdTime';
             $scope.reverse = false;
-            $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
-            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}}
+            $scope.selCate = function (cate) {
+                $scope.cate = cate;
+                if (cate == 'all') {
+                    $scope.cate = ""
+                }
+            };
+            $scope.selLang = function (lang) {
+                $scope.lang = lang;
+                if (lang == 'all') {
+                    $scope.lang = ""
+                }
+            }
         }
     ])
     .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project', 'cateAndLang',
@@ -185,20 +209,20 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.remove = function (projectId) {
                 project.Remove(user.uid, projectId)
             };
-            $scope.waitingList=[];
-            $scope.$watch('pjList', function(nv){
-                $scope.waitingList=[];
+            $scope.waitingList = [];
+            $scope.$watch('pjList', function (nv) {
+                $scope.waitingList = [];
                 var patt = /\$/;
                 angular.forEach(nv, function (pjData, pjRef) {
                     var res = patt.test(pjRef);
                     if (!res) {
-                        if(pjData.waitingList) {
-                            angular.forEach(pjData.waitingList, function(request, coder){
+                        if (pjData.waitingList) {
+                            angular.forEach(pjData.waitingList, function (request, coder) {
                                 $scope.waitingList.push({
-                                    ref:pjRef,
-                                    name:pjData.name,
-                                    request:request,
-                                    coder:coder})
+                                    ref: pjRef,
+                                    name: pjData.name,
+                                    request: request,
+                                    coder: coder})
                             })
                         }
                     }
@@ -206,8 +230,18 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }, true);
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
-            $scope.selCate= function(cate) {$scope.cate = cate; if (cate=='all') {$scope.cate=""}};
-            $scope.selLang= function(lang) {$scope.lang = lang; if (lang=='all') {$scope.lang=""}};
+            $scope.selCate = function (cate) {
+                $scope.cate = cate;
+                if (cate == 'all') {
+                    $scope.cate = ""
+                }
+            };
+            $scope.selLang = function (lang) {
+                $scope.lang = lang;
+                if (lang == 'all') {
+                    $scope.lang = ""
+                }
+            };
             $scope.accept = function (projectId, whom, pjData, price) {
                 var info = {
                     type: 'proposeAccepted',
@@ -301,20 +335,20 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
             // update user data in user list and Data.
             $scope.userInfo = fbutil.syncObject(userInfoPos);
-            $scope.showPwdEml = user.provider=='password';
+            $scope.showPwdEml = user.provider == 'password';
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
 
             $scope.addCate = function () {
-                cateAndLang.Add('categories',$scope.selectedCate, $scope.userInfo);
-                $scope.selectedCate= null
+                cateAndLang.Add('categories', $scope.selectedCate, $scope.userInfo);
+                $scope.selectedCate = null
             };
             $scope.removeCate = function (cid) {
                 cateAndLang.Remove('categories', $scope.userInfo, cid);
             };
             $scope.addLang = function () {
-                cateAndLang.Add('languages',$scope.selectedLang, $scope.userInfo);
-                $scope.selectedLang= null
+                cateAndLang.Add('languages', $scope.selectedLang, $scope.userInfo);
+                $scope.selectedLang = null
             };
             $scope.removeLang = function (lid) {
                 cateAndLang.Remove('languages', $scope.userInfo, lid);
@@ -325,13 +359,13 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     var ref = fbutil.ref(['userList', user.uid]);
                     ref.update({
                         name: $scope.userInfo.name,
-                        email: $scope.userInfo.email||'',
+                        email: $scope.userInfo.email || '',
                         picture: $scope.userInfo.picture || '',
                         uid: user.uid
                     });
                     fbutil.syncData(['emailService', user.uid]).$update({
                         name: $scope.userInfo.name,
-                        email: $scope.userInfo.email||'',
+                        email: $scope.userInfo.email || '',
                         isUpdated: true,
                         sendNoti: false,
                         sendRec: false
@@ -400,31 +434,34 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce', 'chatService', 'user',
         function ($scope, $firebase, fbutil, $routeParams, $sce, chatService, user) {
             $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
-            $scope.showAddContact= false;
-            $scope.showTalkTo= $routeParams.userId!=user.uid;
-            var isContactExist = function () {fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
-                .once('value', function(snap) {
-                    if(snap.val()!=false && user.uid!=$routeParams.userId) {$scope.showAddContact = true}
-                })
+            $scope.showAddContact = false;
+            $scope.showTalkTo = $routeParams.userId != user.uid;
+            var isContactExist = function () {
+                fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
+                    .once('value', function (snap) {
+                        if (snap.val() != false && user.uid != $routeParams.userId) {
+                            $scope.showAddContact = true
+                        }
+                    })
             };
             $scope.talkTo = function () {
                 chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
-                $scope.$parent.chatShow= true
+                $scope.$parent.chatShow = true
             };
             isContactExist();
             $scope.addContact = function () {
                 if ($scope.showAddContact = true) {
                     chatService.AddContact(user.uid, $routeParams.userId, true);
-                    $scope.showAddContact= false;
+                    $scope.showAddContact = false;
                 }
             };
         }
     ])
     .controller('CalendarCtrl', ['$scope', 'fbutil', 'user', 'getFbData', function ($scope, fbutil, user, getFbData) {
         $scope.dues = getFbData.Dues;
-        $scope.pushEvent =function (title, time) {
+        $scope.pushEvent = function (title, time) {
             var date = new Date(Number(time)).toISOString();
-            var url = '#!/projects/detail/'+title;
+            var url = '#!/projects/detail/' + title;
             $scope.calEventsExt.events.push({
                 title: title,
                 start: date,
@@ -442,8 +479,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
 
         /* config object */
         $scope.uiConfig = {
-            calendar:{
-                header:{
+            calendar: {
+                header: {
                     left: 'title',
                     center: '',
                     right: 'today prev,next'
@@ -451,5 +488,15 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         };
         /* event sources array*/
-        $scope.eventSources = [$scope.events,$scope.calEventsExt];
+        $scope.eventSources = [$scope.events, $scope.calEventsExt];
+    }])
+    .controller('SandboxCtrl', ['$scope', 'fbutil', 'user', 'getFbData', function ($scope, fbutil, user, getFbData) {
+        $scope.isFormValid = false;
+        $scope.testt = 'test';
+        $scope.$on('error.field.bv', function () {
+            $scope.isFormValid = false
+        });
+        $scope.test = function () {
+            console.log('test')
+        }
     }]);
