@@ -36,24 +36,39 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                  * @param {string} pass
                  * @returns {*}
                  */
-                login: function (provider, email, pass) {
+                login: function (email, pass, rememberMe,provider) {
                     var presenceCheck =function (user) {
                         presenceMonitor (FBURL, user.uid);
                     };
-                    if (provider == 'password') {
+                    if (!provider) {
                         return auth.$login('password', {
                             email: email,
                             password: pass,
-                            rememberMe: true
-                        }).then(presenceCheck);
+                            rememberMe: rememberMe
+                        }).then(function (user) {
+                            presenceCheck(user);
+                            fbutil.ref(['users', user.uid, 'userInfo', 'name'])
+                                .once('value', function (snap) {
+                                    if (snap.val() == null) {
+                                        var displayName = user.displayName || user.username;
+                                        return createProfile(user.email, displayName, user)
+                                            .then(function () {
+                                                return user;
+                                            })
+                                    }
+                                }
+                            );
+                            var def = $q.defer();
+                            def.resolve(user);
+                            return def.promise;
+                        });
                     } else {
-                        return auth.$login(provider)
+                        return auth.$login(provider, {rememberMe: rememberMe})
                             .then(function (user) {
                                 presenceCheck(user);
                                 fbutil.ref(['users', user.uid, 'userInfo', 'name'])
                                     .once('value', function (snapshot) {
-                                        var isNew = (snapshot.val() == null);
-                                        if (isNew) {
+                                        if (snapshot.val() == null) {
                                             if (provider == 'google') {
                                                 var providedEmail = user.email
                                             }
@@ -61,7 +76,7 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                                                 providedEmail = null
                                             }
                                             var displayName = user.displayName || user.username;
-                                            return createProfile(provider, providedEmail, displayName, user)
+                                            return createProfile(providedEmail, displayName, user, provider)
                                                 .then(function () {
                                                     return user;
                                                 })
@@ -81,11 +96,11 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                     return auth.$createUser(email, pass)
                         .then(function () {
                             // authenticate so we have permission to write to Firebase
-                            return fns.login('password', email, pass);
+                            return fns.login(email, pass);
                         })
                         .then(function (user) {
                             // store user data in Firebase after creating account
-                            return createProfile('password', email, name, user).then(function () {
+                            return createProfile(email, name, user).then(function () {
                                 return user;
                             })
                         });
@@ -130,7 +145,7 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
         }])
 
     .factory('createProfile', ['fbutil', '$q', '$timeout', function (fbutil, $q, $timeout) {
-        return function (provider, email, name, user) {
+        return function (email, name, user, provider) {
             var ref = fbutil.ref('users', user.uid, 'userInfo'), def = $q.defer();
             var onComplete = function (err) {
                 $timeout(function () {
@@ -138,7 +153,7 @@ angular.module('simpleLogin', ['firebase', 'firebase.utils', 'changeEmail'])
                         def.reject(err);
                     }
                     else {
-                        if (provider != 'password') {
+                        if (!!provider) {
                             getExtraData(provider).then(
                                 function (ExtraData) {
                                     ref.update(ExtraData)

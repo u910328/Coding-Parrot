@@ -36,7 +36,7 @@ angular.module('myApp.config', ['ngDisqus'])
                         message: 'The username must be 6-30 characters long'
                     },
                     regexp: {
-                        regexp: /^[a-zA-Z0-9]+$/,
+                        regexp: /^[a-zA-Z0-9\s]+$/,
                         message: 'The username can only consist of alphabetical and number'
                     },
                     different: {
@@ -94,13 +94,6 @@ angular.module('myApp.config', ['ngDisqus'])
                     }
                 }
             },
-            select: {
-                validators: {
-                    notEmpty: {
-                        message: 'Please select one'
-                    }
-                }
-            },
             datePicker: {
                 trigger: "focus blur",
                 validators: {
@@ -137,10 +130,15 @@ angular.module('myApp.config', ['ngDisqus'])
                     }
                 }
             },
-            requirements: {
+            description: {
                 validators: {
                     notEmpty: {
                         message: 'required'
+                    },
+                    stringLength: {
+                        min: 30,
+                        max: 1000,
+                        message: 'not enough words'
                     }
                 }
             }

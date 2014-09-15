@@ -41,7 +41,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     projectName: bvVldtr.projectName,
                     catePicker: bvVldtr.catePicker,
                     datePicker: bvVldtr.datePicker,
-                    brief: bvVldtr.brief
+                    brief: bvVldtr.brief,
+                    description: bvVldtr.description
                 }
             };
 
@@ -110,6 +111,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
                 fields: {
                     projectName: bvVldtr.projectName,
+                    description: bvVldtr.description,
                     catePicker: bvVldtr.catePicker,
                     datePicker: bvVldtr.datePicker,
                     brief: bvVldtr.brief
@@ -318,11 +320,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.pass = null;
         $scope.confirm = null;
         $scope.createMode = false;
+        $scope.rememberMe = false;
 
-        $scope.login = function (provider, email, pass) {
+        $scope.login = function (email, pass, rememberMe, provider) {
             $scope.err = null;
 
-            simpleLogin.login(provider, email, pass)
+            simpleLogin.login(email, pass, rememberMe, provider)
                 .then(function (/* user */) {
                     $location.path('/home');
                 }, function (err) {
@@ -361,39 +364,18 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         }
     }])
 
-    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location', 'cateAndLang',
-        function ($scope, simpleLogin, fbutil, user, $location, cateAndLang) {
+    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location', 'cateAndLang', 'validFormOptions',
+        function ($scope, simpleLogin, fbutil, user, $location, cateAndLang, validFormOptions) {
             // create a 3-way binding with the user profile object in Firebase
             var userInfoPos = ['users', user.uid, 'userInfo'];                 //remember to change changeEmail and UserDetailCtrl if you change this (also in simpleLogin.js)
             var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
 
+            var bvVldtr=validFormOptions.fields;
             $scope.bvOptions={
-                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
                 fields: {
-                    userName: {
-                        message: 'The project name is not valid',
-                        validators: {
-                            notEmpty: {
-                                message: 'The project name is required'
-                            },
-                            stringLength: {
-                                min: 6,
-                                max: 30,
-                                message: 'The project name must be 6-30 characters long'
-                            }
-                        }
-                    },
-                    email: {
-                        validators: {
-                            notEmpty: {
-                                message: 'The email address is required'
-                            },
-                            emailAddress: {
-                                message: 'The email address is not valid'
-                            }
-                        }
-                    }
+                    userName: bvVldtr.username,
+                    email: bvVldtr.email
                 }
             };
 
