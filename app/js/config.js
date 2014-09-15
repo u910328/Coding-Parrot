@@ -102,12 +102,27 @@ angular.module('myApp.config', ['ngDisqus'])
                 }
             },
             datePicker: {
+                trigger: "focus blur",
                 validators: {
                     notEmpty: {
                         message: 'Please select a date'
                     },
                     date: {
                         format: 'YYYY/MM/DD'
+                    }
+                }
+            },
+            catePicker: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select one'
+                    }
+                }
+            },
+            brief: {
+                validators: {
+                    notEmpty: {
+                        message: 'required'
                     }
                 }
             },

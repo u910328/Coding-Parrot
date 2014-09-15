@@ -300,23 +300,26 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             }
         }
     })
-    .directive('validForm', function (validFormOptions, $timeout) {
+    .directive('validForm', function (validFormOptions, $timeout, $rootScope) {
         return {
             restrict: 'E',
             scope: false,
             transclude: true,
             templateUrl: 'partials/directiveTemplates/validForm.html',
             link: function (scope, element, attrs) {
-                angular.element(document).ready(function () {
-                    $("#registrationForm")
+                var bvId = attrs.id;
+                var initBV = function () {
+                    $("#" + bvId)
                         // on('init.form.bv') must be declared
                         // before calling .bootstrapValidator(options)
+                        .on('init.form.bv', function (e,data) {
+                        })
+                        .bootstrapValidator(scope.bvOptions)
                         .on('error.field.bv', function (e, data) {
                             scope.isFormValid = false;
                             scope.$digest();
                             //data.bv.disableSubmitButtons(true);
                         })
-                        .bootstrapValidator(validFormOptions)
                         .on('success.field.bv', function (e, data) {
                             var isValid = data.bv.isValid();
                             scope.isFormValid = isValid;
@@ -325,14 +328,20 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                             }
                             $timeout(function () {                //prevent digest while digesting
                                 scope.$digest();
-                            },0);
+                            }, 0);
+
                             //data.bv.disableSubmitButtons(!isValid);
                         });
                     scope.$on('revalidateDate', function () {
-                            $('#registrationForm').bootstrapValidator('revalidateField', 'datePicker')
+                            $timeout(function () {                //prevent digest while digesting
+                                $("#" + bvId).bootstrapValidator('revalidateField', 'datePicker')
+                            }, 0);
+
                         }
                     );
-                });
+                };
+                    $timeout(initBV,0);
+                //angular.element(document).ready()
             }
         }
     });

@@ -27,12 +27,23 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.review.$save()
         }
     }])
-    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang',
-        function ($scope, fbutil, user, $location, project, cateAndLang) {
+    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang', 'validFormOptions',
+        function ($scope, fbutil, user, $location, project, cateAndLang, validFormOptions) {
             $scope.user = user;
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
             $scope.form = {};
+
+            var bvVldtr=validFormOptions.fields;
+            $scope.bvOptions={
+                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+                fields: {
+                    projectName: bvVldtr.projectName,
+                    catePicker: bvVldtr.catePicker,
+                    datePicker: bvVldtr.datePicker,
+                    brief: bvVldtr.brief
+                }
+            };
 
             $scope.selectCate = function () {
                 if ($scope.selectedCate != null) {
@@ -65,7 +76,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 var md = new Date();
                 $scope.pj = {};
                 $scope.minDate = md.setDate(today.getDate() + 3);
-                $scope.dt = md.setDate(today.getDate() + 30);
+                //$scope.dt = md.setDate(today.getDate() + 30);
             };
             $scope.afterNday();
 
@@ -82,8 +93,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang',
-        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang) {
+    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang', 'validFormOptions',
+        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang, validFormOptions) {
             var loadCate = function () {
                 fbutil.ref(['projects', $routeParams.projectId, 'category']).once('value', function(snap) {
                     for (var i = 0; i < cateAndLang.categories.length; i++) {
@@ -94,6 +105,16 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 })
             };
             loadCate();
+            var bvVldtr=validFormOptions.fields;
+            $scope.bvOptions={
+                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+                fields: {
+                    projectName: bvVldtr.projectName,
+                    catePicker: bvVldtr.catePicker,
+                    datePicker: bvVldtr.datePicker,
+                    brief: bvVldtr.brief
+                }
+            };
 
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);  //todo: combine this with loadCate
             $scope.id = $routeParams.projectId;
@@ -151,11 +172,26 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose',
-        function ($scope, fbutil, $routeParams, $sce, user, propose) {
+    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose', 'validFormOptions',
+        function ($scope, fbutil, $routeParams, $sce, user, propose, validFormOptions) {
             $scope.myUid = user.uid;
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
+            $scope.bvOptions= {
+                fields: {
+                    proposePrice: {
+                        message: 'The value is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: 'required'
+                            },
+                            integer: {
+                                message: 'The value is not an integer'
+                            }
+                        }
+                    }
+                }
+            };
             $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};
             fbutil.ref(['projects', $scope.id, 'waitingList', user.uid, 'price'])
                 .once('value', function (snap) {
@@ -331,6 +367,35 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             var userInfoPos = ['users', user.uid, 'userInfo'];                 //remember to change changeEmail and UserDetailCtrl if you change this (also in simpleLogin.js)
             var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
+
+            $scope.bvOptions={
+                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+                fields: {
+                    userName: {
+                        message: 'The project name is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: 'The project name is required'
+                            },
+                            stringLength: {
+                                min: 6,
+                                max: 30,
+                                message: 'The project name must be 6-30 characters long'
+                            }
+                        }
+                    },
+                    email: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The email address is required'
+                            },
+                            emailAddress: {
+                                message: 'The email address is not valid'
+                            }
+                        }
+                    }
+                }
+            };
 
             // update user data in user list and Data.
             $scope.userInfo = fbutil.syncObject(userInfoPos);

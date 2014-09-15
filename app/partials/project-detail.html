@@ -12,7 +12,7 @@
 </div>
 <div ng-show="show">
     <div ng-show="!proposeExists">
-        <valid-form>
+        <valid-form id="propose">
             <div class="form-group">
                 <label class="col-lg-1 control-label">Price</label>
                 <div class="col-lg-4">
@@ -38,7 +38,7 @@
 
 <div ng-show="show">
     <div ng-show="proposeExists">
-        <valid-form>
+        <valid-form id="rePropose">
             <div class="form-group">
                 <label class="col-lg-1 control-label">Price</label>
                 <div class="col-lg-4">
@@ -54,8 +54,8 @@
             <div class="form-group">
                 <label class="col-lg-1 control-label"></label>
                 <div class="col-lg-4">
-                    <button ng-click="proposeSend(pj.ClientUid, propose.price, propose.message, pj.Name);show=false" class="btn btn-primary">Update</button>
-                    <button ng-click="proposeRemove(pj.ClientUid);show=false" class="btn btn-danger">Withdrawn</button>
+                    <button ng-click="proposeSend(pj.clientUid, propose.price, propose.message, pj.name);$parent.show=false" class="btn btn-primary">Update</button>
+                    <button ng-click="proposeRemove(pj.clientUid);$parent.show=false" class="btn btn-danger">Withdrawn</button>
                 </div>
             </div>
         </valid-form>
