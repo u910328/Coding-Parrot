@@ -300,7 +300,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             }
         }
     })
-    .directive('validForm', function (validFormOptions, $timeout, $rootScope) {
+    .directive('validForm', function (bvOptn, $timeout) {
         return {
             restrict: 'E',
             scope: false,
@@ -308,6 +308,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             templateUrl: 'partials/directiveTemplates/validForm.html',
             link: function (scope, element, attrs) {
                 var bvId = attrs.id;
+                scope.form={};
                 var initBV = function () {
                     $("#" + bvId)
                         // on('init.form.bv') must be declared
@@ -316,14 +317,17 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                         })
                         .bootstrapValidator(scope.bvOptions)
                         .on('error.field.bv', function (e, data) {
+                            scope.form.isFormValid=false;
                             scope.isFormValid = false;
                             scope.$digest();
                             //data.bv.disableSubmitButtons(true);
                         })
                         .on('success.field.bv', function (e, data) {
                             var isValid = data.bv.isValid();
+                            scope.form.isFormValid = isValid;
                             scope.isFormValid = isValid;
-                            if (scope.validFormtype == 'update') {
+                            if (scope.validFormtype) {
+                                scope.form.isFormValid = true;
                                 scope.isFormValid = true
                             }
                             $timeout(function () {                //prevent digest while digesting

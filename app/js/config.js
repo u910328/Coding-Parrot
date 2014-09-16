@@ -15,7 +15,7 @@ angular.module('myApp.config', ['ngDisqus'])
 
     // your Firebase URL goes here
     .constant('FBURL', 'https://codingparrot.firebaseio.com/')
-    .constant('validFormOptions', {
+    .constant('bvOptn', {
         // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
         feedbackIcons: {
             valid: null /*'glyphicon glyphicon-ok'*/,

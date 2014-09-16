@@ -27,14 +27,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.review.$save()
         }
     }])
-    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang', 'validFormOptions',
-        function ($scope, fbutil, user, $location, project, cateAndLang, validFormOptions) {
+    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang', 'bvOptn',
+        function ($scope, fbutil, user, $location, project, cateAndLang, bvOptn) {
             $scope.user = user;
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
-            $scope.form = {};
-
-            var bvVldtr=validFormOptions.fields;
+            var bvVldtr= bvOptn.fields;
             $scope.bvOptions={
                 // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
                 fields: {
@@ -47,19 +45,21 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
 
             $scope.selectCate = function () {
-                if ($scope.selectedCate != null) {
-                    $scope.pj.category = $scope.selectedCate.name;
+                if ($scope.form.selectedCate != null) {
+                    $scope.pj.category = $scope.form.selectedCate.name;
                 }
             };
             $scope.addLang = function () {
-                cateAndLang.Add('language', $scope.selectedLang, $scope.pj);
-                $scope.selectedLang = null
+                cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
+                $scope.form.selectedLang = null
             };
             $scope.removeLang = function (lid) {
                 cateAndLang.Remove('language', $scope.pj, lid);
             };
+
+
             $scope.createProject = function () {
-                $scope.pj.due = Date.parse($scope.dt) || $scope.dt;
+                $scope.pj.due = Date.parse($scope.form.dt) || $scope.form.dt;
                 var pjListData = {
                     name: $scope.pj.name,
                     brief: $scope.pj.brief,
@@ -80,12 +80,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 //$scope.dt = md.setDate(today.getDate() + 30);
             };
             $scope.afterNday();
-
+            $scope.form={};                 //for transclude scope
             $scope.open = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
                 $scope.$emit('revalidateDate');
-                $scope.opened = !$scope.opened;
+                $scope.form.opened = !$scope.form.opened;
             };
 
             $scope.dateOptions = {
@@ -94,8 +94,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang', 'validFormOptions',
-        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang, validFormOptions) {
+    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang', 'bvOptn',
+        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang, bvOptn) {
             var loadCate = function () {
                 fbutil.ref(['projects', $routeParams.projectId, 'category']).once('value', function(snap) {
                     for (var i = 0; i < cateAndLang.categories.length; i++) {
@@ -106,7 +106,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 })
             };
             loadCate();
-            var bvVldtr=validFormOptions.fields;
+            var bvVldtr = bvOptn.fields;
             $scope.bvOptions={
                 // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
                 fields: {
@@ -124,9 +124,12 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
 
+            $scope.form={};
+            $scope.validFormtype=true;
+
             $scope.addLang = function () {
-                cateAndLang.Add('language', $scope.selectedLang, $scope.pj);
-                $scope.selectedLang = null
+                cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
+                $scope.form.selectedLang = null
             };
             $scope.removeLang = function (lid) {
                 cateAndLang.Remove('language', $scope.pj, lid);
@@ -165,7 +168,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 $event.preventDefault();
                 $event.stopPropagation();
                 $scope.$emit('revalidateDate');
-                $scope.opened = !$scope.opened;
+                $scope.form.opened = !$scope.form.opened;
             };
 
             $scope.dateOptions = {
@@ -174,24 +177,14 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             };
         }
     ])
-    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose', 'validFormOptions',
-        function ($scope, fbutil, $routeParams, $sce, user, propose, validFormOptions) {
+    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose', 'bvOptn',
+        function ($scope, fbutil, $routeParams, $sce, user, propose, bvOptn) {
             $scope.myUid = user.uid;
             $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
             $scope.id = $routeParams.projectId;
             $scope.bvOptions= {
                 fields: {
-                    proposePrice: {
-                        message: 'The value is not valid',
-                        validators: {
-                            notEmpty: {
-                                message: 'required'
-                            },
-                            integer: {
-                                message: 'The value is not an integer'
-                            }
-                        }
-                    }
+                    proposePrice: bvOptn.fields.proposePrice
                 }
             };
             $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};
@@ -364,14 +357,14 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         }
     }])
 
-    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location', 'cateAndLang', 'validFormOptions',
-        function ($scope, simpleLogin, fbutil, user, $location, cateAndLang, validFormOptions) {
+    .controller('AccountCtrl', ['$scope', 'simpleLogin', 'fbutil', 'user', '$location', 'cateAndLang', 'bvOptn',
+        function ($scope, simpleLogin, fbutil, user, $location, cateAndLang, bvOptn) {
             // create a 3-way binding with the user profile object in Firebase
             var userInfoPos = ['users', user.uid, 'userInfo'];                 //remember to change changeEmail and UserDetailCtrl if you change this (also in simpleLogin.js)
             var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
 
-            var bvVldtr=validFormOptions.fields;
+            var bvVldtr=bvOptn.fields;
             $scope.bvOptions={
                 fields: {
                     userName: bvVldtr.username,
