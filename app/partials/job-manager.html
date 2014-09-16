@@ -41,13 +41,15 @@
             </thead>
             <tbody>
             <tr ng-repeat="jb in jbList|pjToArray|filter:searchText|filter:filter.status">
-                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.pjName}}</a><br></td>
-                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.client}}</a><br></td>
-                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.price}}</a><br></td>
-                <td><a href=""></a><br></td>
-                <td>{{jb.status}}<br></td>
+                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.pjName}}</a></td>
+                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.client}}</a></td>
+                <td><a href="#!/projects/detail/{{jb.ref}}">{{jb.price}}</a></td>
+                <td><a href=""></a></td>
+                <td>{{jb.status}}</td>
                 <td>
-
+                    <button ng-show="jb.status!='Accepted'&&jb.status!='In progress'" class="btn btn-danger" ng-click="proposeRemove(jb.ref, jb.client)">Withdrawn</button>
+                    <button ng-show="jb.status=='Accepted'" class="btn btn-primary" ng-click="start(jb.ref, jb.client)">I got it!</button>
+                    <button ng-show="jb.status=='Rejected'" class="btn btn-primary" ng-click="acceptRejection(jb.ref)">I got it!</button>
                 </td>
             </tr>
             </tbody>
