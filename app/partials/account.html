@@ -57,6 +57,7 @@
             <div class="col-lg-9 col-lg-offset-7">
                 <!-- Do NOT use name="submit" or id="submit" for the Submit button -->
                 <!--<button type="submit" class="btn btn-default" disabled="true">Sign up</button>-->
+                <input type="reset" class="btn btn-large btn-default" value="Reset!">
                 <button ng-init="$parent.validFormtype='update';$parent.isFormValid=true"
                         class="btn btn-large btn-default" ng-disabled="!isFormValid||!userInfo.categories||!userInfo.languages"
                         ng-click="userInfoUpdate()">Update!</button>

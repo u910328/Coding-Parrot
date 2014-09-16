@@ -22,13 +22,14 @@ angular.module('changeEmail', ['firebase.utils'])
 
       function authOldAccount() {
         return simpleLogin.login(ctx.old.email, password).then(function(user) {
+            console.log(ctx.old.email+password+user.uid);
           ctx.old.uid = user.uid;
         });
       }
 
       function loadOldProfile() {
         var def = $q.defer();
-        ctx.old.ref = fbutil.ref('users', ctx.old.uid);
+        ctx.old.ref = fbutil.ref('users', ctx.old.uid, 'userInfo');
         ctx.old.ref.once('value',
           function(snap){
             var dat = snap.val();
@@ -54,7 +55,7 @@ angular.module('changeEmail', ['firebase.utils'])
 
       function copyProfile() {
         var d = $q.defer();
-        ctx.curr.ref = fbutil.ref('users', ctx.curr.uid);
+        ctx.curr.ref = fbutil.ref('users', ctx.curr.uid, 'userInfo');
         var profile = {email: ctx.curr.email, name: ctx.old.name||''};
         ctx.curr.ref.set(profile, function(err) {
           if (err) {
