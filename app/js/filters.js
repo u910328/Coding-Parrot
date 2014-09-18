@@ -87,14 +87,15 @@ angular.module('myApp.filters', [])
         return function(items, cate, lang) {
             var result = [];
             for (var i = 0; i < items.length; i++) {
+                var langMatch=false;
                 var sLang = items[i].language;
                 for (var key2 in sLang) {
-                    if (sLang[key2].name==lang) {var langMatch=true; break}
+                    if (sLang[key2].name==lang) {langMatch=true; break}
                 }
                 var cateMatch = items[i].category==cate;
                 if ((cateMatch && langMatch)
                     ||(langMatch &&!cate)
-                    ||(cateMatch &&!lang)) {result.push(items[i]);langMatch=false}
+                    ||(cateMatch &&!lang)) {result.push(items[i])}
                 else if (!cate&&!lang) {result=items}
             }
             return result;

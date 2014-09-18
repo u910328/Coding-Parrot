@@ -4,7 +4,7 @@
     </div>
     <div class="col-md-8">
         Search: <input ng-model="searchText">
-    </div>dd
+    </div>
 </div>
         <hr>
 
@@ -39,7 +39,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|filter:filter.status|orderBy:predicate:reverse">
+            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|filter:filter.status|orderBy:predicate:reverse" ng-click="toggle(pj.ref)">
                 <td ng-show="pj.assignedTo"><a href="#!/projects/detail/{{pj.ref}}">{{pj.name}}</a><br></td>
                 <td ng-show="!pj.assignedTo"><a href="#!/projects/edit/{{pj.ref}}">{{pj.name}}</a><br></td>
                 <td><a href="">{{pj.createdTime|date: "yyyy/MM/dd"}}</a><br></td>
@@ -51,33 +51,13 @@
                 </td>
             </tr>
 
-            <!--
-            Category: <a href="">{{pj.category}}</a><br>
-            Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span></a><br>
-            Requirements: <span>{{pj.requirements}}</span><br>
-            <span ng-hide="!pj.assignedTo">Assigned to:</span> {{pj.assignedTo}}<br>
-
-            <tr ng-repeat-end>
-                <td colspan="4">
-
-            <span ng-repeat="(coder, request) in pj.waitingList">
-                <h3 ng-show="$index==0">Waiting list</h3>
-                Name: {{coder}}<br>
-                Price: {{request.price}}<br>
-                Message: {{request.message}}<br>
-                <button ng-click="accept(pj.ref, coder, pj, request.price)">Accept</button>
-                <button ng-click="reject(pj.ref, coder, pj)">Reject</button>
-            </span>
-                </td>
-            </tr>
-            -->
             </tbody>
         </table>
 
 
     </div>
-    <div class="col-md-2">
-        <div ng-repeat="propose in waitingList">
+    <div class="col-md-2" ng-init="select.all=true">
+        <div ng-repeat="propose in waitingList|filter:proposeFilter()">
             Project: {{propose.name}}<br>
             Name: {{propose.coder}}<br>
             Price: {{propose.request.price}}<br>
