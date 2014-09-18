@@ -10,7 +10,41 @@
 <hr>
 <div class="row">
     <div class="col-md-2">
-        <div>
+        <div class="vnav-container">
+            <div class="nav vnav" style="left: 0px; display: block; top: 0px; opacity: 1;" ng-init="vnMleave('gray', 100)">
+                <a ng-click="selCate('');selLang('')" class="menu-link" ng-style="vnList[100]" href="" ng-mouseover="vnMover('gray', 100)" ng-mouseleave="vnMleave('gray', 100)">
+        <span class="hover-target" style="width: 200px;">
+          <span class="icon-container" ng-style="vnIconBg[100]">
+              <span>
+                <img src="http://placekitten.com/50/48" />
+              </span>
+          </span>
+
+          <span class="title" ng-style="vnFontColor[100]" style="color: #555555; display: table-cell;">All</span>
+        </span>
+                </a>
+
+            </div>
+            <div ng-repeat="item in categories" class="nav vnav dropdown" style="left: 0px; display: block; top: 0px; opacity: 1;" ng-init="vnMleave(item.color, $index)">
+                <a class="menu-link dropdown-toggle" ng-style="vnList[$index]" href="" ng-mouseover="vnMover(item.color, $index)" ng-mouseleave="vnMleave(item.color, $index)">
+        <span class="hover-target" style="width: 200px;">
+          <span class="icon-container" ng-style="vnIconBg[$index]">
+              <span>
+                <img src="http://placekitten.com/50/48" />
+              </span>
+          </span>
+
+          <span class="title" ng-style="vnFontColor[$index]" style="color: #555555; display: table-cell;">{{item.name}}</span>
+        </span>
+                </a>
+                <ul class="dropdown-menu right-menu">
+                    <li ng-repeat="lang in item.lang">
+                        <a href="" ng-click="selCate(item.name);selLang(lang)">{{lang}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--<div>
             <div class="vnav">
                 <ul>
                     <li><a href="" ng-click="selCate('all')"><span></span>All categories</a></li>
@@ -26,7 +60,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div>-->
     </div>
 
     <div class="col-md-8">
