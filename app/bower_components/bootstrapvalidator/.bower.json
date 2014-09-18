@@ -48,6 +48,6 @@
   },
   "_source": "git://github.com/nghuuphuoc/bootstrapvalidator.git",
   "_target": "~0.5.1",
-  "_originalSource": "bootstrapvalidator",
+  "_originalSource": "bootstrapValidator",
   "_direct": true
 }

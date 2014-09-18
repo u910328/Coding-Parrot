@@ -14,24 +14,24 @@
         .factory('cateAndLang', [function () {
             return {
                 categories: [
-                    {id:'gen', name: 'General',
+                    {id:'gen', name: 'General', color: 'red',
                         lang: [
                             'C++',
                             'Python',
                             'Javascript']},
-                    {id:'wa', name: 'Web/App',
+                    {id:'wa', name: 'Web/App', color: 'yellow',
                         lang: [
                             'Python',
                             'Javascript',
                             'Ruby']},
-                    {id:'gam', name: 'Games',
+                    {id:'gam', name: 'Games', color: 'blue',
                         lang: ['C++']},
-                    {id:'aca', name: 'Academic',
+                    {id:'aca', name: 'Academic', color: 'green',
                         lang: [
                             'C++',
                             'Python',
                             'Fortran']},
-                    {id:'oth', name: 'Others',
+                    {id:'oth', name: 'Others', color: 'black',
                         lang: [
                             'C++',
                             'Python',

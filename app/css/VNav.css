@@ -1,0 +1,98 @@
+/* Styles go here */
+
+
+
+.vnav-container {
+    -moz-box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    -ms-box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    background: #f5f5f5;
+    background: rgba(245,245,245,0.95);
+    float: left;
+    position: absolute;
+    width: 200px;
+    height: 506px;
+    z-index: 984;
+}
+
+.vnav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    list-style-type: none;
+}
+
+.vnav-list-item {
+    display: inline-block;
+    line-height: normal;
+    padding: 0;
+    position: absolute;
+    z-index: 1053;
+}
+
+.vnav .menu-link {
+    display: block;
+    height: 48px;
+    overflow: hidden;
+    text-decoration: none;
+    padding:0; width: 200px;
+}
+
+.vnav .icon-container {
+    background-position: center;
+    background-repeat: no-repeat;
+    display: table-cell;
+    height: 48px;
+    position: absolute;
+    width: 65px;
+}
+
+.vnav .apps .icon-container {
+    background-color: #b3c833;
+}
+
+.vnav-list-item {
+    display: inline-block;
+    line-height: normal;
+    padding: 0;
+    position: absolute;
+    z-index: 1053;
+}
+
+.vnav .hover-target {
+    display: table;
+    height: 48px;
+    position: absolute;
+}
+
+.vnav .not-selected .hover-target {
+    background-color: transparent;
+}
+
+.vnav .menu-link .title {
+    color: #555;
+    display: table-cell;
+    font-size: 18px;
+    font-weight: 300;
+    left: 56px;
+    line-height: 20px;
+    vertical-align: middle;
+    width: 127px;
+}
+
+.right-menu {
+    position:absolute;
+    top:0;
+    left:200px;
+    margin: 0;
+}
+.bigbox {
+    width:500px;
+    height:500px;
+    background-color:black;
+}

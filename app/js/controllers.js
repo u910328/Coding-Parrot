@@ -218,6 +218,27 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.categories = cateAndLang.categories;
             $scope.languages = cateAndLang.languages;
             $scope.predicate = '-createdTime';
+
+            $scope.vnList={};
+            $scope.vnFontColor={};
+            $scope.vnIconBg={};
+            $scope.vnMover= function (color, index) {
+                $scope.vnList[index]={'background-color': color};
+                $scope.vnFontColor[index]={color:'white'};
+                $scope.vnIconBg[index]={'background-color': 'white'}
+            };
+
+            $scope.vnMleave= function (color, index) {
+                $scope.vnList[index]={};
+                $scope.vnFontColor[index]={};
+                $scope.vnIconBg[index]={'background-color': color}
+            };
+            $scope.mockList=[
+                {cate:'cate 1', color: 'blue', lang:[{name:'sub11'},{name:'sub12'},{name:'sub13'}]},
+                {cate:'cate 2', color: 'red', lang:[{name:'sub21'},{name:'sub22'},{name:'sub23'}]},
+                {cate:'cate 3', color: 'green', lang:[{name:'sub31'},{name:'sub32'},{name:'sub33'}]}
+            ];
+
             $scope.reverse = false;
             $scope.selCate = function (cate) {
                 $scope.cate = cate;
