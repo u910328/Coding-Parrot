@@ -253,21 +253,20 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         function ($scope, fbutil, user, propose, project, cateAndLang) {
             $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
             $scope.select={};
-            $scope.toggle = function (ref) {
-                for (var key in $scope.select) {
-                    $scope.select.all= $scope.select[key]? false:true;
-                }
+            $scope.pjSelect={};
+            $scope.select.all=true;
+            $scope.togglePj = function (ref) {
+                $scope.select.all=true;
                 $scope.select[ref]= $scope.select[ref]? false:true;
+                $scope.pjSelect[ref]= $scope.select[ref]? {background:'blue'}:{background:'transparent'};
+                for (var key in $scope.select) {
+                    if($scope.select[key]&&key!='all') {$scope.select.all=false}
+                }
             };
             $scope.proposeFilter= function() {
                 return function (item) {
-                    if ($scope.select.all) {return true}
-                    for (var key in $scope.select) {
-                        if (item[key]) {return true}
-                    }                                                     //todo: can use " return (arr.indexOf(obj) != -1);"  but it does not support IE8
+                   return $scope.select[item.ref]||$scope.select.all
                 };
-
-
             };
 
             $scope.remove = function (projectId) {
