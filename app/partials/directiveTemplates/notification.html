@@ -4,7 +4,8 @@
             <div ng-show="propose.type == 'propose'">
                 <strong>{{propose.coder}}</strong> want to take <strong>{{propose.pjName}}</strong> for {{propose.price
                 | currency : symbol}}<br>
-                <span ng-show="value.message!='' ">Message: {{value.message}}</span><br>
+                <span ng-show="propose.message!='' ">Message: {{propose.message}}</span><br>
+                <span>Expected due time: {{propose.expectDue}}</span><br>
                 <button ng-click="accept(noti, propose.coder, propose.pjName, propose.price)">Accept</button>
                 <button ng-click="reject(noti, propose.coder, propose.pjName)">Reject</button>
             </div>

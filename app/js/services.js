@@ -243,18 +243,25 @@
                 fbutil.syncData(['users', whom, 'projects', pid, 'waitingList']).$remove(uid);
             };
             return {
-                Send: function (pid, uid, whom, message, data) {
+                Send: function (pid, uid, whom, prps, data) {
                     var obj = {
-                        type: 'propose', price: message.price, message: message.message,
+                        type: 'propose',
                         pjName: data.pjName,
                         coder: uid
                     };
+                    var propose={};
+                    var patt = /\$/;
+                    for(var key in prps) {
+                        var res = patt.test(key);
+                        if (res) {continue}
+                        obj[key]=prps[key];
+                        propose[key]=prps[key];
+                    }
                     notification.Push(whom, pid, obj, uid);
-                    fbutil.syncData(['projects', pid, 'waitingList', uid]).$update(message);
-                    fbutil.syncData(['projectList', pid, 'waitingList', uid]).$update(message);
-                    fbutil.syncData(['users', whom, 'projects', pid, 'waitingList', uid]).$update(message);
+                    fbutil.syncData(['projects', pid, 'waitingList', uid]).$update(propose);
+                    fbutil.syncData(['projectList', pid, 'waitingList', uid]).$update(propose);
+                    fbutil.syncData(['users', whom, 'projects', pid, 'waitingList', uid]).$update(propose);
                     fbutil.syncData(['users', uid, 'jobs', pid]).$update(data);
-
                 },
                 Remove: function (pid, uid, whom) {
                     partialRemove(pid, uid, whom);

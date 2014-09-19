@@ -200,10 +200,10 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                     }
                 });
 
-            $scope.proposeSend = function (whom, price, message, name) {
-                var messages = {price: price, message: message},
-                    data = {status: 'waiting', pjName: name, price: price, client: whom};
-                propose.Send($scope.id, user.uid, whom, messages, data);
+            $scope.proposeSend = function (prps, pj) {
+                var data = {status: 'waiting', client: pj.clientUid, pjName: pj.name, price: prps.price, expectDue: prps.expectDue};
+                var message = {price: prps.price, message: prps.message, expectDue:prps.due};
+                propose.Send($scope.id, user.uid, pj.clientUid, prps, data);
                 $scope.proposeExists = true
             };
             $scope.proposeRemove = function (whom) {
@@ -258,7 +258,6 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.togglePj = function (ref) {
                 $scope.select.all=true;
                 $scope.select[ref]= $scope.select[ref]? false:true;
-                $scope.pjSelect[ref]= $scope.select[ref]? {background:'blue'}:{background:'transparent'};
                 for (var key in $scope.select) {
                     if($scope.select[key]&&key!='all') {$scope.select.all=false}
                 }
