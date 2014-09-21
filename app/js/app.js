@@ -12,7 +12,8 @@ angular.module('myApp', [
     'ngSanitize',
     'myApp.timeAgo',
     'ui.bootstrap',
-    'ui.calendar'
+    'ui.calendar',
+    'ng-context-menu'
 ])
 
     .run(['simpleLogin', 'FBURL', function (simpleLogin, FBURL) {

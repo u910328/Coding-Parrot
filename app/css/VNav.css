@@ -14,9 +14,12 @@
     width: 200px;
     height: 506px;
     z-index: 984;
+    position:fixed;
+    left:0;
 }
 
 .vnav {
+
     list-style: none;
     margin: 0;
     padding: 0;

@@ -27,191 +27,190 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.review.$save()
         }
     }])
-    .controller('ProjectCreatorCtrl', ['$scope', 'fbutil', 'user', '$location', 'project', 'cateAndLang', 'bvOptn',
-        function ($scope, fbutil, user, $location, project, cateAndLang, bvOptn) {
-            $scope.user = user;
-            $scope.categories = cateAndLang.categories;
-            $scope.languages = cateAndLang.languages;
-            var bvVldtr= bvOptn.fields;
-            $scope.bvOptions={
-                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
-                fields: {
-                    projectName: bvVldtr.projectName,
-                    catePicker: bvVldtr.catePicker,
-                    datePicker: bvVldtr.datePicker,
-                    brief: bvVldtr.brief,
-                    description: bvVldtr.description
-                }
-            };
-
-            $scope.selectCate = function () {
-                if ($scope.form.selectedCate != null) {
-                    $scope.pj.category = $scope.form.selectedCate.name;
-                }
-            };
-            $scope.addLang = function () {
-                cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
-                $scope.form.selectedLang = null
-            };
-            $scope.removeLang = function (lid) {
-                cateAndLang.Remove('language', $scope.pj, lid);
-            };
-
-
-            $scope.createProject = function () {
-                $scope.pj.due = Date.parse($scope.form.dt) || $scope.form.dt;
-                var pjListData = {
-                    name: $scope.pj.name,
-                    brief: $scope.pj.brief,
-                    language: $scope.pj.language,
-                    category: $scope.pj.category,
-                    requirements: $scope.pj.requirements || '',
-                    due: $scope.pj.due
-                };
-                project.Create(user.uid, $scope.pj, pjListData);
-                $location.path('/projectManager');
-            };
-
-            $scope.afterNday = function () {
-                var today = new Date();
-                var md = new Date();
-                $scope.pj = {};
-                $scope.minDate = md.setDate(today.getDate() + 3);
-                //$scope.dt = md.setDate(today.getDate() + 30);
-            };
-            $scope.afterNday();
-            $scope.form={};                 //for transclude scope
-            $scope.open = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $scope.$emit('revalidateDate');
-                $scope.form.opened = !$scope.form.opened;
-            };
-
-            $scope.dateOptions = {
-                formatYear: 'yy',
-                startingDay: 1
-            };
-        }
-    ])
-    .controller('ProjectEditorCtrl', ['$scope', 'fbutil', '$routeParams', 'user', 'project', '$location', 'cateAndLang', 'bvOptn',
-        function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang, bvOptn) {
-            var loadCate = function () {
-                fbutil.ref(['projects', $routeParams.projectId, 'category']).once('value', function(snap) {
-                    for (var i = 0; i < cateAndLang.categories.length; i++) {
-                        if (cateAndLang.categories[i].name == snap.val()) {
-                            $scope.selectedCate = cateAndLang.categories[i];
-                        }
-                    }
-                })
-            };
-            loadCate();
-            var bvVldtr = bvOptn.fields;
-            $scope.bvOptions={
-                // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
-                fields: {
-                    projectName: bvVldtr.projectName,
-                    description: bvVldtr.description,
-                    catePicker: bvVldtr.catePicker,
-                    datePicker: bvVldtr.datePicker,
-                    brief: bvVldtr.brief
-                }
-            };
-
-            $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);  //todo: combine this with loadCate
-            $scope.id = $routeParams.projectId;
-
-            $scope.categories = cateAndLang.categories;
-            $scope.languages = cateAndLang.languages;
-
-            $scope.form={};
-            $scope.validFormtype=true;
-
-            $scope.addLang = function () {
-                cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
-                $scope.form.selectedLang = null
-            };
-            $scope.removeLang = function (lid) {
-                cateAndLang.Remove('language', $scope.pj, lid);
-            };
-            $scope.updateProject = function () {
-                $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
-                var listData = {
-                    name: $scope.pj.name,
-                    brief: $scope.pj.brief,
-                    language: $scope.pj.language,
-                    category: $scope.pj.category,
-                    requirements: $scope.pj.requirements || '',
-                    due: $scope.pj.due
-                };
-                project.Update($scope.pj, user.uid, listData);
-                if ($scope.oldDue) {
-                    fbutil.syncData(['users', user.uid, 'due', $scope.id]).$remove($scope.oldDue)
-                }
-                $location.path('/projectManager');
-            };
-            $scope.afterNday = function () {
-                var today = new Date();
-                var threeDLater = new Date();
-                $scope.minDate = threeDLater.setDate(today.getDate() + 3);
-                $scope.$watch('pj.due', function (nVal, oVal) {
-                    if ((oVal != undefined) && (!$scope.oldDueCount)) {                                 //locate and remove old due
-                        $scope.oldDueCount = true;
-                        $scope.oldDue = oVal;
-                    }
-
-                });
-            };
-            $scope.afterNday();
-
-            $scope.open = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $scope.$emit('revalidateDate');
-                $scope.form.opened = !$scope.form.opened;
-            };
-
-            $scope.dateOptions = {
-                formatYear: 'yy',
-                startingDay: 1
-            };
-        }
-    ])
-    .controller('ProjectDetailCtrl', ['$scope', 'fbutil', '$routeParams', '$sce', 'user', 'propose', 'bvOptn',
-        function ($scope, fbutil, $routeParams, $sce, user, propose, bvOptn) {
-            $scope.myUid = user.uid;
-            $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
-            $scope.id = $routeParams.projectId;
-            $scope.bvOptions= {
-                fields: {
-                    proposePrice: bvOptn.fields.proposePrice
-                }
-            };
-            $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};
-            fbutil.ref(['projects', $scope.id, 'waitingList', user.uid, 'price'])
-                .once('value', function (snap) {
-                    if (snap.val() == null) {
-                        $scope.proposeExists = false
-                    } else if (snap.val() == 'accepted') {
-                        $scope.proposeAccepted = true
-                    }
-                    else {
-                        $scope.proposeExists = true
-                    }
-                });
-
-            $scope.proposeSend = function (prps, pj) {
-                var data = {status: 'waiting', client: pj.clientUid, pjName: pj.name, price: prps.price, expectDue: prps.expectDue};
-                var message = {price: prps.price, message: prps.message, expectDue:prps.due};
-                propose.Send($scope.id, user.uid, pj.clientUid, prps, data);
-                $scope.proposeExists = true
-            };
-            $scope.proposeRemove = function (whom) {
-                propose.Remove($scope.id, user.uid, whom);
-                $scope.proposeExists = false
+    .controller('ProjectCreatorCtrl',
+    function ($scope, fbutil, user, $location, project, cateAndLang, bvOptn, dateUtil) {
+        $scope.pj = {};
+        $scope.user = user;
+        $scope.categories = cateAndLang.categories;
+        $scope.languages = cateAndLang.languages;
+        var bvVldtr = bvOptn.fields;
+        $scope.bvOptions = {
+            // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+            fields: {
+                projectName: bvVldtr.projectName,
+                catePicker: bvVldtr.catePicker,
+                datePicker: bvVldtr.datePicker,
+                brief: bvVldtr.brief,
+                description: bvVldtr.description,
+                price: bvVldtr.price
             }
-        }
-    ])
+        };
+
+        $scope.selectCate = function () {
+            if ($scope.form.selectedCate != null) {
+                $scope.pj.category = $scope.form.selectedCate.name;
+            }
+        };
+        $scope.addLang = function () {
+            cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
+            $scope.form.selectedLang = null
+        };
+        $scope.removeLang = function (lid) {
+            cateAndLang.Remove('language', $scope.pj, lid);
+        };
+
+        $scope.createProject = function () {
+            $scope.pj.due = Date.parse($scope.form.dt) || $scope.form.dt;
+            var pjListData = {
+                name: $scope.pj.name,
+                brief: $scope.pj.brief,
+                language: $scope.pj.language,
+                category: $scope.pj.category,
+                price:$scope.pj.price,
+                requirements: $scope.pj.requirements || '',
+                due: $scope.pj.due
+            };
+            project.Create(user.uid, $scope.pj, pjListData);
+            $location.path('/projectManager');
+        };
+        $scope.minDate = dateUtil.afterNday(3);
+        $scope.form = {};                 //for transclude scope
+        $scope.open = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.$emit('revalidateDate');
+            $scope.form.opened = !$scope.form.opened;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1
+        };
+    }
+)
+    .controller('ProjectEditorCtrl', function ($scope, fbutil, $routeParams, user, project, $location, cateAndLang, bvOptn, dateUtil) {
+        var init = function () {
+            $scope.minDate = dateUtil.afterNday(3);
+            $scope.$watch('pj.due', function (nVal, oVal) {
+                if ((oVal != undefined) && (!$scope.oldDueCount)) {                                 //locate and remove old due
+                    $scope.oldDueCount = true;
+                    $scope.oldDue = oVal;
+                }
+            });
+            fbutil.ref(['projects', $routeParams.projectId, 'category']).once('value', function (snap) {
+                for (var i = 0; i < cateAndLang.categories.length; i++) {
+                    if (cateAndLang.categories[i].name == snap.val()) {
+                        $scope.selectedCate = cateAndLang.categories[i];
+                    }
+                }
+            })
+        };
+        init();
+        var bvVldtr = bvOptn.fields;
+        $scope.bvOptions = {
+            fields: {
+                projectName: bvVldtr.projectName,
+                description: bvVldtr.description,
+                catePicker: bvVldtr.catePicker,
+                datePicker: bvVldtr.datePicker,
+                brief: bvVldtr.brief,
+                price: bvVldtr.price
+            }
+        };
+
+        $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);  //todo: combine this with loadCate
+        $scope.id = $routeParams.projectId;
+
+        $scope.categories = cateAndLang.categories;
+        $scope.languages = cateAndLang.languages;
+
+        $scope.form = {};
+        $scope.validFormtype = true;
+
+        $scope.addLang = function () {
+            cateAndLang.Add('language', $scope.form.selectedLang, $scope.pj);
+            $scope.form.selectedLang = null
+        };
+        $scope.removeLang = function (lid) {
+            cateAndLang.Remove('language', $scope.pj, lid);
+        };
+        $scope.updateProject = function () {
+            $scope.pj.due = Date.parse($scope.pj.due) || $scope.pj.due;
+            var listData = {
+                name: $scope.pj.name,
+                brief: $scope.pj.brief,
+                price:$scope.pj.price,
+                language: $scope.pj.language,
+                category: $scope.pj.category,
+                requirements: $scope.pj.requirements || '',
+                due: $scope.pj.due
+            };
+            project.Update($scope.pj, user.uid, listData);
+            if ($scope.oldDue) {
+                fbutil.syncData(['users', user.uid, 'due', $scope.id]).$remove($scope.oldDue)
+            }
+            $location.path('/projectManager');
+        };
+
+        $scope.open = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.$emit('revalidateDate');
+            $scope.form.opened = !$scope.form.opened;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1
+        };
+    }
+)
+    .controller('ProjectDetailCtrl', function ($scope, fbutil, $routeParams, $sce, user, propose, bvOptn, dateUtil) {
+        $scope.myUid = user.uid;
+        $scope.pj = fbutil.syncObject(['projects', $routeParams.projectId]);
+        $scope.id = $routeParams.projectId;
+        $scope.bvOptions = {
+            fields: {
+                datePicker: bvOptn.fields.datePicker,
+                proposePrice: bvOptn.fields.price
+            }
+        };
+        $scope.propose = fbutil.syncObject(['projects', $scope.id, 'waitingList', user.uid]) || {};
+        $scope.form = {};
+        $scope.minDate = dateUtil.afterNday(3);
+        $scope.open = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.$emit('revalidateDate');
+            $scope.form.opened = !$scope.form.opened;
+        };
+        fbutil.ref(['projects', $scope.id, 'waitingList', user.uid, 'price'])
+            .once('value', function (snap) {
+                if (snap.val() == null) {
+                    $scope.proposeExists = false
+                } else if (snap.val() == 'accepted') {
+                    $scope.proposeAccepted = true
+                }
+                else {
+                    $scope.proposeExists = true
+                }
+            });
+        $scope.proposeSend = function (prps, pj) {
+            var data = {status: 'waiting', client: pj.clientUid, pjName: pj.name, price: prps.price, expectDue: prps.expectDue};
+            $scope.propose.expectDue = Date.parse($scope.propose.expectDue) || $scope.propose.expectDue;
+            propose.Send($scope.id, user.uid, pj.clientUid, prps, data);
+            $scope.proposeExists = true
+        };
+        $scope.proposeRemove = function (whom) {
+            propose.Remove($scope.id, user.uid, whom);
+            $scope.proposeExists = false
+        };
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1
+        };
+    }
+)
     .controller('ProjectListCtrl', ['$scope', '$firebase', 'fbutil', 'cateAndLang',
         function ($scope, $firebase, fbutil, cateAndLang) {
             $scope.pjList = fbutil.syncObject('projectList');
@@ -219,19 +218,19 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             $scope.languages = cateAndLang.languages;
             $scope.predicate = '-createdTime';
 
-            $scope.vnList={};
-            $scope.vnFontColor={};
-            $scope.vnIconBg={};
-            $scope.vnMover= function (color, index) {
-                $scope.vnList[index]={'background-color': color};
-                $scope.vnFontColor[index]={color:'white'};
-                $scope.vnIconBg[index]={'background-color': 'white'}
+            $scope.vnList = {};
+            $scope.vnFontColor = {};
+            $scope.vnIconBg = {};
+            $scope.vnMover = function (color, index) {
+                $scope.vnList[index] = {'background-color': color};
+                $scope.vnFontColor[index] = {color: 'white'};
+                $scope.vnIconBg[index] = {'background-color': 'white'}
             };
 
-            $scope.vnMleave= function (color, index) {
-                $scope.vnList[index]={};
-                $scope.vnFontColor[index]={};
-                $scope.vnIconBg[index]={'background-color': color}
+            $scope.vnMleave = function (color, index) {
+                $scope.vnList[index] = {};
+                $scope.vnFontColor[index] = {};
+                $scope.vnIconBg[index] = {'background-color': color}
             };
 
             $scope.reverse = false;
@@ -252,19 +251,21 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
     .controller('ProjectManagerCtrl', ['$scope', 'fbutil', 'user', 'propose', 'project', 'cateAndLang',
         function ($scope, fbutil, user, propose, project, cateAndLang) {
             $scope.pjList = fbutil.syncObject(['users', user.uid, 'projects']);
-            $scope.select={};
-            $scope.pjSelect={};
-            $scope.select.all=true;
+            $scope.select = {};
+            $scope.pjSelect = {};
+            $scope.select.all = true;
             $scope.togglePj = function (ref) {
-                $scope.select.all=true;
-                $scope.select[ref]= $scope.select[ref]? false:true;
+                $scope.select.all = true;
+                $scope.select[ref] = $scope.select[ref] ? false : true;
                 for (var key in $scope.select) {
-                    if($scope.select[key]&&key!='all') {$scope.select.all=false}
+                    if ($scope.select[key] && key != 'all') {
+                        $scope.select.all = false
+                    }
                 }
             };
-            $scope.proposeFilter= function() {
+            $scope.proposeFilter = function () {
                 return function (item) {
-                   return $scope.select[item.ref]||$scope.select.all
+                    return $scope.select[item.ref] || $scope.select.all
                 };
             };
 
@@ -396,8 +397,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             var profile = fbutil.syncObject(userInfoPos);
             profile.$bindTo($scope, 'profile');
 
-            var bvVldtr=bvOptn.fields;
-            $scope.bvOptions={
+            var bvVldtr = bvOptn.fields;
+            $scope.bvOptions = {
                 fields: {
                     userName: bvVldtr.username,
                     email: bvVldtr.email
@@ -562,12 +563,24 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.eventSources = [$scope.events, $scope.calEventsExt];
     }])
     .controller('SandboxCtrl', ['$scope', 'fbutil', 'user', 'getFbData', function ($scope, fbutil, user, getFbData) {
-        $scope.isFormValid = false;
-        $scope.testt = 'test';
-        $scope.$on('error.field.bv', function () {
-            $scope.isFormValid = false
-        });
-        $scope.test = function () {
-            console.log('test')
+        $scope.message = 'Right click triggered';
+
+        $scope.panels = [
+            { name: 'Panel 1' },
+            { name: 'Panel 2' },
+            { name: 'Panel 3' }
+        ];
+
+        $scope.addPanel = function () {
+            $scope.panels.push({ name: 'Panel ' + ($scope.panels.length + 1) });
+        };
+
+        $scope.onRightClick = function (msg) {
+            console.log(msg);
+        };
+
+        $scope.recreatePanels = function () {
+            $scope.panels = angular.copy($scope.panels);
+            console.log($scope.panels);
         }
     }]);

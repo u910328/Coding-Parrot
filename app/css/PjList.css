@@ -1,0 +1,209 @@
+
+.card {
+    display: inline-block;
+    margin: 5px;
+    position: relative;
+    text-align: left;
+    vertical-align: top;
+    white-space: normal;
+    -webkit-backface-visibility: hidden;
+    height: 160px;
+    width: 330px;
+    float: left;
+}
+
+.card-content {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #fff;
+    height: 100%;
+    position: relative;
+    text-decoration: none;
+    vertical-align: top;
+}
+.card-click-target {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.card-content .cover {
+    height: 160px;
+    width: 107px;
+    float: left;
+    position: relative;
+    overflow: hidden;
+    position: relative;
+}
+
+.cover .cover-image-container {
+    height: 110%;
+    left: -5%;
+    position: relative;
+    top: -5%;
+    width: 110%;
+}
+
+.card .cover-outer-align {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+.cover-inner-align {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cover-image {
+    max-height: 170px;
+    max-width: 112px;
+}
+
+
+.card .details {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    padding: 7px 10px 0;
+    position: relative;
+    max-height: 144px;
+    margin-left: 107px;
+    width: 223px;
+}
+
+.card .title {
+    color: #333;
+    display: block;
+    min-height: 18px;
+    overflow: hidden;
+    text-decoration: none;
+    position: relative;
+    white-space: nowrap;
+    font-size: 20px;
+    line-height: 24px;
+    max-height: 48px;
+}
+
+.card .title .paragraph-end {
+    height: 23px;
+    width: 45px;
+}
+
+.paragraph-end {
+    background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));
+    background-image: -webkit-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
+    background-image: -moz-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
+    background-image: -ms-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
+    background-image: -o-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
+    background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='#ffffff');
+    bottom: 0;
+    height: 25px;
+    max-height: 100%;
+    position: absolute;
+    right: 0;
+    width: 60px;
+}
+
+.card .subtitle-container {
+    min-height: 22px;
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.card .subtitle {
+    width: 140px;
+
+    color: #aaa;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 16px;
+    margin: 1px 0;
+    max-width: 132px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.card .description {
+    display: block;
+    max-height: 54px;
+    min-height: 20px;
+    margin-top: 17px;
+}
+
+.card .reason-set {
+    margin-left: 107px;
+    width: 223px;
+    max-height: 83px;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #fff;
+    bottom: 0;
+    display: block;
+    padding: 0 10px;
+    position: absolute;
+}
+
+.card .price-container {
+    display: inline-block;
+    bottom: 7px;
+    bottom: 4px;
+    position: absolute;
+    right: 0;
+    text-align: left;
+}
+
+.price-container .price {
+    color: #ce5043;
+    background: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 17px;
+    padding-left: 2px;
+    position: relative;
+    right:10px;
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.card .date-container {
+    display: inline-block;
+    bottom: 7px;
+    bottom: 4px;
+    position: absolute;
+    left: 0;
+    text-align: left;
+}
+
+.date-container .date {
+    color: #ce5043;
+    background: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 17px;
+    padding-left: 2px;
+    position: relative;
+    left:10px;
+    text-align: left;
+    text-transform: uppercase;
+}

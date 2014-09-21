@@ -16,6 +16,7 @@
     "angularfire": "~0.8.x",
     "mockfirebase": "~0.2.9",
     "angular-ui-calendar": "latest",
-    "moment": "~2.8.3"
+    "moment": "~2.8.3",
+    "ng-context-menu": "~1.0.0"
   }
 }

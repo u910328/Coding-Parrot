@@ -39,7 +39,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|filter:filter.status|orderBy:predicate:reverse" ng-click="togglePj(pj.ref)" class="pjUnsel" ng-class="{pjSelected: select[pj.ref]}">
+            <tr ng-repeat="pj in pjList|pjToArray|categorize:cate:lang|filter:searchText|filter:filter.status|orderBy:predicate:reverse"
+                ng-click="togglePj(pj.ref)" class="pjUnsel" ng-class="{pjSelected: select[pj.ref]}">
                 <td ng-show="pj.assignedTo"><a href="#!/projects/detail/{{pj.ref}}">{{pj.name}}</a><br></td>
                 <td ng-show="!pj.assignedTo"><a href="#!/projects/edit/{{pj.ref}}">{{pj.name}}</a><br></td>
                 <td><a href="">{{pj.createdTime|date: "yyyy/MM/dd"}}</a><br></td>

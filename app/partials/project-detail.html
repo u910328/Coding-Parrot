@@ -6,7 +6,7 @@
 <p>Language: <span ng-repeat="(lid, value) in pj.language">{{value.name}}<span ng-hide="$last">, </span> </span> </p>
 <p>Requirements: {{pj.requirements}}</p>
 <p>Description: <span ng-bind-html="pj.description |linkify"></span></p>
-<div ng-hide="pj.assignedTo||show||(pj.clientUid==myUid)">
+<div ng-hide="pj.assignedTo||showForm||(pj.clientUid==myUid)">
     <button ng-show="!proposeExists" ng-click="showForm=true" class="btn btn-primary">Propose</button>
     <button ng-show="proposeExists" ng-click="showForm=true" class="btn btn-primary">Repropose</button>
 </div>
@@ -19,9 +19,14 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-md-1 control-label">Expect due time</label>
+        <label class="col-md-1 control-label">Expected due date*</label>
         <div class="col-md-4">
-            <input ng-model="propose.expectDue" type="text" class="form-control" placeholder="Pick a date" id="proposeDue">
+                <span class="input-group"><input name="datePicker" type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="propose.expectDue" is-open="form.opened"
+                                                 min-date="minDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+                                                 ng-required="true" show-button-bar="false" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span></span>
         </div>
     </div>
     <div class="form-group">
@@ -33,19 +38,21 @@
     <div class="form-group" ng-show="!proposeExists">
         <label class="col-md-1 control-label"></label>
         <div class="col-md-4">
-            <button ng-click="proposeSend(propose, pj);$parent.showForm=false" class="btn btn-primary">Send</button>
+            <button ng-init="form.isFormValid=false"
+                    class="btn btn-large btn-primary" ng-disabled="!form.isFormValid"
+                    ng-click="proposeSend(propose, pj);$parent.showForm=false">Update!</button>
             <button ng-click="$parent.proposeExists= false;$parent.showForm=false" class="btn btn-danger">Cancel</button>
         </div>
     </div>
     <div class="form-group" ng-show="proposeExists">
         <label class="col-md-1 control-label"></label>
         <div class="col-md-4">
-            <button ng-click="proposeSend(propose, pj);$parent.showForm=false" class="btn btn-primary">Update</button>
+            <button ng-init="form.isFormValid=false"
+                    class="btn btn-large btn-primary" ng-disabled="!form.isFormValid"
+                    ng-click="proposeSend(propose, pj);$parent.showForm=false">Update!</button>
             <button ng-click="proposeRemove(pj.clientUid);$parent.showForm=false" class="btn btn-danger">Withdrawn</button>
         </div>
     </div>
 </valid-form>
-
-
 <hr>
 <div id="disqus_thread" disqus="id"></div>

@@ -56,6 +56,15 @@
                 }
             }
         }])
+        .service('dateUtil', [function () {
+            return {
+                afterNday: function (N) {
+                    var today = new Date();
+                    var md = new Date();
+                    return md.setDate(today.getDate() + N);
+                }
+            }
+        }])
         .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {
             return{
                 cserv: {},

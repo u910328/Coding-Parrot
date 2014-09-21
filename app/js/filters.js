@@ -10,10 +10,12 @@ angular.module('myApp.filters', [])
     }])
     .filter('contactFilter', function () {
         return function (contactList) {
-            var filteredList ={};
+            var filteredList = {};
             for (var uid in contactList) {
                 console.log(uid);
-                if (!contactList[uid].Blocked) {filteredList[uid] = contactList[uid]}
+                if (!contactList[uid].Blocked) {
+                    filteredList[uid] = contactList[uid]
+                }
             }
             return filteredList
         }
@@ -54,7 +56,7 @@ angular.module('myApp.filters', [])
     })
     .filter('with', function () {
         return function (items, field) {
-            var result={};
+            var result = {};
             for (var key in items) {
                 if (items[key].hasOwnProperty(field)) {
                     result[key] = items[key];
@@ -63,69 +65,96 @@ angular.module('myApp.filters', [])
             return result;
         };
     })
-    .filter('categorizeObj', function() {
-        return function(items, cate, lang) {
+    .filter('categorizeObj', function () {
+        return function (items, cate, lang) {
             var result = {};
             var patt = /\$/;
             for (var key in items) {
                 var res = patt.test(key);
-                if (res) {continue}
+                if (res) {
+                    continue
+                }
                 var sLang = items[key].language;
                 for (var key2 in sLang) {
-                    if (sLang[key2].name==lang) {var langMatch=true; break}
+                    if (sLang[key2].name == lang) {
+                        var langMatch = true;
+                        break
+                    }
                 }
-                var cateMatch = items[key].category==cate;
+                var cateMatch = items[key].category == cate;
                 if ((cateMatch && langMatch)
-                    ||(langMatch &&!cate)
-                    ||(cateMatch &&!lang)) {result[key] = items[key]}
-                else if (!cate&&!lang) {result=items}
+                    || (langMatch && !cate)
+                    || (cateMatch && !lang)) {
+                    result[key] = items[key]
+                }
+                else if (!cate && !lang) {
+                    result = items
+                }
             }
             return result;
         };
     })
-    .filter('categorize', function() {
-        return function(items, cate, lang) {
+    .filter('categorize', function () {
+        return function (items, cate, lang) {
             var result = [];
             for (var i = 0; i < items.length; i++) {
-                var langMatch=false;
+                var langMatch = false;
                 var sLang = items[i].language;
                 for (var key2 in sLang) {
-                    if (sLang[key2].name==lang) {langMatch=true; break}
+                    if (sLang[key2].name == lang) {
+                        langMatch = true;
+                        break
+                    }
                 }
-                var cateMatch = items[i].category==cate;
+                var cateMatch = items[i].category == cate;
                 if ((cateMatch && langMatch)
-                    ||(langMatch &&!cate)
-                    ||(cateMatch &&!lang)) {result.push(items[i])}
-                else if (!cate&&!lang) {result=items}
+                    || (langMatch && !cate)
+                    || (cateMatch && !lang)) {
+                    result.push(items[i])
+                }
+                else if (!cate && !lang) {
+                    result = items
+                }
             }
             return result;
         };
     })
-    .filter('objFilter', function($filter) {
-        return function(map, expression, comparator) {
-            if (! expression) return map;
+    .filter('objFilter', function ($filter) {
+        return function (map, expression, comparator) {
+            if (!expression) return map;
             var result = {};
             var patt = /\$/;
-            for(var key in map) {
+            for (var key in map) {
                 var res = patt.test(key);
-                if (res) {continue}
+                if (res) {
+                    continue
+                }
                 if ($filter('filter')([map[key]], expression, comparator).length)
                     result[key] = map[key];
             }
             return result;
         }
     })
-    .filter('pjToArray', function() {
-        return function(map) {
+    .filter('pjToArray', function () {
+        return function (map) {
             var result = [];
             var obj = map;
             var patt = /\$/;
-            for(var key in map) {
+            for (var key in map) {
                 var res = patt.test(key);
-                if (res) {continue}
-                obj[key].ref=key;
+                if (res) {
+                    continue
+                }
+                obj[key].ref = key;
                 result.push(obj[key]);
             }
             return result;
+        }
+    })
+    .filter('capitalize', function () {
+        return function (input, all) {
+            return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }) : '';
         }
     });

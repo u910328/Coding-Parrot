@@ -58,7 +58,7 @@ angular.module('myApp.config', ['ngDisqus'])
                     }
                 }
             },
-            proposePrice: {
+            price: {
                 message: 'The value is not valid',
                 validators: {
                     notEmpty: {

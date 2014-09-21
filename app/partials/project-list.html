@@ -44,43 +44,43 @@
                 </ul>
             </div>
         </div>
-        <!--<div>
-            <div class="vnav">
-                <ul>
-                    <li><a href="" ng-click="selCate('all')"><span></span>All categories</a></li>
-                    <li ng-repeat="category in categories"><a href="" ng-click="selCate(category.name)"><span></span>{{category.name}}</a>
-                    </li>
-                    <li>
-                        <a href=""><span></span>Languages</a>
-                        <ul>
-                            <li><a href="" ng-click="selLang('all')">All languages</a></li>
-                            <li ng-repeat="language in languages"><a href="" ng-click="selLang(language.name)">{{language.name}}</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>-->
+
     </div>
 
-    <div class="col-md-8">
-        <div class="col-sm-6 col-md-3 col-lg-3"
-             ng-repeat="pj in pjList |pjToArray| filter:searchText |categorize:cate:lang|orderBy:predicate:reverse">
-            <div class="thumbnail" style="height:450px;">
-                <a href="#!/projects/detail/{{pj.ref}}"><img src="http://placekitten.com/g/300/200" alt="..."></a>
-
-                <div class="caption">
-                    <h2>{{pj.name}}</h2>
-                    <h4>{{pj.clientName}}</h4>
-                    Brief: <a href="">{{pj.brief}}</a><br>
-                    <!--Created: <a href="">{{pj.createdTime}}</a><br>-->
-                    Due: <a href="">{{pj.due|date: "yyyy/MM/dd"}}</a><br>
-                    Category: <a href="">{{pj.category}}</a><br>
-                    Language: <a href=""><span ng-repeat="(lid, value) in pj.language">{{value.name}}<span
-                        ng-hide="$last">, </span> </span></a><br>
-                    Requirements: <span>{{pj.requirements}}</span><br>
+    <div class="col-md-10">
+        <div class="card" ng-repeat="pj in pjList |pjToArray| filter:searchText |categorize:cate:lang|orderBy:predicate:reverse">
+            <div class="card-content">
+                <a class="card-click-target" href="#!/projects/detail/{{pj.ref}}"></a>
+                <div class="cover">
+                    <div class="cover-image-container">
+                        <div class="cover-outer-align">
+                            <div class="cover-inner-align">
+                                <img class="cover-image" src="https://lh3.ggpht.com/3RelTy1OtmXT-M4XzPGCt3ZNayrlEjho1ukHx11QKVckYS7vY6x_t8OO1I4mWcOzuYtg=w170-rw">
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="details">
+                    <h2> <a class="title" href="#!/projects/detail/{{pj.ref}}">{{pj.name|capitalize}}<span class="paragraph-end"></span> </a> </h2>
+                    <div class="subtitle-container">
+                        <a class="subtitle" href="#!/users/detail/{{pj.clientUid}}">{{pj.clientName}}</a>  <span class="paragraph-end"></span>
+                    </div>
+                    <div class="description">{{pj.category}}/<span ng-repeat="(lid, value) in pj.language">{{value.name}}<span
+                            ng-hide="$last">, </span> </span><br>
+                        {{pj.brief}}<span class="paragraph-end"></span>
+                    </div>
+                </div>
+                <div class="reason-set">
+        <span class="price-container">
+          <a href="" class="price"> <span>US$&nbsp;{{pj.price}}.00</span></a>
+        </span>
+        <span class="date-container">
+          <a href="" class="date"> <span>{{pj.due|date: "yyyy/MM/dd"}}</span></a>
+        </span>
+                </div>
+
             </div>
+
         </div>
     </div>
 </div>
