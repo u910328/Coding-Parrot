@@ -9,7 +9,7 @@
 
 <hr>
 <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-2" style="width:250px">
         <div class="vnav-container">
             <div class="nav vnav" style="left: 0px; display: block; top: 0px; opacity: 1;" ng-init="vnMleave('gray', 100)">
                 <a ng-click="selCate('');selLang('')" class="menu-link" ng-style="vnList[100]" href="" ng-mouseover="vnMover('gray', 100)" ng-mouseleave="vnMleave('gray', 100)">
@@ -72,7 +72,7 @@
                 </div>
                 <div class="reason-set">
         <span class="price-container">
-          <a href="" class="price"> <span>US$&nbsp;{{pj.price}}.00</span></a>
+          <a href="" class="price"> <span>US$&nbsp;{{pj.price||0}}.00</span></a>
         </span>
         <span class="date-container">
           <a href="" class="date"> <span>{{pj.due|date: "yyyy/MM/dd"}}</span></a>

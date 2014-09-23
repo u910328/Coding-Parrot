@@ -12,6 +12,10 @@
     float: left;
 }
 
+.card a:hover {
+    text-decoration: underline;
+}
+
 .card-content {
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
