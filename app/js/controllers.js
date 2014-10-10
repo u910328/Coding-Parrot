@@ -3,6 +3,9 @@
 /* Controllers */
 
 angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
+    .controller('IndexCtrl', function ($scope,visualCtrl) {
+        $scope.visibility=visualCtrl.visibility
+    })
     .controller('HomeCtrl', ['$scope', 'fbutil', 'user', 'FBURL', function ($scope, fbutil, user, FBURL) {
         $scope.syncedValue = fbutil.syncObject('syncedValue');
         $scope.user = user;
@@ -66,7 +69,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
                 brief: $scope.pj.brief,
                 language: $scope.pj.language,
                 category: $scope.pj.category,
-                price:$scope.pj.price,
+                price: $scope.pj.price,
                 requirements: $scope.pj.requirements || '',
                 due: $scope.pj.due
             };
@@ -139,7 +142,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             var listData = {
                 name: $scope.pj.name,
                 brief: $scope.pj.brief,
-                price:$scope.pj.price,
+                price: $scope.pj.price,
                 language: $scope.pj.language,
                 category: $scope.pj.category,
                 requirements: $scope.pj.requirements || '',
@@ -503,32 +506,35 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
             }
         }
     ])
-    .controller('UserDetailCtrl', ['$scope', '$firebase', 'fbutil', '$routeParams', '$sce', 'chatService', 'user',
-        function ($scope, $firebase, fbutil, $routeParams, $sce, chatService, user) {
-            $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
-            $scope.showAddContact = false;
-            $scope.showTalkTo = $routeParams.userId != user.uid;
-            var isContactExist = function () {
-                fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
-                    .once('value', function (snap) {
-                        if (snap.val() != false && user.uid != $routeParams.userId) {
-                            $scope.showAddContact = true
-                        }
-                    })
-            };
-            $scope.talkTo = function () {
-                chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
-                $scope.$parent.chatShow = true
-            };
-            isContactExist();
-            $scope.addContact = function () {
-                if ($scope.showAddContact = true) {
-                    chatService.AddContact(user.uid, $routeParams.userId, true);
-                    $scope.showAddContact = false;
-                }
-            };
-        }
-    ])
+    .controller('UserDetailCtrl', function ($scope, $firebase, fbutil, $routeParams, $sce, chatService, user, visualCtrl) {
+        $scope.userInfo = fbutil.syncObject(['users', $routeParams.userId, 'userInfo']);
+        $scope.showAddContact = false;
+        $scope.showTalkTo = $routeParams.userId != user.uid;
+        $scope.visibility=visualCtrl.visibility;
+        $scope.test = $scope.visibility.chatContainer;
+        var isContactExist = function () {
+            fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
+                .once('value', function (snap) {
+                    if (snap.val() != false && user.uid != $routeParams.userId) {
+                        $scope.showAddContact = true
+                    }
+                })
+        };
+        $scope.talkTo = function () {
+            chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
+            $scope.visibility.chatContainer=true;
+            $scope.visibility.contacts=false;
+
+        };
+        isContactExist();
+        $scope.addContact = function () {
+            if ($scope.showAddContact = true) {
+                chatService.AddContact(user.uid, $routeParams.userId, true);
+                $scope.showAddContact = false;
+            }
+        };
+    }
+)
     .controller('CalendarCtrl', ['$scope', 'fbutil', 'user', 'getFbData', function ($scope, fbutil, user, getFbData) {
         $scope.dues = getFbData.Dues;
         $scope.pushEvent = function (title, time) {

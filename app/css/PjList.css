@@ -211,3 +211,12 @@
     text-align: left;
     text-transform: uppercase;
 }
+
+.categories-title{
+    color: #555;
+    font-size: 18px;
+    font-weight: 300;
+    left: 56px;
+    vertical-align: middle;
+    width: 110px;
+}

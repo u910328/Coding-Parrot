@@ -1,22 +1,52 @@
-<div ng-show="!cserv.convRef">
-    <h2>Contacts</h2>
 
-    <div ng-repeat="(contact, value) in contacts" ng-hide="value.Blocked">                                                        <!--todo: make a filter to remove blocked contact-->
-        <div ng-init="findBlocked(value.Ref, value.Blocked)"></div>
-        <a href="" ng-click="removeContact(contact)">[X]</a><a href="" ng-click="blockContact(contact)">[Block]</a>
-        <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
-        <span ng-show="Conversations[value.Ref].unread"> ({{Conversations[value.Ref].unread}})</span>
 
-        <br>
-        <button ng-click="invite(contact)">invite</button>
+<div class="panel panel-default" ng-show="visibility.contacts">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-comment">chat</span>
 
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
+                <ul class="dropdown-menu slidedown">
+                    <li>
+                        function 1
+                    </li>
+                    <li>
+                        function 2
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-repeat="(contact, value) in contacts" ng-hide="value.Blocked">
+                <!--todo: make a filter to remove blocked contact-->
+                <div ng-init="findBlocked(value.Ref, value.Blocked)"></div>
+                <a href="" ng-click="removeContact(contact)">[X]</a><a href=""
+                                                                       ng-click="blockContact(contact)">[Block]</a>
+                <a href="" ng-click="talkTo(contact)" ng-init="getUserName(contact)">{{Users[contact].name}}</a>
+                <span ng-show="Conversations[value.Ref].unread"> ({{Conversations[value.Ref].unread}})</span>
+                <!--<br>
+                <button ng-click="invite(contact)">invite</button>-->
+
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="input-group">
+                <input id="btn-input" type="text" class="form-control input-sm" placeholder="Find a friend">
+                <span class="input-group-btn">
+                <button class="btn btn-warning btn-sm" id="btn-chat"> Find
+                </button>
+              </span>
+            </div>
+        </div>
     </div>
 
-    <div>
+
+    <!--<div>
         <hr>
         <button ng-click="Confirm()">Create a Conversation</button>
         <br>
         <div>Users in This Conversation: {{usrInCon}}</div>
-    </div>
+    </div>-->
 
-</div>

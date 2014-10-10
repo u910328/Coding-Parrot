@@ -65,6 +65,17 @@
                 }
             }
         }])
+
+        .factory('visualCtrl', function () {
+            return {
+                visibility:{
+                    contacts:true,
+                    chatContainer:false
+                }
+            }
+        })
+
+
         .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {
             return{
                 cserv: {},

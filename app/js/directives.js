@@ -58,7 +58,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
     }])
     .directive('communication', function () {
 
-        var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService) {
+        var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService, visualCtrl) {
             //utilities
             var grpConPos = ['users', myUid, 'conversations', 'group'];
             $scope.myUid = myUid;
@@ -70,6 +70,9 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                 var pos1 = ['conversations', conv, 'members', myUid];
                 getFbData.getUnread(pos1, conv)
             };
+            //visual
+            $scope.visibility=visualCtrl.visibility;
+
 
             //notification
             $scope.notifications = fbutil.syncObject(['users', myUid, 'notifications']);
@@ -179,10 +182,10 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
             restrict: 'E',
             transclude: true,
             templateUrl: 'partials/directiveTemplates/communication.html',
-            controller: function ($scope, $rootScope, simpleLogin, fbutil, $sce, getFbData, $q, propose, chatService) {
+            controller: function ($scope, $rootScope, simpleLogin, fbutil, $sce, getFbData, $q, propose, chatService,visualCtrl) {
                 $rootScope.$on('$firebaseSimpleLogin:login', function () {
                     simpleLogin.getUser().then(function (user) {
-                        Ctrl($scope, fbutil, $sce, getFbData, $q, user.uid, propose, chatService)
+                        Ctrl($scope, fbutil, $sce, getFbData, $q, user.uid, propose, chatService,visualCtrl)
                     });
                 });
                 $rootScope.$on('$firebaseSimpleLogin:logout', function () {

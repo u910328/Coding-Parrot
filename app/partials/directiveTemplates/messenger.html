@@ -1,15 +1,82 @@
+<div style="position: fixed; right:300px; bottom:0;" ng-show="!!cserv.convRef">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+              <span>
+               <img src="http://placekitten.com/g/30/30"> Name
+             </span>
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon glyphicon-cog"></span>
+            </button>
+            <ul class="dropdown-menu slidedown">
+                <li>
+                    function 1
+                </li>
+                <li>
+                    function 2
+                </li>
+            </ul>
+            <butoon type="button" ng-click="closeWindow()" class="btn btn-default btn-xs">
+            </butoon>
+        </div>
+    </div>
+    <div class="panel-body">
+        <ul id="messages" ng-show="cserv.messages.length">
+            <li class="left clearfix" ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+                <div ng-bind-html="message.text">
+                </div>
+                  <span class="chat-img pull-left">
+                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=U" alt="User Avatar" class="img-circle">
+                  </span>
+            </li>
+            <li class="right clearfix">
+                  <span class="chat-img pull-right">
+                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=ME" alt="User Avatar" class="img-circle">
+                        </span>
+                <div class="chat-body clearfix">
+                    <div class="header">
+                        <small class="text-muted">
+                            <span class="glyphicon glyphicon-time"></span>
+                            13 mins ago
+                        </small>
+                        <strong class="pull-right primary-font">Bhaumik Patel</strong>
+                    </div>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum
+                        ornare dolor, quis ullamcorper ligula sodales.
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="panel-footer">
+        <div class="input-group">
+            <input id="btn-input" type="text" ng-model="newMessage" class="form-control input-xs" placeholder="Type your message here...">
+                <span class="input-group-btn">
+                             <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send
+                             </button>
+                            <button class="glyphicon glyphicon-picture">
+                                card
+                            </button>
+                        </span>
+        </div>
+    </div>
+</div>
+</div>
 
-<div ng-show="!!cserv.convRef">
+
+<!--
+<div style="position: fixed;right:200px;bottom:200px;" ng-show="!!cserv.convRef">
     <button ng-click="closeWindow()">X</button>
     <ul id="messages" ng-show="cserv.messages.length">
         <li ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
             <div ng-bind-html="message.text"></div>
         </li>
-        <!--use ng-bind-html because of $sanitize-->
+        &lt;!&ndash;use ng-bind-html because of $sanitize&ndash;&gt;
     </ul>
     <form>
         <br>
         <input placeholder="Message..." ng-model="newMessage">
         <button type="submit" ng-click="addMessage(newMessage);newMessage = null;">send</button>
     </form>
-</div>
+</div>-->
