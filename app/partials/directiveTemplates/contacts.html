@@ -1,6 +1,6 @@
 
-
-<div class="panel panel-default" ng-show="visibility.contacts">
+<div class="chatContainer">
+    <div class="panel panel-default" ng-show="visibility.contacts">
         <div class="panel-heading">
             <span class="glyphicon glyphicon-comment">chat</span>
 
@@ -18,7 +18,7 @@
                 </ul>
             </div>
         </div>
-        <div class="panel-body">
+        <div class="panel-body contactBox">
             <div ng-repeat="(contact, value) in contacts" ng-hide="value.Blocked">
                 <!--todo: make a filter to remove blocked contact-->
                 <div ng-init="findBlocked(value.Ref, value.Blocked)"></div>
@@ -41,12 +41,4 @@
             </div>
         </div>
     </div>
-
-
-    <!--<div>
-        <hr>
-        <button ng-click="Confirm()">Create a Conversation</button>
-        <br>
-        <div>Users in This Conversation: {{usrInCon}}</div>
-    </div>-->
-
+</div>

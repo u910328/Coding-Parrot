@@ -1,4 +1,4 @@
-<div style="position: fixed; right:300px; bottom:0;" ng-show="!!cserv.convRef">
+<div class="msgContainer" ng-show="!!cserv.convRef">
   <div class="panel panel-default">
     <div class="panel-heading">
               <span>
@@ -20,7 +20,7 @@
             </butoon>
         </div>
     </div>
-    <div class="panel-body">
+    <div class="panel-body msgBox">
         <ul id="messages" ng-show="cserv.messages.length">
             <li class="left clearfix" ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
                 <div ng-bind-html="message.text">
