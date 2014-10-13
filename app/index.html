@@ -48,7 +48,7 @@
                 <li><a href="#!/sandbox">sandbox</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li ng-show-auth><a href="" ng-click="visibility.chatContainer=!visibility.chatContainer;visibility.contacts=true">chat</a></li>
+                <li ng-show-auth><a href="" ng-click="visibility.contacts=!visibility.contacts; visibility.chatContainer=visibility.contacts;">chat</a></li>
                 <li ng-show-auth><a href="" ng-click="notiShow=!notiShow">notificaton</a></li>
                 <li ng-hide-auth><a href="#!/login">login</a></li>
                 <li ng-show-auth><a href="#!/account">account</a></li>
@@ -67,14 +67,13 @@
     </communication>
 </div>
 
-<div ng-show = 'visibility.chatContainer'>
-    <communication class="chatContainer">
-        <!--<conversation></conversation>-->
-        <contacts></contacts>
-        <messenger></messenger>
-        <!--<userlist></userlist>-->
-    </communication>
-</div>
+<communication ng-show = 'visibility.chatContainer' style="height: 100%" >
+    <!--<conversation></conversation>-->
+    <div style="height: 50px; width: 100%;"></div>
+    <contacts style="float: right; display: block; height: 100%;"></contacts>
+    <messenger style="float: right; display: block; height: 100%;"></messenger>
+    <!--<userlist></userlist>-->
+</communication>
 
     <div ng-view></div>
 <check-over-due></check-over-due>

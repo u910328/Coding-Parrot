@@ -523,8 +523,7 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.talkTo = function () {
             chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
             $scope.visibility.chatContainer=true;
-            $scope.visibility.contacts=false;
-
+            /*$scope.visibility.contacts=false;*/
         };
         isContactExist();
         $scope.addContact = function () {

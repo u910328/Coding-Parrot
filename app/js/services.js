@@ -69,7 +69,7 @@
         .factory('visualCtrl', function () {
             return {
                 visibility:{
-                    contacts:true,
+                    contacts:false,
                     chatContainer:false
                 }
             }
@@ -78,10 +78,17 @@
 
         .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {
             return{
+                cserv2:{convRef:[]},
                 cserv: {},
                 SelConv: function (myUid, conv) {
                     this.cserv.convRef = conv;
                     this.cserv.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
+                    fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
+                    fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
+                },
+                SelConv2: function (myUid, conv) {
+                    this.cserv2.convRef.push(conv);
+                    this.cserv2.messages[conv] = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
                     fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
                     fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
                 },
