@@ -59,6 +59,7 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
     .directive('communication', function () {
 
         var Ctrl = function ($scope, fbutil, $sce, getFbData, $q, myUid, propose, chatService, visualCtrl) {
+
             //utilities
             var grpConPos = ['users', myUid, 'conversations', 'group'];
             $scope.myUid = myUid;
@@ -159,20 +160,23 @@ angular.module('myApp.directives', ['firebase.utils', 'simpleLogin'])
                     $scope.blockedList[contactRef] = true
                 }
             };
+            $scope.talkTo = function (whom) {
+                chatService.cserv.convRef[whom]=true;
+                $scope.visibility.messengers[whom]=true;
+                chatService.Create1to1Ref(myUid, whom, true)
+            };
 
             //messenger
             $scope.cserv = chatService.cserv;
-            $scope.closeWindow = function () {
-                if ($scope.cserv.convRef) {
+            $scope.closeWindow = function (conv) {
+                $scope.visibility.messengers[conv]=false;
+                /*if ($scope.cserv.convRef[conv]) {
                     fbutil.syncData(['conversations', $scope.cserv.convRef, 'members', myUid]).$update({unread: 0});
                     $scope.cserv.convRef = false
-                }
+                }*/
             };
             $scope.addMessage = function (newMessage) {
                 chatService.AddMessage(myUid, $scope.cserv.convRef, newMessage);
-            };
-            $scope.talkTo = function (whom) {
-                chatService.Create1to1Ref(myUid, whom, true)
             };
 
             //user list

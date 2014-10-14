@@ -70,25 +70,25 @@
             return {
                 visibility:{
                     contacts:false,
-                    chatContainer:false
+                    contactContainer:false,
+                    messengers: {}
                 }
             }
         })
 
 
-        .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification) {
+        .factory('chatService', ['fbutil', 'getFbData', '$q', 'notification', function (fbutil, getFbData, $q, notification, visualCtrl) {
             return{
-                cserv2:{convRef:[]},
-                cserv: {},
+                cserv:{convRef:{}, messages:{}},
+                /*cserv: {},
                 SelConv: function (myUid, conv) {
                     this.cserv.convRef = conv;
                     this.cserv.messages = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
                     fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
                     fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
-                },
-                SelConv2: function (myUid, conv) {
-                    this.cserv2.convRef.push(conv);
-                    this.cserv2.messages[conv] = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
+                },*/
+                SelConv: function (myUid, conv, whom) {
+                    this.cserv.messages[whom||conv] = fbutil.syncArray(['conversations', conv, 'messages'], {limit: 10, endAt: null});
                     fbutil.syncData(['conversations', conv, 'members', myUid]).$update({unread: 'watching'});
                     fbutil.ref(['conversations', conv, 'members', myUid]).onDisconnect().update({unread: 0})
                 },
@@ -104,14 +104,14 @@
                                 var whomRef = snapshot.val();
                                 def.resolve(snapshot.val());
                                 if (select) {
-                                    that.SelConv(myUid, whomRef)
+                                    that.SelConv(myUid, whomRef, whom)
                                 }
                             } else {
                                 fbutil.syncData(pos).$push({Data: 'success'}).then(function (Ref) {
                                     var conRef = Ref.name();
                                     def.resolve(conRef);
                                     if (select) {
-                                        that.SelConv(myUid, conRef)
+                                        that.SelConv(myUid, conRef, whom)
                                     }
                                     fbutil.syncData(['conversations', conRef, 'members', whom]).$update({Data: 'success'});
                                     fbutil.syncData(['users', whom, 'conversations', '1to1', myUid]).$update({Data: 'success', Ref: conRef});

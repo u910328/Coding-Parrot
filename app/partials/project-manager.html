@@ -1,3 +1,4 @@
+<!--
 <div class="row">
     <div class="col-md-2">
         <a class="btn btn-large btn-primary" href="#!/jobManager">Job manager</a>
@@ -7,25 +8,29 @@
     </div>
 </div>
         <hr>
+-->
 
 <div class="row">
     <div class="col-md-2">
-        <div>
-            <ul>
-                <li>
-                    <a href="#!/newProject" class="btn btn-danger">new project</a>
-                </li>
-                <li>
-                    <a href="" ng-click="filter.status=''"><h3>My Projects</h3></a>
-                </li>
-                <li>
-                    <a href="" ng-click="filter.status='In Progress'"><h3>In Progress</h3></a>
-                </li>
-                <li>
-                    <a href="" ng-click="filter.status='Published'"><h3>Published</h3></a>
-                </li>
-            </ul>
+        <div class="vnav-container">
+            <div style="width: 200px; height: 50px; padding:0, 5px, 0, 0;">
+                <input ng-model="searchText" style="width: 200px; height: 40px;" placeholder="Search...">
+            </div>
+            <!--<div class="nav vnav "
+                 style="left: 0px; display: block; top: 0px; opacity: 1;" ng-init="vnMleave(item.color, $index)">
+                    <li>
+                        <a href="" ng-click="filter.status=''"><h3>My Projects</h3></a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="filter.status='In Progress'"><h3>In Progress</h3></a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="filter.status='Published'"><h3>Published</h3></a>
+                    </li>
+                </ul>
+            </div>-->
         </div>
+
     </div>
     <div class="col-md-8">
         <table class="table table-hover" ng-init="predicate='-createdTime';reverse=false">

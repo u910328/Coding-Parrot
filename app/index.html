@@ -46,9 +46,11 @@
                 <li><a href="#!/users">users</a></li>
                 <li><a href="#!/calendar">calendar</a></li>
                 <li><a href="#!/sandbox">sandbox</a></li>
+
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li ng-show-auth><a href="" ng-click="visibility.contacts=!visibility.contacts; visibility.chatContainer=visibility.contacts;">chat</a></li>
+                <li> <a href="#!/newProject" class="btn btn-primary btn-lg">new project</a></li>
+                <li ng-show-auth><a href="" ng-click="visibility.contacts=!visibility.contacts;">chat</a></li>
                 <li ng-show-auth><a href="" ng-click="notiShow=!notiShow">notificaton</a></li>
                 <li ng-hide-auth><a href="#!/login">login</a></li>
                 <li ng-show-auth><a href="#!/account">account</a></li>
@@ -60,6 +62,7 @@
     <!-- /.container-fluid -->
 </nav>
 
+<div class="empty-head"></div>
 
 <div ng-init="notiShow=false" ng-show = 'notiShow'>
     <communication class="notiContainer">
@@ -67,7 +70,7 @@
     </communication>
 </div>
 
-<communication ng-show = 'visibility.chatContainer' style="height: 100%" >
+<communication ng-show = 'visibility.contactContainer' style="height: 100%" >
     <!--<conversation></conversation>-->
     <div style="height: 50px; width: 100%;"></div>
     <contacts style="float: right; display: block; height: 100%;"></contacts>

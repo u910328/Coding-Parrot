@@ -511,7 +511,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         $scope.showAddContact = false;
         $scope.showTalkTo = $routeParams.userId != user.uid;
         $scope.visibility=visualCtrl.visibility;
-        $scope.test = $scope.visibility.chatContainer;
+        $scope.cserv=chatService.cserv;
+        $scope.test = $scope.visibility.contactContainer;
         var isContactExist = function () {
             fbutil.ref(['users', user.uid, 'contacts', $routeParams.userId, 'Blocked'])
                 .once('value', function (snap) {
@@ -522,7 +523,8 @@ angular.module('myApp.controllers', ['firebase.utils', 'simpleLogin'])
         };
         $scope.talkTo = function () {
             chatService.Create1to1Ref(user.uid, $routeParams.userId, true);
-            $scope.visibility.chatContainer=true;
+            $scope.cserv.convRef[$routeParams.userId]=true;
+            $scope.visibility.messengers[$routeParams.userId]=true;
             /*$scope.visibility.contacts=false;*/
         };
         isContactExist();

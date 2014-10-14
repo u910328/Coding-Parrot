@@ -12,14 +12,19 @@
     float: left;
     position: absolute;
     width: 200px;
-    height: 506px;
+    height: 100%;
     z-index: 984;
     position:fixed;
     left:0;
+    position: fixed;
+    top:0;
 }
 
 .vnav {
-
+    display: block;
+    left: 0;
+    top: 0px;
+    opacity: 1;
     list-style: none;
     margin: 0;
     padding: 0;

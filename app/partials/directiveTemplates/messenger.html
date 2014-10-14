@@ -1,4 +1,4 @@
-<div class="msgContainer" ng-show="!!cserv.convRef">
+<div ng-repeat="(conv, value) in cserv.convRef" class="msgContainer" ng-show="visibility.messengers[conv]&&cserv.convRef[conv]">
   <div class="msgContainer-inner">
       <div class="panel panel-default" style="height: 100%;">
               <div class="panel-heading">
@@ -17,13 +17,13 @@
                           function 2
                       </li>
                   </ul>
-                  <butoon type="button" ng-click="closeWindow()" class="btn btn-default btn-xs">
+                  <butoon type="button" ng-click="closeWindow(conv)" class="btn btn-default btn-xs">
                   </butoon>
               </div>
           </div>
           <div class="panel-body msgBox">
-              <ul id="messages" ng-show="cserv.messages.length">
-                  <li class="right clearfix" ng-repeat="message in cserv.messages">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
+              <ul id="messages" ng-show="cserv.messages[conv].length">
+                  <li class="right clearfix" ng-repeat="message in cserv.messages[conv]">{{message.addresser}} ({{message.timeStamp| chatTimeStamp}})
                       <div ng-bind-html="message.text">
                       </div>
                   <span class="chat-img pull-right">
