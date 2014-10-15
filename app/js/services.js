@@ -69,8 +69,8 @@
         .factory('visualCtrl', function () {
             return {
                 visibility:{
+                    debug:false,
                     contacts:false,
-                    contactContainer:false,
                     messengers: {}
                 }
             }

@@ -1,0 +1,9 @@
+<div style="background-color:gray;width:400px;min-height: 400px;position:fixed;">
+    <h1>Visibility</h1>
+    <button ng-click="visibility.contacts=!visibility.contacts">Contacts</button>{{visibility.contacts}}<br>
+    <h4>Current conversations</h4>
+    <div ng-repeat="(conv, value) in visibility.messengers">
+        <button ng-click="visibility.messengers[conv]=!visibility.messengers[conv]">{{conv}}</button>{{visibility.messengers[conv]}}<br>
+    </div>
+
+</div>

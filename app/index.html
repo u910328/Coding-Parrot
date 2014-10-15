@@ -46,6 +46,7 @@
                 <li><a href="#!/users">users</a></li>
                 <li><a href="#!/calendar">calendar</a></li>
                 <li><a href="#!/sandbox">sandbox</a></li>
+                <li><a href="" ng-click="visibility.debug=!visibility.debug;">debug</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -70,7 +71,9 @@
     </communication>
 </div>
 
-<communication ng-show = 'visibility.contactContainer' style="height: 100%" >
+<debug ng-show="visibility.debug"></debug>
+
+<communication style="height: 100%" >
     <!--<conversation></conversation>-->
     <div style="height: 50px; width: 100%;"></div>
     <contacts style="float: right; display: block; height: 100%;"></contacts>
@@ -118,6 +121,7 @@
 <script src="js/filters.js"></script>
 <script src="js/routes.js"></script>
 <script src="js/services.js"></script>
+<script src="js/debug.js"></script>
 <script src="js/util/firebase.utils.js"></script>
 <script src="js/util/simpleLogin.js"></script>
 <script src="js/util/changeEmail.js"></script>

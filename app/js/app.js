@@ -9,6 +9,7 @@ angular.module('myApp', [
     'myApp.filters',
     'myApp.routes',
     'myApp.services',
+    'myApp.debug',
     'ngSanitize',
     'myApp.timeAgo',
     'ui.bootstrap',
